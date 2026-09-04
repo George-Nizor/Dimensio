@@ -142,7 +142,7 @@ class RunStore {
     throw new Error(`Run not found: ${runId}`);
   }
 
-  async create({ prompt, workflow = "auto", quality = "balanced", targetFormat = "glb", tool = "auto", outputSettings = {}, cloudApproved = false, attachments = [] }) {
+  async create({ prompt, workflow = "auto", quality = "production", targetFormat = "splat", tool = "auto", outputSettings = {}, attachments = [] }) {
     if (typeof prompt !== "string" || !prompt.trim()) throw new Error("A prompt is required");
     if (!Array.isArray(attachments) || attachments.length > 12) throw new Error("At most 12 attachments are allowed");
     const runId = crypto.randomUUID();
@@ -180,7 +180,7 @@ class RunStore {
         completed_at: null,
         prompt: prompt.trim(),
         inputs,
-        settings: { quality, target_format: targetFormat, tool, output: outputSettings, cloud_approved: Boolean(cloudApproved) },
+        settings: { quality, target_format: targetFormat, tool, output: outputSettings, cloud_approved: false },
         steps: [],
         outputs: {},
         artifacts: [],
@@ -281,7 +281,6 @@ class RunStore {
       targetFormat: manifest.settings?.target_format,
       tool: manifest.settings?.tool,
       outputSettings: manifest.settings?.output,
-      cloudApproved: false,
       attachments,
     });
   }

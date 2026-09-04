@@ -25,6 +25,7 @@ contextBridge.exposeInMainWorld("forge3d", Object.freeze({
   archive: invoke("forge3d:archive"),
   trash: invoke("forge3d:trash"),
   artifactAction: invoke("forge3d:artifact-action"),
+  exportArtifact: invoke("forge3d:export-artifact"),
   repairPlugin: invoke("forge3d:repair-plugin"),
   refreshTools: invoke("forge3d:refresh-tools"),
   onState: (listener) => subscribe("forge3d:state", listener),

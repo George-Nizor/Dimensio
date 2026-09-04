@@ -57,13 +57,15 @@ Forge3D accepts these requests automatically for the current session:
 - file changes contained by the run; and
 - local Blender or Godot MCP calls without remote intent.
 
-Network access is disabled unless the job's cloud checkbox is confirmed. A network request, remote
-provider action, or write outside the run stays interactive. This removes the pointless approval
-drumbeat from local asset work while keeping the expensive or surprising operations visible.
+Network access is disabled unconditionally: the desktop is local-only, cloud tool selections are
+scrubbed from persisted preferences, and the agent prompt forbids cloud providers. A network
+request, remote provider action, or write outside the run stays interactive. This removes the
+pointless approval drumbeat from local asset work while keeping surprising operations visible.
 
 ## Plugin repair
 
-`skills/list` is authoritative. Forge3D compares the discovered plugin with the bundled 0.2.2 copy.
+`skills/list` is authoritative. Forge3D compares the discovered plugin with the bundled copy, whose
+version is read from the desktop `package.json`.
 The Repair action backs up the personal plugin, installs the bundled files, writes machine-specific
 Blender/Godot MCP configuration, updates the personal marketplace entry, and registers the plugin.
 A failure restores the backup.
@@ -83,9 +85,18 @@ former repository name.
 - PNG, JPEG, WebP, and GIF use native image playback.
 - Ordered raster directories play as 12 fps image sequences.
 - GLB and glTF use bundled Three.js, OrbitControls, animation mixers, and bounding-sphere framing.
-- PLY, SPLAT, and SOG use bundled SparkJS plus the tested TripoSplat coordinate conversion.
+- SPLAT, SOG, and header-verified Gaussian PLY use bundled SparkJS plus the tested TripoSplat
+  coordinate conversion; polygon PLY routes to Three.js as an ordinary model.
 - Validation JSON and text/log artifacts render through contained readers.
 - Unsupported files show metadata and keep their named open actions.
+
+## Export
+
+The inspector's "Export to another format" action converts a finished artifact through headless
+Blender (`blender/export_asset.py`). Polygon artifacts offer eight interchange formats; a Gaussian
+splat offers only `blend`, because pretending a splat is a polygon mesh helps nobody. Each export
+writes a fresh versioned folder under the run's `exports/` and succeeds only when Blender's own
+`export-report.json` reports completion.
 
 ## Recovery and file actions
 

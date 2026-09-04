@@ -22,6 +22,7 @@ const { RunStore } = require("./lib/run-store.cjs");
 const {
   BUNDLE_VERSION,
   detectExternalTools,
+  detectWslModelsDirectory,
   ensureRuntimeState,
   findCodexExecutable,
   inspectForgeSkill,
@@ -30,6 +31,7 @@ const {
 } = require("./lib/runtime.cjs");
 const { resolveContained } = require("./lib/path-policy.cjs");
 const { automaticApproval } = require("./lib/approval-policy.cjs");
+const { exportArtifact, exportFormatsForArtifact } = require("./lib/export-service.cjs");
 
 protocol.registerSchemesAsPrivileged([
   {
@@ -152,6 +154,8 @@ async function ensureCodex() {
   if (codexClient?.started) return codexClient;
   const executable = findCodexExecutable();
   const binDirectory = app.isPackaged ? path.join(process.resourcesPath, "bin") : path.join(repoRoot, ".venv", "Scripts");
+  const tools = externalTools();
+  const wslModelsDirectory = process.env.FORGE3D_WSL_MODELS_DIR || detectWslModelsDirectory(tools.wsl);
   const env = {
     ...process.env,
     PATH: `${binDirectory}${path.delimiter}${process.env.PATH || ""}`,
@@ -159,6 +163,9 @@ async function ensureCodex() {
     FORGE3D_TOOLKIT_ROOT: bundledToolkit(),
     FORGE3D_PLUGIN_ROOT: bundledPlugin(),
     FORGE3D_STATE_ROOT: runtimeState.root,
+    ...(tools.blender ? { BLENDER_EXECUTABLE: tools.blender } : {}),
+    ...(tools.godot ? { GODOT_EXECUTABLE: tools.godot } : {}),
+    ...(wslModelsDirectory ? { FORGE3D_WSL_MODELS_DIR: wslModelsDirectory } : {}),
   };
   codexClient = new CodexAppServerClient({ command: executable, cwd: runStore.root, env });
   codexClient.on("notification", (message) => {
@@ -204,17 +211,16 @@ async function refreshSkill(forceReload = false) {
 }
 
 function promptWithPolicy(manifest) {
-  const attachments = (manifest.inputs || []).map((item) => item.path).join(", ") || "none";
-  const cloud = manifest.settings?.cloud_approved
-    ? `Cloud execution or upload is approved for this job only, and only for these copied run attachments: ${attachments}. Still request approval before any charged provider action.`
-    : "Cloud execution and uploading user files are not approved for this job. Use local workflows only.";
+  const quality = manifest.settings?.quality || "production";
+  const gaussianDensity = quality === "draft" ? 65536 : quality === "balanced" ? 131072 : 262144;
   return [
     manifest.prompt,
     "Work only inside this Forge3D run directory. Never overwrite an existing artifact; create a numbered version.",
-    cloud,
-    `Workflow: ${manifest.workflow_route}; quality: ${manifest.settings?.quality}; target: ${manifest.settings?.target_format}; tool/model: ${manifest.settings?.tool}.`,
-    "The desktop host has already completed startup diagnostics and selected the requested route. Start production immediately. Do not rerun forge3d doctor, inspect CLI help, reinstall or search for tools, inspect plugin source, or launch review applications unless the first concrete production command fails.",
-    "Use the leanest complete route: one authored build pass and at most one targeted correction. For splat targets, generate one clean reference, run local TripoSplat once, preserve its PLY and SPLAT outputs, make only the minimum proxy needed for interaction, and do not investigate optional KIRI or Godot review integrations. Do not perform redundant screenshots, orbit renders, or validation passes.",
+    "This desktop is local-only. Never use a cloud provider, upload a user file, or request cloud approval.",
+    `Workflow: ${manifest.workflow_route}; quality: ${quality}; target: ${manifest.settings?.target_format}; tool/model: ${manifest.settings?.tool}.`,
+    "The desktop host has already detected local Blender, Godot, WSL, and the model directory and provided their paths in environment variables. Start production immediately. Do not rerun forge3d doctor, inspect CLI help, rediscover tools, reinstall packages, inspect plugin source, or launch review applications unless the first production command fails.",
+    `Use one production pass and at most one targeted correction. For a splat, create one clean reference, then invoke exactly: forge3d models run triposplat <reference-image> --output-dir <versioned-output> --gaussians ${gaussianDensity} --json. Do not try local-run or alternate model commands. Preserve the PLY and SPLAT outputs and create only the minimum interaction proxy.`,
+    "Perform one consolidated validation pass. Do not make redundant screenshots, orbit renders, duplicate reports, or optional integration probes.",
     "The Forge3D host exclusively owns run.json. Do not create, edit, replace, rename, or delete it. Write validation evidence to separate files and return artifact paths relative to this run directory.",
   ].join("\n\n");
 }
@@ -242,7 +248,7 @@ async function beginRun(manifest, { model = "auto", effort = "auto", continuatio
       images: continuation ? [] : copiedImages,
       model,
       effort,
-      allowNetwork: Boolean(manifest.settings?.cloud_approved),
+      allowNetwork: false,
     });
     activeJob = { runId: manifest.run_id, threadId: thread.id, turnId: turn.id };
     runStore.setCodex(manifest.run_id, thread.id, turn.id);
@@ -295,6 +301,18 @@ function describeItem(item) {
   return item.name || item.type || "Work";
 }
 
+function presentItem(item) {
+  const raw = describeItem(item);
+  const lower = raw.toLowerCase();
+  if (item.type === "imageGeneration") return { phase: "reference", name: "Prepare reference", detail: "Creating the source image" };
+  if (item.type === "fileChange") return { phase: "package", name: "Package deliverables", detail: "Saving generated files" };
+  if (/triposplat|models run|gaussian|candidate\.(splat|ply)/.test(lower)) return { phase: "generate", name: "Generate asset", detail: "Generating the Gaussian splat locally" };
+  if (/validat|report|quality check|doctor/.test(lower)) return { phase: "validate", name: "Check quality", detail: "Checking output quality" };
+  if (/export|proxy|collision|save|convert/.test(lower)) return { phase: "package", name: "Package deliverables", detail: "Preparing reusable output files" };
+  if (/blender|procedural|forge3d_task/.test(lower)) return { phase: "generate", name: "Generate asset", detail: "Building the asset in Blender" };
+  return { phase: "local", name: "Local processing", detail: item.type === "mcpToolCall" ? "Using a local 3D tool" : "Running a local production task" };
+}
+
 function updateSteps(runId, method, params) {
   const item = params.item;
   if (!item?.id || !VISIBLE_ITEM_TYPES.has(item.type)) return false;
@@ -305,8 +323,11 @@ function updateSteps(runId, method, params) {
       step = { item_id: item.id, name: item.type || "work", status: "running", started_at: new Date().toISOString() };
       manifest.steps.push(step);
     }
+    const presented = presentItem(item);
     step.status = method === "item/completed" ? (item.status || "completed") : (item.status || "running");
-    step.detail = describeItem(item).slice(0, 500);
+    step.phase = presented.phase;
+    step.name = presented.name;
+    step.detail = presented.detail;
     if (method === "item/completed") step.completed_at = new Date().toISOString();
   });
   return true;
@@ -484,6 +505,41 @@ function registerIpc() {
       spawn(godot, ["--editor", "--path", runtimeState.godot], { detached: true, windowsHide: true, stdio: "ignore" }).unref();
     } else throw new Error("Unsupported artifact action");
     return { path: absolute };
+  });
+
+  handle("forge3d:export-artifact", async (payload = {}) => {
+    if (activeJob) throw new Error("Wait for the active run to finish before exporting");
+    const manifest = runStore.find(payload.runId, false).manifest;
+    const artifact = (manifest.artifacts || []).find((item) => item.path === payload.path);
+    if (!artifact) throw new Error("The selected artifact is no longer available");
+    const formats = exportFormatsForArtifact(artifact);
+    if (!formats.length) throw new Error("This file is not a supported 3D export source");
+    const buttons = [...formats.map((item) => item.label), "Cancel"];
+    const choice = await dialog.showMessageBox(mainWindow, {
+      type: "question",
+      title: "Export asset",
+      message: artifact.preview_role === "gaussian-splat" ? "Create a Blender package for this Gaussian splat" : "Choose an export format",
+      detail: artifact.preview_role === "gaussian-splat"
+        ? "The Blend file preserves the Gaussian representation through KIRI Engine. It does not pretend the splat is a polygon mesh."
+        : "Forge3D creates a new versioned export inside this run. Existing files are never overwritten.",
+      buttons,
+      cancelId: buttons.length - 1,
+      defaultId: 0,
+      noLink: true,
+    });
+    if (choice.response >= formats.length) return { canceled: true };
+    const absolute = runStore.resolveArtifact(payload.runId, payload.path);
+    const result = await exportArtifact({
+      source: absolute,
+      artifact,
+      runDirectory: runStore.runDirectory(payload.runId),
+      format: formats[choice.response].id,
+      blender: externalTools(true).blender,
+      toolkitRoot: bundledToolkit(),
+    });
+    runStore.refreshArtifacts(payload.runId);
+    sendState();
+    return result;
   });
 
   handle("forge3d:repair-plugin", async () => {

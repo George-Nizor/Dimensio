@@ -6,7 +6,7 @@ const fs = require("node:fs");
 const os = require("node:os");
 const path = require("node:path");
 const test = require("node:test");
-const { findCodexExecutable, primeGodotProject } = require("../src/lib/runtime.cjs");
+const { detectWslModelsDirectory, findCodexExecutable, primeGodotProject } = require("../src/lib/runtime.cjs");
 
 test("primes a fresh Godot project class cache once", async (t) => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "forge3d-godot-"));
@@ -37,6 +37,14 @@ test("primes a fresh Godot project class cache once", async (t) => {
   assert.equal(first.cached, false);
   assert.equal(second.cached, true);
   assert.equal(spawns, 1);
+});
+
+test("resolves the default local model directory once for child tool calls", () => {
+  const spawnProcess = (_command, args) => {
+    assert.deepEqual(args, ["--exec", "sh", "-lc", "printf %s \"$HOME/.local/share/forge3d/models\""]);
+    return { status: 0, stdout: "/home/george/.local/share/forge3d/models" };
+  };
+  assert.equal(detectWslModelsDirectory("wsl.exe", { spawnProcess }), "/home/george/.local/share/forge3d/models");
 });
 
 test("Codex discovery prefers the spawnable local app binary over WindowsApps PATH entries", () => {

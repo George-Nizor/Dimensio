@@ -7,7 +7,7 @@ const { spawn, spawnSync } = require("node:child_process");
 const { atomicWriteJson } = require("./run-store.cjs");
 const { resolveContained } = require("./path-policy.cjs");
 
-const BUNDLE_VERSION = "0.2.2";
+const BUNDLE_VERSION = require("../../package.json").version;
 
 function firstWhere(command) {
   const result = spawnSync("where.exe", [command], { windowsHide: true, encoding: "utf8" });
@@ -129,6 +129,18 @@ function detectExternalTools(localStateRoot) {
   };
 }
 
+function detectWslModelsDirectory(wslExecutable, { spawnProcess = spawnSync } = {}) {
+  if (!wslExecutable) return null;
+  const result = spawnProcess(wslExecutable, ["--exec", "sh", "-lc", "printf %s \"$HOME/.local/share/forge3d/models\""], {
+    windowsHide: true,
+    encoding: "utf8",
+    timeout: 10000,
+  });
+  if (result.status !== 0) return null;
+  const directory = String(result.stdout || "").trim();
+  return directory.startsWith("/") ? directory.replace(/\/$/, "") : null;
+}
+
 function inspectForgeSkill(skill) {
   if (!skill?.path || !fs.existsSync(skill.path)) return { state: "missing", bundledVersion: BUNDLE_VERSION };
   const pluginRoot = path.resolve(path.dirname(skill.path), "..", "..");
@@ -204,4 +216,4 @@ function repairForgePlugin({ bundledPlugin, runtimeState, codexExecutable = find
   }
 }
 
-module.exports = { BUNDLE_VERSION, detectExternalTools, ensureRuntimeState, findCodexExecutable, inspectForgeSkill, primeGodotProject, repairForgePlugin };
+module.exports = { BUNDLE_VERSION, detectExternalTools, detectWslModelsDirectory, ensureRuntimeState, findCodexExecutable, inspectForgeSkill, primeGodotProject, repairForgePlugin };

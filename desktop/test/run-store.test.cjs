@@ -43,6 +43,9 @@ test("creates contained schema-v2 runs and copies attachments", async (t) => {
   const store = new RunStore(path.join(root, "runs"));
   const run = await store.create({ prompt: "Make a robot", attachments: [source] });
   assert.equal(run.schema_version, 2);
+  assert.equal(run.settings.quality, "production");
+  assert.equal(run.settings.target_format, "splat");
+  assert.equal(run.settings.cloud_approved, false);
   assert.match(run.inputs[0].path, /^attachments\//);
   const copied = path.join(store.runDirectory(run.run_id), ...run.inputs[0].path.split("/"));
   assert.equal(fs.readFileSync(copied, "utf8"), "image");

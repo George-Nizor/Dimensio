@@ -46,7 +46,7 @@ class CodexAppServerClient extends EventEmitter {
     this.reader.on("line", (line) => this.ingestLine(line));
 
     await this.request("initialize", {
-      clientInfo: { name: "forge3d_desktop", title: "Forge3D", version: "0.2.2" },
+      clientInfo: { name: "forge3d_desktop", title: "Forge3D", version: require("../../package.json").version },
     });
     this.notify("initialized", {});
     this.started = true;

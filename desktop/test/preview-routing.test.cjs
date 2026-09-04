@@ -20,6 +20,8 @@ function splatRun() {
       { path: "wooden_spoon_v004/splat/candidate.splat", preview_role: "gaussian-splat" },
       { path: "wooden_spoon_v004/previews/hero.png", preview_role: "primary-image" },
       { path: "wooden_spoon_v004/build.py", preview_role: "metadata" },
+      { path: "wooden_spoon_v004/validation.json", preview_role: "validation" },
+      { path: "wooden_spoon_v004/notes.txt", preview_role: "text" },
     ],
   };
 }
@@ -34,11 +36,12 @@ test("an explicit artifact selection still overrides the target default", async 
   assert.equal(selectedArtifactForRun(splatRun(), "wooden_spoon_v004/proxy.glb").preview_role, "model");
 });
 
-test("the filmstrip puts the interactive splat first and keeps metadata behind previews", async () => {
+test("the filmstrip shows one interactive splat and excludes implementation files", async () => {
   const { filmstripArtifacts } = await routing();
-  const artifacts = filmstripArtifacts(splatRun(), null, 6);
+  const artifacts = filmstripArtifacts(splatRun(), null, 8);
   assert.equal(artifacts[0].path, "wooden_spoon_v004/splat/candidate.splat");
-  assert.ok(artifacts.findIndex((artifact) => artifact.preview_role === "metadata") > artifacts.findIndex((artifact) => artifact.preview_role === "primary-image"));
+  assert.equal(artifacts.filter((artifact) => artifact.preview_role === "gaussian-splat").length, 1);
+  assert.equal(artifacts.some((artifact) => ["metadata", "validation", "text"].includes(artifact.preview_role)), false);
 });
 
 test("non-splat runs retain their rendered-image default", async () => {

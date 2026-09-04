@@ -21,6 +21,7 @@ foreach ($command in @("uv", "npm")) {
 if (-not $SkipCli) {
     New-Item -ItemType Directory -Path $runtimeRoot -Force | Out-Null
     New-Item -ItemType Directory -Path $temporaryRoot -Force | Out-Null
+    Push-Location $repoRoot
     & uv run --with "pyinstaller==6.19.0" pyinstaller `
         --noconfirm `
         --clean `
@@ -31,7 +32,9 @@ if (-not $SkipCli) {
         --workpath (Join-Path $temporaryRoot "work") `
         --specpath (Join-Path $temporaryRoot "spec") `
         (Join-Path $repoRoot "scripts\forge3d_entry.py")
-    if ($LASTEXITCODE -ne 0) { throw "PyInstaller failed to build forge3d.exe." }
+    $pyInstallerExitCode = $LASTEXITCODE
+    Pop-Location
+    if ($pyInstallerExitCode -ne 0) { throw "PyInstaller failed to build forge3d.exe." }
 }
 
 $npmSteps = [System.Collections.Generic.List[string]]::new()
@@ -62,8 +65,21 @@ else {
     }
 }
 
-$assetName = "Forge3D-0.2.2-windows-x64.zip"
+$desktopPackage = Get-Content -LiteralPath (Join-Path $desktopRoot "package.json") -Raw | ConvertFrom-Json
+$releaseVersion = [string]$desktopPackage.version
+if ([string]::IsNullOrWhiteSpace($releaseVersion)) {
+    throw "Forge3D desktop package version is missing."
+}
+$assetName = "Forge3D-$releaseVersion-windows-x64.zip"
 $asset = Join-Path $packageRoot $assetName
+if (-not (Test-Path -LiteralPath $asset -PathType Leaf)) {
+    $electronVersion = ($releaseVersion -split "\+", 2)[0]
+    $electronAssetName = "Forge3D-$electronVersion-windows-x64.zip"
+    $electronAsset = Join-Path $packageRoot $electronAssetName
+    if ($electronAsset -ne $asset -and (Test-Path -LiteralPath $electronAsset -PathType Leaf)) {
+        Move-Item -LiteralPath $electronAsset -Destination $asset
+    }
+}
 if (-not (Test-Path -LiteralPath $asset -PathType Leaf)) {
     throw "Forge3D release archive was not created: $asset"
 }
@@ -71,7 +87,7 @@ $assetInfo = Get-Item -LiteralPath $asset
 $manifest = [ordered]@{
     schemaVersion = 1
     product = "forge3d"
-    version = "0.2.2"
+    version = $releaseVersion
     platform = "windows-x64"
     minimumInstrumentaVersion = "0.8.0"
     installStrategy = "managed-bundle"

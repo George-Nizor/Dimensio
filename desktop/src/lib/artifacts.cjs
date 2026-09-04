@@ -8,9 +8,11 @@ const IMAGE_EXTENSIONS = new Set([".png", ".jpg", ".jpeg", ".webp"]);
 const MEDIA_TYPES = new Map([
   [".blend", "application/x-blender"],
   [".gif", "image/gif"],
+  [".fbx", "application/octet-stream"],
   [".glb", "model/gltf-binary"],
   [".gltf", "model/gltf+json"],
   [".json", "application/json"],
+  [".obj", "model/obj"],
   [".log", "text/plain"],
   [".md", "text/markdown"],
   [".ply", "application/x-ply"],
@@ -18,21 +20,41 @@ const MEDIA_TYPES = new Map([
   [".splat", "application/x-gaussian-splat"],
   [".spz", "application/x-gaussian-splat"],
   [".ksplat", "application/x-gaussian-splat"],
+  [".stl", "model/stl"],
   [".txt", "text/plain"],
+  [".usd", "model/vnd.usd"],
+  [".usda", "model/vnd.usda"],
+  [".usdc", "model/vnd.usdc"],
   [".webp", "image/webp"],
   [".png", "image/png"],
   [".jpg", "image/jpeg"],
   [".jpeg", "image/jpeg"],
 ]);
 
-function classify(relativePath) {
+function isGaussianPly(absolutePath) {
+  if (!absolutePath || !fs.existsSync(absolutePath)) return false;
+  const descriptor = fs.openSync(absolutePath, "r");
+  try {
+    const buffer = Buffer.alloc(65536);
+    const length = fs.readSync(descriptor, buffer, 0, buffer.length, 0);
+    const header = buffer.subarray(0, length).toString("ascii").split("end_header", 1)[0];
+    return /property float opacity/m.test(header)
+      && /property float scale_0/m.test(header)
+      && /property float rot_0/m.test(header)
+      && /property float f_dc_0/m.test(header);
+  } finally {
+    fs.closeSync(descriptor);
+  }
+}
+
+function classify(relativePath, absolutePath = null) {
   const extension = path.extname(relativePath).toLowerCase();
   const lower = relativePath.toLowerCase();
   let previewRole = "metadata";
   if (IMAGE_EXTENSIONS.has(extension)) previewRole = lower.includes("preview") ? "primary-image" : "image";
   else if (extension === ".gif") previewRole = "animation";
-  else if (extension === ".glb" || extension === ".gltf") previewRole = "model";
-  else if ([".splat", ".sog", ".spz", ".ksplat", ".ply"].includes(extension)) previewRole = "gaussian-splat";
+  else if ([".splat", ".sog", ".spz", ".ksplat"].includes(extension) || (extension === ".ply" && isGaussianPly(absolutePath))) previewRole = "gaussian-splat";
+  else if ([".blend", ".glb", ".gltf", ".fbx", ".obj", ".ply", ".stl", ".usd", ".usda", ".usdc"].includes(extension)) previewRole = "model";
   else if (extension === ".json" && lower.includes("validation")) previewRole = "validation";
   else if ([".json", ".log", ".md", ".txt"].includes(extension)) previewRole = "text";
   return {
@@ -65,7 +87,7 @@ function scanArtifacts(runRoot, workflowRoute = "prompt") {
       path: relative,
       workflow_route: workflowRoute,
       size_bytes: fs.statSync(absolute).size,
-      ...classify(relative),
+      ...classify(relative, absolute),
     };
   });
 

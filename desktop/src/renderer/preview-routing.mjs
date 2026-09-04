@@ -13,10 +13,9 @@ const ROLE_PRIORITY = new Map([
   ["animation", 3],
   ["image-sequence", 4],
   ["image", 5],
-  ["validation", 6],
-  ["text", 7],
-  ["metadata", 8],
 ]);
+
+const FILMSTRIP_ROLES = new Set(ROLE_PRIORITY.keys());
 
 function extension(artifact) {
   const match = String(artifact?.path || "").toLowerCase().match(/\.[^.\\/]+$/);
@@ -74,9 +73,20 @@ export function selectedArtifactForRun(run, selectedPath = null) {
 
 export function filmstripArtifacts(run, selectedPath = null, limit = 16) {
   const selected = selectedArtifactForRun(run, selectedPath);
-  return [...(run?.artifacts || [])]
-    .sort((left, right) => compareArtifacts(run, selected?.path || null, left, right))
-    .slice(0, limit);
+  const sorted = [...(run?.artifacts || [])]
+    .filter((artifact) => FILMSTRIP_ROLES.has(artifact.preview_role))
+    .sort((left, right) => compareArtifacts(run, selected?.path || null, left, right));
+  const seen = new Set();
+  return sorted.filter((artifact) => {
+    const role = artifact.preview_role;
+    const gaussianKey = role === "gaussian-splat" ? "gaussian-splat" : null;
+    const imageKey = ["primary-image", "image"].includes(role) ? role + ":" + artifact.name : null;
+    const key = gaussianKey || imageKey;
+    if (!key) return true;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  }).slice(0, limit);
 }
 
 export { isSplatTarget };

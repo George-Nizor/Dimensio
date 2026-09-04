@@ -7,6 +7,8 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { SparkRenderer, SplatMesh } from "@sparkjsdev/spark";
 import { filmstripArtifacts, selectedArtifactForRun } from "./preview-routing.mjs";
+import { readRunSettings, writeRunSettings } from "./preferences.mjs";
+import { summarizeRunSteps } from "./run-presentation.mjs";
 
 const api = window.forge3d;
 const app = document.querySelector("#app");
@@ -81,9 +83,9 @@ function glyph(name, className = "") {
 
 const selectOptions = {
   workflow: [["auto", "Auto route"], ["authored-blender", "Authored Blender"], ["image-to-mesh", "Image to mesh"], ["gaussian-splat", "Gaussian splat"], ["process", "Process existing"], ["rig", "Rig"], ["animate", "Animate"], ["retarget", "Retarget"], ["validate", "Validate"]],
-  quality: [["balanced", "Balanced"], ["draft", "Draft"], ["production", "Production"]],
-  target: [["glb", "GLB"], ["blend", "BLEND"], ["splat", "SPLAT / PLY"], ["gif", "GIF / sequence"]],
-  tool: [["auto", "Auto"], ["blender", "Blender"], ["triposplat", "TripoSplat"], ["spar3d", "SPAR3D"], ["tripo-cloud", "Tripo cloud"]],
+  quality: [["production", "Production"], ["balanced", "Balanced"], ["draft", "Draft"]],
+  target: [["splat", "SPLAT / PLY"], ["blend", "BLEND"], ["glb", "GLB"], ["gif", "GIF / sequence"]],
+  tool: [["auto", "Auto"], ["blender", "Blender"], ["triposplat", "TripoSplat"], ["spar3d", "SPAR3D"]],
   effort: [["auto", "Model default"], ["low", "Low"], ["medium", "Medium"], ["high", "High"], ["xhigh", "Extra high"]],
 };
 function optionMarkup(name) {
@@ -190,7 +192,6 @@ app.innerHTML = `
       <label class="field"><span>Tool / model</span><select id="tool">${optionMarkup("tool")}</select></label>
       <label class="field"><span>Codex model</span><select id="model"><option value="auto">Codex default</option></select></label>
       <label class="field"><span>Reasoning</span><select id="effort">${optionMarkup("effort")}</select></label>
-      <label class="check consent wide"><input id="cloud-approved" type="checkbox" /><span>Allow cloud execution or file upload for this job only</span></label>
     </div>
   </section>
 
@@ -205,9 +206,26 @@ const elements = Object.fromEntries([
   "preview", "viewport-hud", "library", "inspector", "run-list", "run-search", "run-count", "run-brief",
   "inspector-content", "inspector-actions", "library-toggle", "inspector-toggle",
   "pipeline", "filmstrip", "dependency-strip", "agent-state", "status-time",
-  "workflow", "quality", "target", "tool", "model", "effort", "cloud-approved",
+  "workflow", "quality", "target", "tool", "model", "effort",
   "approval-layer", "dialog-layer", "menu-layer", "toast-layer",
 ].map((id) => [id.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase()), document.querySelector(`#${id}`)]));
+
+
+let runSettings = readRunSettings(localStorage);
+for (const key of ["workflow", "quality", "target", "tool", "effort"]) {
+  if ([...elements[key].options].some((option) => option.value === runSettings[key])) elements[key].value = runSettings[key];
+}
+
+function persistRunSettings() {
+  runSettings = writeRunSettings(localStorage, {
+    workflow: elements.workflow.value,
+    quality: elements.quality.value,
+    target: elements.target.value,
+    tool: elements.tool.value,
+    model: elements.model.value,
+    effort: elements.effort.value,
+  });
+}
 
 /* ── helpers ────────────────────────────────────────────────── */
 
@@ -373,7 +391,7 @@ function renderDependencies() {
 }
 
 function renderModelOptions() {
-  const current = elements.model.value;
+  const current = runSettings.model || elements.model.value;
   elements.model.innerHTML = '<option value="auto">Codex default</option>' + (state.models || [])
     .map((model) => `<option value="${escapeHtml(model.id || model.model)}">${escapeHtml(model.displayName || model.id || model.model)}</option>`).join("");
   if ([...elements.model.options].some((option) => option.value === current)) elements.model.value = current;
@@ -575,13 +593,14 @@ function renderInspector() {
     return;
   }
   if (tab === "steps") {
-    elements.inspectorContent.innerHTML = run.steps?.length
-      ? `<ol class="step-list">${run.steps.map((step) => `
+    const phases = summarizeRunSteps(run);
+    elements.inspectorContent.innerHTML = phases.length
+      ? `<ol class="step-list">${phases.map((phase) => `
           <li>
-            <i class="step-dot ${escapeHtml(step.status)}"></i>
-            <div class="step-text"><strong>${escapeHtml(titleCase(step.name))}</strong><small>${escapeHtml(statusLabel(step.status))}${step.detail ? ` · ${escapeHtml(String(step.detail).slice(0, 90))}` : ""}</small></div>
+            <i class="step-dot ${escapeHtml(phase.status)}"></i>
+            <div class="step-text"><strong>${escapeHtml(phase.label)}</strong><small>${escapeHtml(statusLabel(phase.status))} · ${escapeHtml(phase.detail)}</small></div>
           </li>`).join("")}</ol>`
-      : `<div class="empty-list">${glyph("nodes")}<span>Steps appear as soon as the run starts.</span></div>`;
+      : `<div class="empty-list">${glyph("nodes")}<span>Progress appears as soon as local production starts.</span></div>`;
   } else if (tab === "artifacts") {
     elements.inspectorContent.innerHTML = run.artifacts?.length
       ? `<div class="artifact-list">${run.artifacts.map((artifact) => `
@@ -637,6 +656,7 @@ function renderInspectorActions() {
     { id: "open", icon: "open", label: "Open" },
   ];
   if ([".blend", ".glb", ".gltf", ".fbx", ".obj"].some((extension) => lower.endsWith(extension))) actions.push({ id: "blender", icon: "cube", label: "Open in Blender" });
+  if ([".blend", ".glb", ".gltf", ".fbx", ".obj", ".ply", ".splat", ".stl", ".usd", ".usda", ".usdc"].some((extension) => lower.endsWith(extension))) actions.push({ id: "export", icon: "output", label: "Export to another format" });
   if ([".glb", ".gltf", ".splat", ".ply", ".sog"].some((extension) => lower.endsWith(extension))) actions.push({ id: "godot", icon: "play", label: "Review in Godot" });
   elements.inspectorActions.innerHTML = actions.map((action) => `
     <button data-artifact-action="${action.id}" title="${escapeHtml(action.label)}" aria-label="${escapeHtml(action.label)}" ${artifact ? "" : "disabled"}>${glyph(action.icon)}</button>`).join("");
@@ -930,7 +950,6 @@ function renderComposer() {
   elements.send.title = active ? "Send a steering note to the running job" : "Run the prompt";
   elements.cancel.classList.toggle("hidden", !active);
   elements.topbarProgress.classList.toggle("on", Boolean(active));
-  elements.cloudApproved.disabled = Boolean(active);
   elements.prompt.placeholder = active ? "Steer the running job…" : "Describe the asset or change…";
 }
 
@@ -1061,16 +1080,6 @@ async function startOrSteer() {
       autoGrowPrompt();
       toast("Steering note sent", "success");
     } else {
-      const cloudApproved = elements.cloudApproved.checked;
-      if (cloudApproved) {
-        const agreed = await askDialog({
-          eyebrow: "Cloud approval",
-          title: "Approve cloud execution for this job?",
-          body: "Forge3D will still ask for provider or command approvals when a step requires them. This consent covers this single job.",
-          confirmLabel: "Approve this job",
-        });
-        if (!agreed) return;
-      }
       const result = await api.startRun({
         prompt: text,
         attachments,
@@ -1080,7 +1089,6 @@ async function startOrSteer() {
         tool: elements.tool.value,
         model: elements.model.value,
         effort: elements.effort.value,
-        cloudApproved,
         outputSettings: {},
       });
       state = { ...state, ...result };
@@ -1088,7 +1096,6 @@ async function startOrSteer() {
       selectedArtifactPath = null;
       attachments = [];
       elements.prompt.value = "";
-      elements.cloudApproved.checked = false;
       autoGrowPrompt();
       renderAttachments();
       renderAll();
@@ -1181,6 +1188,11 @@ async function artifactAction(action) {
   const artifact = selectedArtifact(run);
   if (!run || !artifact) return toast("Select an output first", "error");
   try {
+    if (action === "export") {
+      const result = await api.exportArtifact({ runId: run.run_id, path: artifact.path });
+      if (!result.canceled) toast("Exported " + artifact.name + " as " + result.format.toUpperCase(), "success");
+      return;
+    }
     await api.artifactAction({ runId: run.run_id, path: artifact.path, action });
     toast(action === "copy" ? "Artifact path copied" : `${artifact.name}: ${action}`, "success");
   } catch (error) {
@@ -1237,6 +1249,9 @@ elements.attach.addEventListener("click", async () => {
   }
 });
 
+for (const key of ["workflow", "quality", "target", "tool", "model", "effort"]) {
+  elements[key].addEventListener("change", persistRunSettings);
+}
 elements.settingsToggle.addEventListener("click", () => toggleSettings());
 document.querySelector("#settings-close").addEventListener("click", () => toggleSettings(false));
 document.addEventListener("pointerdown", (event) => {
