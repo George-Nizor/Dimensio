@@ -1,7 +1,7 @@
 {
   "name": "forge3d-desktop",
   "productName": "Forge3D",
-  "version": "0.2.2+codex.20260822.desktop1",
+  "version": "0.3.0",
   "private": true,
   "author": "George Nizor",
   "license": "MIT",
