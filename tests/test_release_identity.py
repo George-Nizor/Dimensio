@@ -17,7 +17,8 @@ def test_release_identity_is_consistent() -> None:
     assert json.loads((ROOT / "plugins" / "forge3d" / ".codex-plugin" / "plugin.json").read_text(encoding="utf-8"))["version"] == RELEASE_VERSION
     desktop = json.loads((ROOT / "desktop" / "package.json").read_text(encoding="utf-8"))
     assert desktop["version"] == RELEASE_VERSION
-    assert desktop["build"]["win"]["icon"] == "assets/icon.png"
+    assert desktop["build"]["win"]["icon"] == "assets/icon.ico"
+    assert (ROOT / "desktop" / "assets" / "icon.ico").is_file()
     assert (ROOT / "desktop" / "assets" / "icon.svg").is_file()
     assert (ROOT / "desktop" / "assets" / "icon.png").is_file()
     blender_source = (ROOT / "blender" / "forge3d_task.py").read_text(encoding="utf-8")

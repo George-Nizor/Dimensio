@@ -25,6 +25,9 @@
     "checkout": "../Forge3D",
     "override": "explicit"
   },
+  "assets": {
+    "mark": "desktop/assets/brand/forge3d-app-art.png"
+  },
   "mcp": {
     "skill": "plugins/forge3d/skills/forge3d/SKILL.md"
   }
