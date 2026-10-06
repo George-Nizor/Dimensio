@@ -12,6 +12,7 @@
     "start": "electron .",
     "build": "vite build",
     "test": "node --test test/*.test.cjs",
+    "shots": "node test-tools/screenshots/harness.cjs",
     "pack": "npm run build && electron-builder --dir",
     "dist": "npm run build && electron-builder"
   },
