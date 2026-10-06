@@ -4,9 +4,10 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
 const test = require("node:test");
+const { pathToFileURL } = require("node:url");
 
 const dir = path.join(__dirname, "../src/renderer/brand-icons");
-const load = () => import(path.join(dir, "forge-icons.mjs"));
+const load = () => import(pathToFileURL(path.join(dir, "forge-icons.mjs")).href);
 
 test("every glyph renders at 16, 24 and 48 px with presentation attributes only", async () => {
   const { render, names, HUES } = await load();
