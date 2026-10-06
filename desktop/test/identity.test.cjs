@@ -146,3 +146,18 @@ test("the CSP carries no dev-server socket", () => {
   const html = fs.readFileSync(path.join(desktopRoot, "index.html"), "utf8");
   assert.doesNotMatch(html, /ws:\/\/|127\.0\.0\.1:5173/);
 });
+
+test("renderer honesty: capabilities drive readiness, errors persist, footer buttons are labelled, no title case", () => {
+  assert.match(renderer, /api\.capabilities\(\{ force \}\)/);
+  assert.match(renderer, /checkCapabilities\(true\)/);
+  assert.match(renderer, /toolVersionsFromReport/);
+  assert.match(renderer, /sticky = kind === "error"/);
+  assert.match(renderer, /if \(!sticky\) setTimeout/);
+  assert.doesNotMatch(renderer, /titleCase/);
+  assert.doesNotMatch(styles, /text-transform:/);
+  // Every inspector footer button carries a visible label and a tooltip.
+  assert.match(renderer, /<span>\$\{escapeHtml\(action\.label\)\}<\/span>/);
+  assert.match(renderer, /title="\$\{escapeHtml\(action\.unavailable \|\| action\.title\)\}"/);
+  // No invented progress: no fixed fractions in the pipeline.
+  assert.doesNotMatch(renderer, /fill: 0\.\d+/);
+});

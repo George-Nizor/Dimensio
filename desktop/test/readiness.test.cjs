@@ -170,3 +170,14 @@ test("phases are ordered by when they began and carry real timing only", async (
   assert.equal(untimed.elapsedMs, null);
   assert.equal(untimed.live, false);
 });
+
+test("the setup headline names the real problem", async () => {
+  const { deriveReadiness, setupHeadline } = await load("readiness.mjs");
+  const signedOut = deriveReadiness({ capabilities: report({ capabilities: { codex: item("codex", "signed_out", { label: "Codex" }) } }), settings: {} });
+  assert.equal(setupHeadline(signedOut).title, "Codex isn't signed in");
+  const missing = deriveReadiness({ capabilities: report({ capabilities: { codex: item("codex", "missing", { label: "Codex" }) } }), settings: {} });
+  assert.equal(setupHeadline(missing).title, "Codex isn't reachable");
+  const splat = deriveReadiness({ capabilities: report(), settings: { workflow: "gaussian-splat" } });
+  assert.equal(setupHeadline(splat).title, "Gaussian splat isn't ready");
+  assert.equal(setupHeadline(deriveReadiness({ capabilities: report(), settings: {} }), { firstRun: true }).title, "What shall we forge?");
+});

@@ -67,20 +67,20 @@ function verdictForRoute(report, routeId) {
   if (route.state === "blocked") {
     const first = route.blocked_by?.[0];
     const item = first ? report.capabilities[first] : null;
-    return { phase: "blocked", route: routeId, reason: route.reason || item?.reason || `${ROUTE_LABELS[routeId] || routeId} is not ready.`, fix: item?.fix || "", culprits: culpritLabels(report, route.blocked_by) };
+    return { phase: "blocked", route: routeId, reason: route.reason || item?.reason || `${ROUTE_LABELS[routeId] || routeId} is not ready.`, fix: item?.fix || "", culprits: culpritLabels(report, route.blocked_by), culpritIds: route.blocked_by || [] };
   }
   if (route.state === "degraded") {
     const first = route.degraded_by?.[0];
     const item = first ? report.capabilities[first] : null;
-    return { phase: "degraded", route: routeId, reason: route.reason || item?.reason || `${ROUTE_LABELS[routeId] || routeId} has a caveat.`, fix: item?.fix || "", culprits: culpritLabels(report, route.degraded_by) };
+    return { phase: "degraded", route: routeId, reason: route.reason || item?.reason || `${ROUTE_LABELS[routeId] || routeId} has a caveat.`, fix: item?.fix || "", culprits: culpritLabels(report, route.degraded_by), culpritIds: route.degraded_by || [] };
   }
-  return { phase: "ready", route: routeId, reason: "", fix: "", culprits: [] };
+  return { phase: "ready", route: routeId, reason: "", fix: "", culprits: [], culpritIds: [] };
 }
 
 // capabilities: null while the first check runs, { ok: true, ...report } or { ok: false, error, fix }.
 export function deriveReadiness({ capabilities = null, settings = {}, appServerError = "" } = {}) {
   const route = routeForSettings(settings);
-  const base = { route, routeLabel: route ? ROUTE_LABELS[route] : "", required: [], optional: [], versions: {}, unavailableRoutes: [], culprits: [], reason: "", fix: "", error: "", checked: false };
+  const base = { route, routeLabel: route ? ROUTE_LABELS[route] : "", required: [], optional: [], versions: {}, unavailableRoutes: [], culprits: [], culpritIds: [], reason: "", fix: "", error: "", checked: false };
 
   if (!capabilities) return { ...base, phase: "checking", reason: "Checking this machine for Codex, Blender and the splat stack." };
   if (!capabilities.ok) {
@@ -110,15 +110,15 @@ export function deriveReadiness({ capabilities = null, settings = {}, appServerE
     const blocked = generating.filter((id) => report.routes[id].state === "blocked");
     result.unavailableRoutes = blocked.map((id) => ROUTE_LABELS[id]);
     if (codex && (codex.state === "missing" || codex.state === "signed_out")) {
-      verdict = { phase: "blocked", reason: codex.reason || "Codex is not ready.", fix: codex.fix || "", culprits: [codex.label || "Codex"] };
+      verdict = { phase: "blocked", reason: codex.reason || "Codex is not ready.", fix: codex.fix || "", culprits: [codex.label || "Codex"], culpritIds: ["codex"] };
     } else if (generating.length && blocked.length === generating.length) {
       const first = report.routes[blocked[0]];
       const item = report.capabilities[first.blocked_by?.[0]];
-      verdict = { phase: "blocked", reason: "No generating route is ready on this machine.", fix: item?.fix || "", culprits: culpritLabels(report, generating.flatMap((id) => report.routes[id].blocked_by || [])) };
+      verdict = { phase: "blocked", reason: "No generating route is ready on this machine.", fix: item?.fix || "", culprits: culpritLabels(report, generating.flatMap((id) => report.routes[id].blocked_by || [])), culpritIds: generating.flatMap((id) => report.routes[id].blocked_by || []) };
     } else if (codex?.state === "degraded") {
-      verdict = { phase: "degraded", reason: codex.reason || "Codex needs attention.", fix: codex.fix || "", culprits: [codex.label || "Codex"] };
+      verdict = { phase: "degraded", reason: codex.reason || "Codex needs attention.", fix: codex.fix || "", culprits: [codex.label || "Codex"], culpritIds: ["codex"] };
     } else {
-      verdict = { phase: "ready", reason: "", fix: "", culprits: [] };
+      verdict = { phase: "ready", reason: "", fix: "", culprits: [], culpritIds: [] };
     }
   }
 
@@ -133,7 +133,7 @@ export function deriveReadiness({ capabilities = null, settings = {}, appServerE
 // What the Run button may do. blocked disables it (steering a live job is never gated); degraded and error only warn.
 export function runGate(readiness) {
   switch (readiness.phase) {
-    case "blocked": return { allowed: false, level: "blocked", chip: readiness.culprits.length === 1 ? `Needs ${readiness.culprits[0]}` : "Setup needed", message: `Run is off: ${readiness.reason}${readiness.fix ? ` ${readiness.fix}` : ""}` };
+    case "blocked": return { allowed: false, level: "blocked", chip: readiness.culprits.length === 1 ? `Needs ${readiness.culprits[0]}` : "Setup needed", message: `Run is off: ${readiness.reason}${readiness.fix ? ` ${readiness.fix.replaceAll("`", "")}` : ""}` };
     case "degraded": return { allowed: true, level: "warn", chip: "Check setup", message: readiness.reason };
     case "error": return { allowed: true, level: "warn", chip: "Setup unchecked", message: `Setup could not be checked. ${readiness.error}` };
     case "checking": return { allowed: true, level: "info", chip: "Checking setup", message: readiness.reason };
@@ -166,4 +166,28 @@ export function formatElapsed(ms) {
 export function sentenceCase(value) {
   const text = String(value ?? "").replaceAll("-", " ").replaceAll("_", " ").trim();
   return text ? text[0].toUpperCase() + text.slice(1) : "";
+}
+
+// The headline and lead line of the setup card.
+export function setupHeadline(readiness, { firstRun = false } = {}) {
+  switch (readiness.phase) {
+    case "checking":
+      return { title: "Checking this machine", lead: readiness.reason };
+    case "error":
+      return { title: "Setup could not be checked", lead: readiness.reason };
+    case "blocked": {
+      const codex = readiness.culpritIds?.includes("codex") ? readiness.required.find((row) => row.id === "codex") : null;
+      const title = codex ? (codex.state === "signed_out" ? "Codex isn't signed in" : "Codex isn't reachable")
+        : readiness.routeLabel ? `${readiness.routeLabel} isn't ready` : "No route is ready yet";
+      return { title, lead: `${readiness.reason} Run stays off until this is fixed.` };
+    }
+    case "degraded":
+      return readiness.offline
+        ? { title: "The Codex session ended", lead: readiness.reason }
+        : { title: "Ready, with a caveat", lead: `${readiness.reason} Run is still available.` };
+    default:
+      return firstRun
+        ? { title: "What shall we forge?", lead: "Everything Forge3D needs is ready. Describe an asset in the prompt bar." }
+        : { title: "Everything is ready", lead: "Every dependency Forge3D checked is in place." };
+  }
 }
