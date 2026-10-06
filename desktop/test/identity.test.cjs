@@ -141,3 +141,8 @@ test("no invented tool versions in the status bar", () => {
   assert.doesNotMatch(renderer, /" 4\.5"|" 4\.4"/);
   assert.match(renderer, /state\.toolVersions\?\./);
 });
+
+test("the CSP carries no dev-server socket", () => {
+  const html = fs.readFileSync(path.join(desktopRoot, "index.html"), "utf8");
+  assert.doesNotMatch(html, /ws:\/\/|127\.0\.0\.1:5173/);
+});
