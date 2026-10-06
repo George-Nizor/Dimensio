@@ -1,7 +1,7 @@
 import "./style.css";
-import "@fontsource/space-grotesk/500.css";
-import "@fontsource/space-grotesk/600.css";
-import brandMark from "./forge3d-mark.png";
+import "./brand/fonts/fonts.css";
+import "./brand/instrumenta-icons.css";
+import InstrumentaIcons from "./brand/instrumenta-icons.js";
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
@@ -9,6 +9,10 @@ import { SparkRenderer, SplatMesh } from "@sparkjsdev/spark";
 import { filmstripArtifacts, selectedArtifactForRun } from "./preview-routing.mjs";
 import { readRunSettings, writeRunSettings } from "./preferences.mjs";
 import { summarizeRunSteps } from "./run-presentation.mjs";
+
+// Brand v2 cube from Instrumenta's icon library (a UMD file; the bundler hands over its exports). Built from presentation
+// attributes only, so it is safe under this window's Content-Security-Policy.
+const brandIcon = (size, label = "") => InstrumentaIcons.render("forge3d", { size, label });
 
 const api = window.forge3d;
 const app = document.querySelector("#app");
@@ -94,7 +98,7 @@ function optionMarkup(name) {
 
 app.innerHTML = `
   <header class="topbar">
-    <div class="brand" aria-label="Forge3D"><img src="${brandMark}" alt="" /><strong>Forge3D</strong></div>
+    <div class="brand ii-hover" id="brand" aria-label="Forge3D"><span class="brand-icon">${brandIcon(36)}</span><strong>Forge3D</strong></div>
 
     <div class="omnibox">
       <div class="omnibox-field">
@@ -853,7 +857,7 @@ function emptyViewport() {
   return `<div class="viewport-empty" aria-label="Empty viewport">
     <span class="empty-glow"></span>
     <div class="empty-body">
-      <img src="${brandMark}" alt="" />
+      <span class="empty-icon">${brandIcon(108)}</span>
       <h2>Nothing forged yet</h2>
       <p>Describe an asset in the prompt bar. Forge3D routes it, builds it locally, and shows the result here.</p>
     </div>
@@ -943,6 +947,7 @@ function renderAttachments() {
   }));
 }
 
+let wasActive = false;
 function renderComposer() {
   const active = state.activeJob;
   elements.send.innerHTML = active ? `${glyph("steer")}<span>Steer</span>` : `${glyph("play")}<span>Run</span>`;
@@ -950,6 +955,13 @@ function renderComposer() {
   elements.send.title = active ? "Send a steering note to the running job" : "Run the prompt";
   elements.cancel.classList.toggle("hidden", !active);
   elements.topbarProgress.classList.toggle("on", Boolean(active));
+  // The cube lifts its lid for a few seconds when a job starts, then rests again.
+  if (active && !wasActive) {
+    const brand = document.getElementById("brand");
+    brand.classList.add("ii-play");
+    setTimeout(() => brand.classList.remove("ii-play"), 3300);
+  }
+  wasActive = Boolean(active);
   elements.prompt.placeholder = active ? "Steer the running job…" : "Describe the asset or change…";
 }
 

@@ -1,36 +1,27 @@
 # Forge3D brand identity
 
-## Topology Loop — approved Logo A
+## Brand v2 cube
 
-Forge3D's primary mark is the approved **Topology Loop** render selected during the 0.2.2 identity
-review. It is a copper-orange continuous loop whose left side transitions visibly from connected
-vertices and triangular topology into a smooth finished surface. It represents the path from an
-editable 3D structure to a finished spatial result.
+Forge3D's mark is the cube from the Instrumenta brand v2 icon family: a freestanding object with
+depth (flat drawing, dark ink outline, deep-shaded extrusion down and to the right), ember
+`#EE7752`. It replaces the Topology Loop (the earlier "approved Logo A"), which was retired on
+2026-10-06 when the whole suite moved to brand v2. See `docs/brand/README.md` for what was copied
+from Instrumenta and what is deliberately kept.
 
-The generated Logo A render is the sole geometry reference. Do not redraw or simplify it. The mark
-must retain:
-
-- The exact oblique loop silhouette and large open negative space.
-- The irregular node-and-triangle cage on the left.
-- The gradual mesh-to-surface transition and translucent intermediate faces.
-- The sculpted copper material, highlights, and dark inner surface.
-- No cube, anvil, hammer, flame, letter `F`, number `3`, or substitute outline treatment.
-
-Canonical assets are `desktop/assets/forge3d-mark.png`, the square
-`desktop/assets/icon.png`, the bundled renderer copy at
-`desktop/src/renderer/forge3d-mark.png`, and Instrumenta's
-`brand/artwork/forge3d-app-art.png`. The SVG files are compatibility wrappers around those PNGs;
-they are not alternate drawings.
+The icon is drawn by `desktop/src/renderer/brand/instrumenta-icons.js`; never edit the copied
+files, regenerate them in Instrumenta and copy again. The cube's lid lifts on hover and when a job
+starts, and `prefers-reduced-motion` stops it.
 
 ## Colour and type
 
 The desktop palette is cool graphite, blue-black viewport space, restrained neutral separators, and
-copper-orange focus. Green is reserved for ready/success states and red for failures or destructive
-actions.
+ember `#EE7752` for focus and the primary action. Green is reserved for ready/success states and
+red for failures or destructive actions.
 
-Space Grotesk 500/600 is the Forge3D wordmark and display face. The exact Fontsource 5.3.0 package is
-bundled under the SIL Open Font License 1.1. Controls use Segoe UI Variable with Segoe UI and system
-fallbacks, matching Instrumenta and its other Windows products.
+Fraunces (soft, wonky, weight 650 to 700) is the wordmark and panel/modal title face only.
+Commissioner with `"FLAR" 40` is the interface face, including the small uppercase labels that used
+Space Grotesk. Spline Sans Mono is for code, versions, sizes and IDs. All three are SIL OFL 1.1,
+vendored under `desktop/src/renderer/brand/fonts/`.
 
 ## Interface expression — approved UI B
 
@@ -38,8 +29,8 @@ Forge3D follows the **viewport-first workstation** composition captured in
 the approved alignment reference
 (`Instrumenta/docs/design-references/forge3d-ui-claude-alignment-reference.png`):
 
-- One application bar holding the Logo A wordmark, a wide prompt omnibox, Attach, run settings,
-  and a single orange Run action. On Windows the native caption is hidden and the system window
+- One application bar holding the Forge3D wordmark, a wide prompt omnibox, Attach, run settings,
+  and a single ember Run action. On Windows the native caption is hidden and the system window
   controls are drawn over the reserved inset at the right of that bar.
 - A full-bleed viewport underneath it. With no output it shows a studio backdrop with a receding
   ground grid and the mark as a watermark.

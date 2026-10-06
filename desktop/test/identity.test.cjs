@@ -7,7 +7,7 @@ const desktopRoot = path.resolve(__dirname, "..");
 const renderer = fs.readFileSync(path.join(desktopRoot, "src", "renderer", "main.js"), "utf8");
 const styles = fs.readFileSync(path.join(desktopRoot, "src", "renderer", "style.css"), "utf8");
 const icon = fs.readFileSync(path.join(desktopRoot, "assets", "icon.png"));
-const mark = fs.readFileSync(path.join(desktopRoot, "assets", "forge3d-mark.png"));
+const ico = fs.readFileSync(path.join(desktopRoot, "assets", "icon.ico"));
 const packageJson = JSON.parse(fs.readFileSync(path.join(desktopRoot, "package.json"), "utf8"));
 
 function pngDimensions(buffer) {
@@ -15,14 +15,30 @@ function pngDimensions(buffer) {
   return { width: buffer.readUInt32BE(16), height: buffer.readUInt32BE(20) };
 }
 
-test("approved Logo A is the canonical desktop identity", () => {
+test("the brand v2 cube is the canonical desktop identity", () => {
   assert.deepEqual(pngDimensions(icon), { width: 512, height: 512 });
-  assert.equal(pngDimensions(mark).width, pngDimensions(mark).height);
-  assert.match(renderer, /import brandMark from "\.\/forge3d-mark\.png"/);
-  assert.match(renderer, /<img src="\$\{brandMark\}"/);
-  assert.doesNotMatch(renderer, /brand-symbol|Codex-driven asset studio|class="brand-mark">F3/);
-  assert.equal(packageJson.dependencies["@fontsource/space-grotesk"], "5.3.0");
-  assert.match(styles, /--display: "Space Grotesk"/);
+  // Windows icon: reserved word 0, type 1 (icon), at least the 16 to 256 sizes.
+  assert.deepEqual([ico.readUInt16LE(0), ico.readUInt16LE(2)], [0, 1]);
+  assert.ok(ico.readUInt16LE(4) >= 6);
+  assert.equal(packageJson.build.win.icon, "assets/icon.ico");
+  assert.match(renderer, /import InstrumentaIcons from "\.\/brand\/instrumenta-icons\.js"/);
+  assert.match(renderer, /InstrumentaIcons\.render\("forge3d"/);
+  assert.doesNotMatch(renderer, /forge3d-mark|brand-symbol|Codex-driven asset studio|class="brand-mark">F3/);
+});
+
+test("brand v2 type and accent are vendored locally, not loaded from a CDN", () => {
+  assert.equal(packageJson.dependencies["@fontsource/space-grotesk"], undefined);
+  assert.match(renderer, /import "\.\/brand\/fonts\/fonts\.css"/);
+  assert.match(styles, /--display: "Fraunces"/);
+  assert.match(styles, /--ui: "Commissioner"/);
+  assert.match(styles, /--mono: "Spline Sans Mono"/);
+  assert.match(styles, /--ui-vs: "FLAR" 40/);
+  assert.match(styles, /--accent: #ee7752/);
+  const fonts = path.join(desktopRoot, "src", "renderer", "brand", "fonts");
+  for (const name of ["fonts.css", "OFL-fraunces.txt", "OFL-commissioner.txt", "OFL-splinesansmono.txt"]) {
+    assert.ok(fs.existsSync(path.join(fonts, name)), name);
+  }
+  assert.doesNotMatch(fs.readFileSync(path.join(fonts, "fonts.css"), "utf8"), /https?:/);
 });
 
 test("approved UI B keeps the viewport-first alignment composition", () => {
