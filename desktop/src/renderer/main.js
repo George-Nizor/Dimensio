@@ -63,6 +63,8 @@ const glyphs = {
   grid: '<rect x="4" y="4" width="16" height="16" rx="1"/><path d="M4 10h16M4 16h16M10 4v16M16 4v16"/>',
   hand: '<path d="M9 11V5.6a1.6 1.6 0 0 1 3.2 0V11M12.2 11V4.4a1.6 1.6 0 0 1 3.2 0V11M15.4 11V6.6a1.6 1.6 0 0 1 3.2 0V15a6 6 0 0 1-6 6h-1.2a5 5 0 0 1-4.1-2.2l-3-4.3a1.7 1.7 0 0 1 2.5-2.2L9 14.6Z"/>',
   image: '<rect x="3" y="4.5" width="18" height="15" rx="2"/><circle cx="8.6" cy="9.6" r="1.4"/><path d="m4 17.5 5-4.6 3.6 3.4 3-2.6L20 17"/>',
+  monitor: '<rect x="3" y="4.5" width="18" height="12" rx="2"/><path d="M8.5 20h7M12 16.5V20"/>',
+  moon: '<path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z"/>',
   logs: '<rect x="3.5" y="4" width="17" height="16" rx="2"/><path d="m8 9.5 3 2.5-3 2.5M13 15h4"/>',
   more: '<circle cx="5.2" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="18.8" cy="12" r="1.5"/>',
   nodes: '<circle cx="5" cy="6" r="2"/><circle cx="19" cy="6" r="2"/><circle cx="12" cy="19" r="2"/><path d="M7 7.2 10.8 17M17 7.2 13.2 17M7 6h10"/>',
@@ -75,6 +77,7 @@ const glyphs = {
   settings: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2h-4V21a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9A1.7 1.7 0 0 0 3 14H2.8v-4H3a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1A1.7 1.7 0 0 0 9 4.6 1.7 1.7 0 0 0 10 3V2.8h4V3a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.2v4H21a1.7 1.7 0 0 0-1.6 1Z"/>',
   shield: '<path d="M12 3.2 20 6v5.9c0 4.5-3.3 8.4-8 9.1-4.7-.7-8-4.6-8-9.1V6Z"/><path d="m9 12 2.2 2.2L15.5 10"/>',
   sparkle: '<path d="M12 3.2 13.9 8.6 19.3 10.5 13.9 12.4 12 17.8 10.1 12.4 4.7 10.5 10.1 8.6Z"/><path d="m18.2 15.2.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8Z"/>',
+  sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/>',
   steer: '<path d="M21.5 2.5 10.8 13.2M21.5 2.5 14.9 21l-4.1-7.8L3 9.1Z"/>',
   stop: '<rect x="6.5" y="6.5" width="11" height="11" rx="1.5"/>',
   text: '<path d="M5 5.5h14M5 10.5h14M5 15.5h9"/>',
@@ -111,6 +114,7 @@ app.innerHTML = `
     <div class="topbar-actions">
       <button id="attach" class="ghost-action" title="Attach source files">${glyph("attach")}<span>Attach</span></button>
       <span class="v-sep"></span>
+      <button id="theme-toggle" class="icon-action"></button>
       <button id="settings-toggle" class="icon-action" aria-expanded="false" title="Run settings" aria-label="Run settings">${glyph("settings")}</button>
       <button id="cancel" class="icon-action danger hidden" title="Cancel the active run" aria-label="Cancel the active run">${glyph("stop")}</button>
       <button id="send" class="run-button"></button>
@@ -206,7 +210,7 @@ app.innerHTML = `
 `;
 
 const elements = Object.fromEntries([
-  "prompt", "attachments", "attach", "send", "cancel", "settings-toggle", "settings-popover", "topbar-progress",
+  "prompt", "attachments", "attach", "send", "cancel", "theme-toggle", "settings-toggle", "settings-popover", "topbar-progress",
   "preview", "viewport-hud", "library", "inspector", "run-list", "run-search", "run-count", "run-brief",
   "inspector-content", "inspector-actions", "library-toggle", "inspector-toggle",
   "pipeline", "filmstrip", "dependency-strip", "agent-state", "status-time",
@@ -214,6 +218,46 @@ const elements = Object.fromEntries([
   "approval-layer", "dialog-layer", "menu-layer", "toast-layer",
 ].map((id) => [id.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase()), document.querySelector(`#${id}`)]));
 
+
+/* ── theme ──────────────────────────────────────────────────── */
+
+// Follows the system until the person picks one; the choice persists. The sheet itself switches on
+// prefers-color-scheme (light-dark()), so "system" needs no script; data-theme pins light or dark.
+const THEME_ORDER = ["system", "light", "dark"];
+const THEME_NAMES = { system: "System", light: "Light", dark: "Dark" };
+const THEME_GLYPHS = { system: "monitor", light: "sun", dark: "moon" };
+let themeChoice = THEME_ORDER.includes(readPreference("forge3d.theme", "system")) ? readPreference("forge3d.theme", "system") : "system";
+let viewportRefresh = null;
+
+// Resolves a colour token (which may be a light-dark() pair) to the colour in use right now, for three.js.
+function tokenColor(name) {
+  const probe = document.createElement("span");
+  probe.style.cssText = `position:absolute;visibility:hidden;color:var(${name})`;
+  document.body.append(probe);
+  const value = getComputedStyle(probe).color;
+  probe.remove();
+  return value;
+}
+
+function applyTheme({ announce = true } = {}) {
+  const root = document.documentElement;
+  if (themeChoice === "system") delete root.dataset.theme; else root.dataset.theme = themeChoice;
+  const next = THEME_ORDER[(THEME_ORDER.indexOf(themeChoice) + 1) % THEME_ORDER.length];
+  const button = document.querySelector("#theme-toggle");
+  button.innerHTML = glyph(THEME_GLYPHS[themeChoice]);
+  button.title = `Theme: ${THEME_NAMES[themeChoice]}. Switch to ${THEME_NAMES[next].toLowerCase()}`;
+  button.setAttribute("aria-label", button.title);
+  if (announce) api.setTheme?.(themeChoice)?.catch?.(() => {});
+  viewportRefresh?.();
+}
+
+document.querySelector("#theme-toggle").addEventListener("click", () => {
+  themeChoice = THEME_ORDER[(THEME_ORDER.indexOf(themeChoice) + 1) % THEME_ORDER.length];
+  writePreference("forge3d.theme", themeChoice);
+  applyTheme();
+});
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => viewportRefresh?.());
+applyTheme();
 
 let runSettings = readRunSettings(localStorage);
 for (const key of ["workflow", "quality", "target", "tool", "effort"]) {
@@ -368,6 +412,13 @@ function askDialog({ eyebrow = "Forge3D", title, body = "", detail = "", input =
 
 /* ── status bar ─────────────────────────────────────────────── */
 
+// Tool versions are shown only when the main process reports a real one (state.toolVersions.blender = "4.5.3").
+// Until it does, the name stands alone; the old build printed made-up numbers.
+function toolVersion(name) {
+  const value = state.toolVersions?.[name.toLowerCase()];
+  return typeof value === "string" ? value.trim() : "";
+}
+
 function renderDependencies() {
   const tools = [
     ["Codex", state.tools?.codex],
@@ -382,15 +433,18 @@ function renderDependencies() {
   const overall = failed ? "offline" : missing.length ? "attention" : checking ? "checking" : "ready";
   const overallLabel = failed ? "Toolchain offline" : missing.length ? "Toolchain attention" : checking ? "Checking toolchain" : "Local toolchain ready";
   elements.dependencyStrip.innerHTML = `<span class="status-item ${overall}"><i></i>${overallLabel}</span><span class="status-divider"></span>${
-    tools.map(([name, value]) => `<span class="status-item ${value ? "ready" : value === undefined ? "checking" : "offline"}"><i></i>${name}${name === "Blender" && value ? " 4.5" : name === "Godot" && value ? " 4.4" : ""}</span>`).join("")}`;
+    tools.map(([name, value]) => {
+      const version = value ? toolVersion(name) : "";
+      return `<span class="status-item ${value ? "ready" : value === undefined ? "checking" : "offline"}"><i></i>${name}${version ? ` <span class="mono">${escapeHtml(version)}</span>` : ""}</span>`;
+    }).join("")}`;
 
   const skill = state.skill;
   const needsRepair = skill && skill.state !== "ready";
   const message = failed ? state.appServerError
-    : needsRepair ? (skill.state === "version-mismatch" ? `Plugin ${skill.installedVersion} → ${skill.bundledVersion}` : "Plugin repair available")
+    : needsRepair ? (skill.state === "version-mismatch" ? `Plugin <span class="mono">${escapeHtml(skill.installedVersion)}</span> → <span class="mono">${escapeHtml(skill.bundledVersion)}</span>` : "Plugin repair available")
     : "";
   elements.agentState.classList.toggle("hidden", !message);
-  elements.agentState.innerHTML = message ? `<span>${escapeHtml(message)}</span>${needsRepair ? '<button id="repair-skill" class="link-button">Repair</button>' : ""}` : "";
+  elements.agentState.innerHTML = message ? `<span>${needsRepair && !failed ? message : escapeHtml(message)}</span>${needsRepair ? '<button id="repair-skill" class="link-button">Repair</button>' : ""}` : "";
   document.querySelector("#repair-skill")?.addEventListener("click", repairPlugin);
 }
 
@@ -532,7 +586,7 @@ function renderPipeline() {
       <span class="stage-icon">${glyph(stage.state === "done" ? "check" : stage.icon)}</span>
       <div class="stage-body">
         <div class="stage-top">
-          <span class="stage-label">${stage.label.toUpperCase()}</span>
+          <span class="stage-label">${stage.label}</span>
           <span class="stage-rail"><i class="stage-fill" style="width:${Math.round(Math.min(1, stage.fill) * 100)}%"></i></span>
         </div>
         <div class="stage-detail">${escapeHtml(stage.detail)}</div>
@@ -552,7 +606,7 @@ function renderFilmstrip() {
     <button class="film-tile ${artifact.path === active?.path ? "selected" : ""}" data-film-path="${escapeHtml(artifact.path)}" title="${escapeHtml(artifact.name)}">
       ${isImageRole(artifact.preview_role)
         ? `<img src="${artifactUrl(run.run_id, (artifact.frames && artifact.frames[0]) || artifact.path)}" alt="${escapeHtml(artifact.name)}" loading="lazy" />`
-        : `<span class="film-glyph">${glyph(artifactIcon(artifact))}<span>${escapeHtml(String(artifact.preview_role || "file").split("-")[0])}</span></span>`}
+        : `<span class="film-glyph">${glyph(artifactIcon(artifact))}<span>${escapeHtml(titleCase(String(artifact.preview_role || "file").split("-")[0]))}</span></span>`}
     </button>`).join("");
   elements.filmstrip.querySelectorAll("[data-film-path]").forEach((tile) => tile.addEventListener("click", () => selectArtifact(tile.dataset.filmPath)));
 }
@@ -612,7 +666,7 @@ function renderInspector() {
             <span class="artifact-thumb">${isImageRole(artifact.preview_role)
               ? `<img src="${artifactUrl(run.run_id, (artifact.frames && artifact.frames[0]) || artifact.path)}" alt="" loading="lazy" />`
               : glyph(artifactIcon(artifact))}</span>
-            <span class="artifact-lines"><strong>${escapeHtml(artifact.name)}</strong><small>${escapeHtml(titleCase(artifact.preview_role))} · ${escapeHtml(formatBytes(artifact.size_bytes))}</small></span>
+            <span class="artifact-lines"><strong>${escapeHtml(artifact.name)}</strong><small>${escapeHtml(titleCase(artifact.preview_role))} · <span class="mono">${escapeHtml(formatBytes(artifact.size_bytes))}</span></small></span>
           </button>`).join("")}</div>`
       : `<div class="empty-list">${glyph("folder")}<span>Files are discovered inside this run directory only.</span></div>`;
     elements.inspectorContent.querySelectorAll("[data-artifact-path]").forEach((button) => button.addEventListener("click", () => selectArtifact(button.dataset.artifactPath)));
@@ -670,7 +724,7 @@ function renderInspectorActions() {
 /* ── viewport ───────────────────────────────────────────────── */
 
 const clayMaterial = new THREE.MeshStandardMaterial({ color: 0x9ba1a8, roughness: 0.74, metalness: 0.02 });
-const wireMaterial = new THREE.MeshBasicMaterial({ color: 0xe2571c, wireframe: true });
+const wireMaterial = new THREE.MeshBasicMaterial({ color: 0xee7752, wireframe: true });
 
 function disposeThree(scene, renderer, animationId, observer) {
   cancelAnimationFrame(animationId.value);
@@ -713,23 +767,41 @@ function threeBase(container, withSpark = false) {
   renderer.setClearColor(0x000000, 0);
   renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.05;
+  // The Khronos PBR Neutral operator keeps base colours as authored; ACES would shift hue and saturation.
+  renderer.toneMapping = THREE.NeutralToneMapping;
+  renderer.toneMappingExposure = 1;
   container.append(renderer.domElement);
 
   let grid = null;
+  let base = null;
   if (withSpark) scene.add(new SparkRenderer({ renderer }));
   else {
-    scene.add(new THREE.HemisphereLight(0xd7e1ea, 0x0a0d12, 2.1));
-    const key = new THREE.DirectionalLight(0xffb27a, 3.2);
+    // Neutral studio lighting: white key, white fill, neutral sky and ground, so a material reads as authored.
+    scene.add(new THREE.HemisphereLight(0xffffff, 0x8a8a8a, 1.5));
+    const key = new THREE.DirectionalLight(0xffffff, 2.4);
     key.position.set(3, 6, 4);
-    const rim = new THREE.DirectionalLight(0x89b4e8, 1.1);
-    rim.position.set(-4, 2.5, -3.5);
-    grid = new THREE.GridHelper(14, 28, 0x46586a, 0x22303c);
-    grid.material.transparent = true;
-    grid.material.opacity = 0.5;
-    grid.visible = viewportTools.grid;
-    scene.add(key, rim, grid);
+    const fill = new THREE.DirectionalLight(0xffffff, 0.9);
+    fill.position.set(-4, 2.5, -3.5);
+    scene.add(key, fill);
+    const buildGrid = () => {
+      const made = new THREE.GridHelper(14, 28, tokenColor("--grid-major"), tokenColor("--grid-minor"));
+      made.material.transparent = true;
+      made.material.opacity = 0.6;
+      made.visible = viewportTools.grid;
+      return made;
+    };
+    grid = buildGrid();
+    scene.add(grid);
+    viewportRefresh = () => {
+      const visible = grid.visible;
+      scene.remove(grid);
+      grid.geometry.dispose();
+      grid.material.dispose();
+      grid = buildGrid();
+      grid.visible = visible;
+      scene.add(grid);
+      base.grid = grid;
+    };
   }
 
   const controls = new OrbitControls(camera, renderer.domElement);
@@ -746,7 +818,8 @@ function threeBase(container, withSpark = false) {
   const observer = new ResizeObserver(resize);
   observer.observe(container);
   resize();
-  return { scene, camera, renderer, controls, observer, grid };
+  base = { scene, camera, renderer, controls, observer, grid };
+  return base;
 }
 
 // A SplatMesh carries no mesh geometry, so Box3.setFromObject cannot see its extents.
@@ -853,12 +926,11 @@ async function renderSplat(container, run, artifact) {
   return () => disposeThree(base.scene, base.renderer, animationId, base.observer);
 }
 
-function emptyViewport() {
+function emptyViewport(fresh = false) {
   return `<div class="viewport-empty" aria-label="Empty viewport">
-    <span class="empty-glow"></span>
     <div class="empty-body">
       <span class="empty-icon">${brandIcon(108)}</span>
-      <h2>Nothing forged yet</h2>
+      <h2>${fresh ? "What shall we forge?" : "Nothing forged yet"}</h2>
       <p>Describe an asset in the prompt bar. Forge3D routes it, builds it locally, and shows the result here.</p>
     </div>
   </div>`;
@@ -868,12 +940,13 @@ async function renderPreview() {
   previewDispose();
   previewDispose = () => {};
   viewportApi = null;
+  viewportRefresh = null;
   const run = selectedRun();
   const artifact = selectedArtifact(run);
   renderHud();
   if (!run || !artifact) {
     elements.preview.classList.add("inset-panels");
-    elements.preview.innerHTML = emptyViewport();
+    elements.preview.innerHTML = emptyViewport(!run);
     return;
   }
   selectedArtifactPath = artifact.path;
@@ -913,7 +986,7 @@ async function renderPreview() {
       pre.textContent = `Could not load ${artifact.name}: ${error.message}`;
     }
   } else {
-    elements.preview.innerHTML = `<div class="blank-state">${glyph(artifactIcon(artifact))}<h2>${escapeHtml(artifact.name)}</h2><p>${escapeHtml(artifact.media_type)} · ${escapeHtml(formatBytes(artifact.size_bytes))}</p><p>This file has no embedded preview. Use Reveal or Open in the inspector.</p></div>`;
+    elements.preview.innerHTML = `<div class="blank-state">${glyph(artifactIcon(artifact))}<h2>${escapeHtml(artifact.name)}</h2><p>${escapeHtml(artifact.media_type)} · <span class="mono">${escapeHtml(formatBytes(artifact.size_bytes))}</span></p><p>This file has no embedded preview. Use Reveal or Open in the inspector.</p></div>`;
   }
 }
 
@@ -1045,7 +1118,7 @@ function updateDockOffset() {
   const styles = getComputedStyle(document.documentElement);
   const width = (name) => parseFloat(styles.getPropertyValue(name)) || 0;
   const open = (panels.library ? width("--lib-w") + 12 : 0) + (panels.inspector ? width("--insp-w") + 12 : 0);
-  document.querySelector(".stage").style.setProperty("--dock-offset", `${open + 60}px`);
+  document.querySelector(".stage").style.setProperty("--dock-offset", `${open + 88}px`);
 }
 
 function setViewportTool(key, value) {
