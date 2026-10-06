@@ -56,7 +56,7 @@ test("approved UI B keeps the viewport-first alignment composition", () => {
   assert.match(renderer, /id="pipeline"/);
   assert.match(renderer, /id="filmstrip"/);
   assert.match(renderer, /class="statusbar"/);
-  assert.match(renderer, /const glyphs = \{/);
+  assert.match(renderer, /import \{ icon, themeIcon \} from "\.\/icons\.mjs"/);
   assert.doesNotMatch(renderer, /class="app-bar"|class="pane library"|class="pane inspector"|class="production-rail"/);
   assert.match(styles, /--topbar-h: 72px/);
   assert.match(styles, /grid-template-rows: var\(--topbar-h\) minmax\(0, 1fr\) var\(--dock-h\) var\(--status-h\)/);

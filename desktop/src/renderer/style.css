@@ -250,8 +250,8 @@ kbd {
 .icon-action { display: grid; place-items: center; width: 36px; height: 36px; border-radius: var(--r-md); color: var(--muted); transition: background .15s var(--ease), color .15s var(--ease); }
 .icon-action:hover { background: var(--raised-hover); color: var(--text); }
 .icon-action[aria-expanded="true"] { background: var(--raised); color: var(--accent-text); }
-.icon-action.danger { margin-left: 4px; border: var(--obj-border); background: var(--danger); color: var(--danger-ink); box-shadow: 2px 3px 0 var(--extrude); transition: transform .08s ease, box-shadow .08s ease, filter .15s ease; }
-.icon-action.danger:hover { filter: brightness(1.07); background: var(--danger); color: var(--danger-ink); }
+.icon-action.danger { margin-left: 4px; border: var(--obj-border); background: var(--panel); color: var(--text); box-shadow: 2px 3px 0 var(--extrude); transition: transform .08s ease, box-shadow .08s ease, background .15s ease; }
+.icon-action.danger:hover { background: var(--raised-hover); color: var(--text); }
 .icon-action.danger:active { transform: translate(2px, 3px); box-shadow: 0 0 0 var(--extrude); }
 .v-sep { width: 2px; height: 22px; margin: 0 8px; background: var(--line); }
 
@@ -287,7 +287,6 @@ kbd {
   pointer-events: none;
 }
 .blank-state { position: relative; display: grid; justify-items: center; gap: 10px; padding: 24px; text-align: center; }
-.blank-state .ui-icon { width: 30px; height: 30px; color: var(--muted); }
 .blank-state h2 { font: 650 17px var(--ui); color: var(--text); overflow-wrap: anywhere; }
 .blank-state p { font-size: 13px; color: var(--muted); }
 
@@ -344,7 +343,6 @@ kbd {
 .cmd code { padding: 1px 8px; color: var(--text); font: 12px/1.6 var(--mono); }
 .cmd-copy { display: inline-flex; align-items: center; gap: 4px; align-self: stretch; padding: 0 8px; border-left: 1px solid var(--line-strong); border-radius: 0 var(--r-xs) var(--r-xs) 0; color: var(--accent-text); font: 650 11.5px var(--ui); }
 .cmd-copy:hover { background: var(--raised-hover); }
-.cmd-copy .ui-icon { width: 13px; height: 13px; }
 
 .toolrail {
   position: absolute; z-index: 6; left: 16px; top: 16px;
@@ -401,23 +399,20 @@ kbd {
 .panel-head .head-count:empty { display: none; }
 .panel-head .head-count { padding: 2px 9px; border-radius: 999px; background: var(--raised); color: var(--muted); font: 600 11px var(--mono); }
 .panel-head .icon-action { width: 30px; height: 30px; }
-.panel-head .icon-action .ui-icon { width: 16px; height: 16px; }
 .panel-body { flex: 1; min-height: 0; overflow: auto; padding: 0 12px 14px; }
 .panel-foot { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; padding: 8px; border-top: 2px solid var(--line); }
 .panel-foot button { display: flex; align-items: center; gap: 8px; min-width: 0; height: 34px; padding: 0 10px; border-radius: var(--r-sm); color: var(--text-2); font: 600 12.5px var(--ui); text-align: left; transition: background .14s var(--ease), color .14s var(--ease); }
 .panel-foot button span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.panel-foot button .ui-icon { width: 16px; height: 16px; color: var(--accent-text); }
 .panel-foot button:hover { background: var(--raised-hover); color: var(--text); }
 .panel-foot button:disabled { opacity: .55; cursor: not-allowed; background: none; color: var(--muted); }
-.panel-foot button:disabled .ui-icon { color: var(--muted); }
 .panel-foot .foot-hint { grid-column: 1 / -1; padding: 6px 4px; color: var(--muted); font-size: 12px; }
 .panel-foot:empty { display: none; }
 
 .panel-tools { display: grid; gap: 10px; padding: 0 14px 12px; }
 .new-run { height: 38px; font-size: 13px; }
-.new-run .ui-icon { width: 15px; height: 15px; color: var(--accent-text); }
+.new-run .fi-line { color: var(--accent-text); }
 .search-wrap { position: relative; display: flex; align-items: center; }
-.search-wrap > .ui-icon { position: absolute; left: 12px; width: 14px; height: 14px; color: var(--muted); pointer-events: none; }
+.search-wrap > .fi-line { position: absolute; left: 12px; color: var(--muted); pointer-events: none; }
 .search {
   width: 100%; height: 36px; padding: 0 12px 0 34px;
   border: 2px solid var(--line); border-radius: var(--r-md); outline: 0;
@@ -440,7 +435,6 @@ kbd {
 .run-card.selected { background: var(--raised-hover); box-shadow: inset 3px 0 var(--accent); }
 .run-tile { display: grid; place-items: center; width: 32px; height: 32px; border: 2px solid var(--line-strong); border-radius: var(--r-xs); background: var(--well); color: var(--muted); overflow: hidden; }
 .run-tile img { width: 100%; height: 100%; object-fit: cover; }
-.run-tile .ui-icon { width: 15px; height: 15px; }
 .run-card.selected .run-tile { border-color: var(--accent); color: var(--accent-text); }
 .run-lines { min-width: 0; display: grid; gap: 2px; }
 .run-lines strong { min-width: 0; overflow: hidden; color: var(--text); font: 550 13px var(--ui); text-overflow: ellipsis; white-space: nowrap; }
@@ -453,9 +447,7 @@ kbd {
 .run-more { display: grid; place-items: center; width: 26px; height: 26px; border-radius: var(--r-xs); color: var(--muted); opacity: 0; transition: .14s var(--ease); }
 .run-card:hover .run-more, .run-more:focus-visible, .run-card:focus-within .run-more { opacity: 1; }
 .run-more:hover { background: var(--raised-hover); color: var(--text); }
-.run-more .ui-icon { width: 14px; height: 14px; }
 .empty-list { display: grid; place-items: center; gap: 12px; min-height: 130px; padding: 28px 18px; color: var(--muted); font-size: 12.5px; line-height: 1.55; text-align: center; }
-.empty-list .ui-icon { width: 28px; height: 28px; color: var(--muted); }
 
 /* ── inspector content ──────────────────────────────────────── */
 
@@ -510,7 +502,6 @@ kbd {
 
 .mini-log { max-height: 300px; overflow: auto; margin: 4px 2px; padding: 12px; border: 2px solid var(--line); border-radius: var(--r-md); background: var(--well); color: var(--text-2); font: 11.5px/1.6 var(--mono); white-space: pre-wrap; overflow-wrap: anywhere; }
 .report-link { display: flex; align-items: center; gap: 9px; width: 100%; margin-top: 6px; padding: 9px 11px; border: var(--obj-border); border-radius: var(--r-md); background: var(--raised); box-shadow: var(--obj-shadow-sm); color: var(--text); text-align: left; font-size: 12.5px; font-weight: 600; transition: transform .08s ease, box-shadow .08s ease, background .15s ease; }
-.report-link .ui-icon { color: var(--accent-text); }
 .report-link:hover { background: var(--raised-hover); }
 .report-link:active { transform: translate(2px, 3px); box-shadow: 0 0 0 var(--extrude); }
 
@@ -535,20 +526,15 @@ kbd {
 .edge-tab:hover { color: var(--text); background: var(--raised); }
 .edge-tab:active { transform: translate(2px, 3px); box-shadow: 0 0 0 var(--extrude); }
 .edge-tab[aria-expanded="true"] { color: var(--accent-text); border-color: var(--accent); box-shadow: 2px 3px 0 var(--accent-deep); }
-.edge-tab .ui-icon { width: 14px; height: 14px; transition: transform .25s var(--ease); }
-.edge-tab[aria-expanded="true"] .ui-icon { transform: rotate(180deg); }
+.edge-tab .fi-line { transition: transform .25s var(--ease); }
+.edge-tab[aria-expanded="true"] .fi-line { transform: rotate(180deg); }
 
 /* ── production dock ────────────────────────────────────────── */
 
 .dock { position: relative; z-index: 20; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 24px; padding: 0 22px; background: var(--bar); border-top: 2px solid var(--outline); }
 .pipeline { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); align-items: center; min-width: 0; }
 .stage-node { display: grid; grid-template-columns: 38px minmax(0, 1fr); align-items: center; gap: 13px; min-width: 0; }
-.stage-icon { display: grid; place-items: center; width: 38px; height: 38px; border: 2px solid var(--line-strong); border-radius: 50%; color: var(--muted); transition: color .3s var(--ease), border-color .3s var(--ease); }
-.stage-icon .ui-icon { width: 18px; height: 18px; }
-.stage-node.done .stage-icon { color: var(--ok); border-color: var(--ok-line); }
-.stage-node.active .stage-icon { color: var(--accent-text); border-color: var(--accent); }
-.stage-node.warn .stage-icon { color: var(--warn); border-color: var(--warn-line); }
-.stage-node.failed .stage-icon { color: var(--danger); border-color: var(--danger-line); }
+.stage-icon { display: grid; place-items: center; width: 38px; height: 38px; }
 .stage-body { min-width: 0; }
 .stage-top { display: flex; align-items: center; gap: 15px; min-width: 0; }
 .stage-label { --fvs: var(--display-vs), "opsz" 18; flex: none; font: 650 17px/1.2 var(--display); letter-spacing: -.005em; color: var(--muted); transition: color .3s var(--ease); }
@@ -575,7 +561,6 @@ kbd {
 .film-tile:not(.film-ghost):active { transform: translate(2px, 3px); box-shadow: 0 0 0 var(--extrude); }
 .film-tile.selected { border-color: var(--accent); box-shadow: 2px 3px 0 var(--accent-deep); }
 .film-glyph { display: grid; align-content: center; justify-items: center; gap: 5px; height: 100%; color: var(--muted); font: 600 11px var(--ui); }
-.film-glyph .ui-icon { width: 17px; height: 17px; }
 .film-tile.selected .film-glyph { color: var(--accent-text); }
 .film-ghost { border-style: dashed; border-color: var(--line-strong); box-shadow: none; cursor: default; background: none; }
 
@@ -619,7 +604,6 @@ kbd {
 .menu button:hover { background: var(--raised-hover); color: var(--text); }
 .menu button.danger { color: var(--danger); }
 .menu button.danger:hover { background: color-mix(in srgb, var(--danger) 14%, transparent); }
-.menu .ui-icon { width: 15px; height: 15px; }
 .menu hr { height: 2px; margin: 5px 4px; border: 0; background: var(--line); }
 
 .scrim { position: fixed; z-index: 100; inset: 0; display: grid; place-items: center; padding: 28px; background: var(--scrim); animation: fade .2s var(--ease); }
@@ -644,7 +628,6 @@ kbd {
 .toast-action { flex: none; color: var(--accent-text); font: 650 12.5px var(--ui); text-decoration: underline; text-underline-offset: 2px; }
 .toast-dismiss { flex: none; display: grid; place-items: center; width: 22px; height: 22px; margin: -1px 0 0 2px; border-radius: var(--r-xs); color: var(--muted); }
 .toast-dismiss:hover { background: var(--raised-hover); color: var(--text); }
-.toast-dismiss .ui-icon { width: 14px; height: 14px; }
 .toast.success { border-left-color: var(--ok); }
 
 /* ── motion ─────────────────────────────────────────────────── */
@@ -687,3 +670,11 @@ kbd {
    meaningful moments (a run starting) via .ii-play. prefers-reduced-motion is handled in the icon CSS. */
 .empty-body .empty-icon { display: block; width: 132px; height: 132px; }
 .empty-body .empty-icon svg { display: block; width: 100%; height: 100%; }
+
+/* Brand-v2 interface icons (brand-icons/forge-icons.css holds the motion). Beyond the icon set's own hop on a button,
+   a lid lifts when its owner is hovered: the model teapot on a run or file, the bin in a menu. The set's reduced-motion
+   rules (!important on every m-* part) switch this off with the rest. */
+.run-card:hover .fi .m-lid, .artifact-card:hover .fi .m-lid, .film-tile:hover .fi .m-lid, .menu button:hover .fi .m-lid {
+  animation: fi-lid .7s ease;
+}
+.rail-button .fi { display: block; }

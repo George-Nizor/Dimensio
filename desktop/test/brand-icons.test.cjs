@@ -42,3 +42,44 @@ test("motion CSS honours reduced motion", () => {
   assert.match(css, /prefers-reduced-motion: reduce/);
   assert.doesNotMatch(css, /@import|url\(/);
 });
+
+const renderer = path.join(__dirname, "../src/renderer");
+const mainJs = fs.readFileSync(path.join(renderer, "main.js"), "utf8");
+const styleCss = fs.readFileSync(path.join(renderer, "style.css"), "utf8");
+
+test("the renderer draws every icon from the brand set and keeps no old line-glyph table", async () => {
+  const { names } = await load();
+  assert.doesNotMatch(mainJs, /\bglyph\(|const glyphs\b|shade-dot/);
+  // names passed to icon("...") and icon: "..." must exist in the set
+  const used = new Set([...mainJs.matchAll(/\bicon\("([A-Za-z]+)"/g)].map((m) => m[1]));
+  for (const m of mainJs.matchAll(/\bicon: "([A-Za-z]+)"/g)) used.add(m[1]);
+  for (const m of mainJs.matchAll(/return "([A-Za-z]+)";/g)) if (names.includes(m[1])) used.add(m[1]);
+  for (const name of used) assert.ok(names.includes(name), `main.js uses unknown icon ${name}`);
+  for (const name of ["hammer", "send", "stop", "gear", "plan", "anvil", "shield", "crate", "done", "alert", "failed", "teapot", "splat", "render", "film", "page", "folder", "copy", "archive", "trash", "resume", "open", "export", "blender", "gamepad", "orbit", "pan", "frame", "grid", "clay", "rendered", "wire", "capture"]) {
+    assert.ok(used.has(name) || mainJs.includes(`"${name}"`), `mapped icon ${name} is not wired`);
+  }
+});
+
+test("the icon CSS rides the Vite build through icons.mjs, and the module output stays CSP-safe", () => {
+  const icons = fs.readFileSync(path.join(renderer, "icons.mjs"), "utf8");
+  assert.match(icons, /import "\.\/brand-icons\/forge-icons\.css"/);
+  assert.match(mainJs, /from "\.\/icons\.mjs"/);
+  assert.doesNotMatch(icons, /\.style|setAttribute\("style"|innerHTML\s*=/);
+});
+
+test("motion moments are wired and every one stops under reduced motion", () => {
+  assert.match(mainJs, /strikeHammer/);
+  assert.match(mainJs, /working: stage\.state === "active"/);
+  assert.match(mainJs, /stagePlaying/);
+  const css = fs.readFileSync(path.join(renderer, "brand-icons/forge-icons.css"), "utf8");
+  assert.match(css, /prefers-reduced-motion: reduce\)\s*\{[^}]*\.fi \[class\^="m-"\]\s*\{\s*animation: none !important/s);
+  assert.match(css, /html\[data-motion="reduced"\]/);
+  // style.css adds the only extra animation (hover lid lift); it names .fi .m-lid, which the rule above overrides
+  assert.match(styleCss, /\.fi \.m-lid[^{]*\{\s*animation: fi-lid/);
+});
+
+test("inactive rail tools are stone; stop, failed and trash are the only rose", () => {
+  assert.match(mainJs, /hue: on \? undefined : "stone"/);
+  assert.match(mainJs, /icon\("stop", 24\)/);
+  assert.match(mainJs, /alert: warn|warn: "alert"/);
+});

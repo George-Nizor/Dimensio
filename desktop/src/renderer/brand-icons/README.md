@@ -1,6 +1,6 @@
 # Forge3D brand-v2 interface icons
 
-Standalone, not yet wired in. Spec: `docs/review-2026-10/ui-ux.md` section 2.4. Contact sheet:
+Wired into the renderer through `../icons.mjs`. Spec: `docs/review-2026-10/ui-ux.md` section 2.4. Contact sheet:
 `docs/review-2026-10/icon-contact-sheet.png` (regenerate with `node test-tools/icon-contact-sheet.mjs`).
 
 ```js
