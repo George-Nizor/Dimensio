@@ -128,14 +128,77 @@ srv.listen(0, "127.0.0.1", async () => {
       steps: [{ name: "Route request", status: "completed" }, { name: "Generate mesh with SPAR3D", status: "running", detail: "spar3d inference" }], transcript: [{ kind: "agent", at: iso(3), text: "Running SPAR3D on the reference." }] };
     const failed = { run_id: "r3", name: "Stump", prompt: "Mossy tree stump as a gaussian splat", status: "failed", workflow_route: "gaussian-splat", failure: "TripoSplat exited with code 1 (CUDA out of memory)", created_at: iso(60 * 26), updated_at: iso(60 * 26), artifacts: [],
       steps: [{ name: "Route request", status: "completed" }, { name: "Generate splat", status: "failed" }], transcript: [{ kind: "error", at: iso(60 * 26), text: "CUDA out of memory. Tried to allocate 2.00 GiB" }] };
+    // Capability reports in the shape of docs/capabilities.md (schema 1). Each scene picks one.
+    const cap = (id, label, state, extra = {}) => ({ id, label, state, reason: state === "ready" ? "" : extra.reason || "", fix: state === "ready" ? "" : extra.fix || "", version: extra.version ?? null, path: null, detail: {}, gates: extra.gates || [], optional: Boolean(extra.optional) });
+    const report = (over = {}) => {
+      const capabilities = {
+        codex: cap("codex", "Codex CLI", "ready", { version: "0.159.2", gates: ["splat", "blender"] }),
+        blender: cap("blender", "Blender", "ready", { version: "5.0.1", gates: ["blender", "export"] }),
+        kiri: cap("kiri", "KIRI Engine extension", "ready", { version: "3.1.0", gates: ["export"] }),
+        blender_mcp: cap("blender_mcp", "Blender MCP add-on", "ready", { optional: true, gates: ["blender"] }),
+        uv: cap("uv", "uv", "ready", { version: "0.8.3", optional: true, gates: ["blender"] }),
+        node: cap("node", "Node.js", "ready", { version: "22.1.0", optional: true, gates: ["godot"] }),
+        godot: cap("godot", "Godot 4", "ready", { version: "4.6.2", optional: true, gates: ["godot"] }),
+        wsl: cap("wsl", "WSL", "ready", { version: "Ubuntu-24.04", gates: ["splat"] }),
+        wsl_tools: cap("wsl_tools", "uv and git in WSL", "ready", { gates: ["splat"] }),
+        cuda: cap("cuda", "NVIDIA GPU in WSL", "ready", { version: "12.9", gates: ["splat"] }),
+        triposplat: cap("triposplat", "TripoSplat", "ready", { version: "a1b2c3d4e5f6", gates: ["splat"] }),
+        triposplat_weights: cap("triposplat_weights", "TripoSplat weights", "ready", { gates: ["splat"] }),
+        ...(over.capabilities || {}),
+      };
+      const route = (label, state, blocked_by = [], degraded_by = [], optional = false) => ({ label, state, optional, reason: state === "ready" ? "" : (capabilities[(blocked_by[0] || degraded_by[0])] || {}).reason || "", requires: [], soft: [], blocked_by, degraded_by });
+      return { ok: true, schema: 1, forge3d_version: "0.3.0", generated_at: new Date().toISOString(), platform: { system: "windows" }, capabilities,
+        routes: over.routes || { splat: route("Gaussian splat", "ready"), blender: route("Blender", "ready"), export: route("Export", "ready"), godot: route("Godot", "ready", [], [], true) },
+        versions: { forge3d: "0.3.0", codex: "0.159.2", blender: "5.0.1", godot: "4.6.2", uv: "0.8.3", node: "22.1.0", cuda: "12.9", wsl_distro: "Ubuntu-24.04", ...(over.versions || {}) } };
+    };
+    const route = (label, state, blocked_by = [], degraded_by = [], reason = "", optional = false) => ({ label, state, optional, reason, requires: [], soft: [], blocked_by, degraded_by });
+    let capsResult = report();
     let runs = [], tools = { codex: true, blender: true, godot: true, wsl: true }, active = null, err = "", skill = { state: "ready" };
     if (["done", "image", "model", "checks", "logs", "menu", "dialog", "approval", "settings", "text"].includes(sc)) runs = [done, failed];
     if (sc === "checking") tools = {};
     if (sc === "offline") { err = "Codex App Server could not start: codex not found on PATH"; tools = { codex: false, blender: true, godot: false, wsl: true }; }
-    if (sc === "running") { runs = [running, done, failed]; active = { runId: "r2" }; }
+    if (sc === "running") { runs = [{ ...running, created_at: iso(3), steps: [{ name: "Route request", status: "completed", started_at: iso(3), completed_at: iso(2.8) }, { name: "Generate mesh with SPAR3D", status: "running", detail: "spar3d inference", started_at: iso(2.6) }], artifacts: [] }, done, failed]; active = { runId: "r2" }; }
     if (sc === "failed") runs = [failed, done];
+    if (sc === "blocked") {
+      // Gaussian splat chosen in Run settings, and TripoSplat is not installed in WSL.
+      localStorage.setItem("forge3d.runSettings.v1", JSON.stringify({ workflow: "gaussian-splat" }));
+      runs = [done];
+      capsResult = report({
+        capabilities: {
+          cuda: cap("cuda", "NVIDIA GPU in WSL", "degraded", { version: "12.9", reason: "Only 3.1 GB of VRAM is free right now (8 GB needed).", fix: "Close other GPU programs, then check again.", gates: ["splat"] }),
+          triposplat: cap("triposplat", "TripoSplat", "missing", { reason: "TripoSplat is not installed in WSL.", fix: "Run `forge3d models install triposplat` in a terminal, then check again.", gates: ["splat"] }),
+          triposplat_weights: cap("triposplat_weights", "TripoSplat weights", "missing", { reason: "No model weights found under TripoSplat/ckpts.", fix: "Install TripoSplat first; it downloads the weights.", gates: ["splat"] }),
+          godot: cap("godot", "Godot 4", "optional_missing", { optional: true, reason: "Godot 4 was not found.", fix: "Install it from godotengine.org if you want to review assets in a game scene.", gates: ["godot"] }),
+        },
+        routes: { splat: route("Gaussian splat", "blocked", ["triposplat", "triposplat_weights"], ["cuda"], "TripoSplat is not installed in WSL."), blender: route("Blender", "ready"), export: route("Export", "ready"), godot: route("Godot", "blocked", ["godot"], [], "Godot 4 was not found.", true) },
+        versions: { godot: null },
+      });
+    }
+    if (sc === "signedout") {
+      runs = [done];
+      capsResult = report({
+        capabilities: { codex: cap("codex", "Codex CLI", "signed_out", { version: "0.159.2", reason: "Codex is installed but not signed in.", fix: "Run `codex login` in a terminal, then check again.", gates: ["splat", "blender"] }) },
+        routes: { splat: route("Gaussian splat", "blocked", ["codex"], [], "Codex is installed but not signed in."), blender: route("Blender", "blocked", ["codex"], [], "Codex is installed but not signed in."), export: route("Export", "ready"), godot: route("Godot", "ready", [], [], "", true) },
+      });
+    }
+    if (sc === "degraded") {
+      runs = [done];
+      localStorage.setItem("forge3d.runSettings.v1", JSON.stringify({ workflow: "authored-blender" }));
+      capsResult = report({
+        capabilities: { blender: cap("blender", "Blender", "degraded", { version: "4.0.2", reason: "Blender 4.0.2 is older than 4.2, so extensions such as KIRI cannot load.", fix: "Install Blender 4.2 or later from blender.org.", gates: ["blender", "export"] }) },
+        routes: { splat: route("Gaussian splat", "ready"), blender: route("Blender", "degraded", [], ["blender"], "Blender 4.0.2 is older than 4.2."), export: route("Export", "degraded", [], ["blender"], "Blender 4.0.2 is older than 4.2."), godot: route("Godot", "ready", [], [], "", true) },
+        versions: { blender: "4.0.2" },
+      });
+    }
+    if (sc === "ready") { runs = []; }
+    if (sc === "blockedrun") { localStorage.setItem("forge3d.runSettings.v1", JSON.stringify({ workflow: "gaussian-splat" })); capsResult = report({ capabilities: { triposplat: cap("triposplat", "TripoSplat", "missing", { reason: "TripoSplat is not installed in WSL.", fix: "Run `forge3d models install triposplat` in a terminal.", gates: ["splat"] }) }, routes: { splat: route("Gaussian splat", "blocked", ["triposplat"], [], "TripoSplat is not installed in WSL."), blender: route("Blender", "ready"), export: route("Export", "ready"), godot: route("Godot", "ready", [], [], "", true) } }); runs = [done]; }
+    if (sc === "capserror") {
+      runs = [done];
+      capsResult = { ok: false, error: "The capability check failed: 'forge3d' is not recognized as an internal or external command.", fix: "Reinstall Forge3D, or run `forge3d capabilities --json` in a terminal to see the error." };
+    }
+    if (sc === "stopped") { runs = [{ ...failed, run_id: "r4", status: "interrupted", failure: null, name: "Pod", prompt: "A sci-fi medical pod" }, done]; }
     if (sc === "plugin") { runs = [done]; skill = { state: "version-mismatch", installedVersion: "0.2.0", bundledVersion: "0.2.2" }; tools = { codex: true, blender: true, godot: false, wsl: true }; }
-    localStorage.setItem("forge3d.panels", JSON.stringify({ library: !["first", "checking", "offline"].includes(sc), inspector: true }));
+    localStorage.setItem("forge3d.panels", JSON.stringify({ library: !["first", "checking", "offline", "ready", "blockedrun"].includes(sc), inspector: true }));
     // The app loads artifacts from forge3d-artifact://<run>/<path>, a scheme only Electron serves. Map it onto the
     // harness's /artifacts/ route for fetch() (models, text) and for <img> (thumbnails, previews).
     const mapUrl = (u) => (typeof u === "string" && u.startsWith("forge3d-artifact://") ? "/artifacts/" + u.split("/").slice(3).join("/") : u);
@@ -146,7 +209,7 @@ srv.listen(0, "127.0.0.1", async () => {
       .observe(document, { subtree: true, childList: true, attributes: true, attributeFilter: ["src"] });
     const noop = () => () => {};
     window.forge3d = { bootstrap: async () => ({ version: "0.2.2", activeJob: active, appServerError: err, skill, tools, runs, models: [{ id: "gpt-5", displayName: "GPT-5" }] }),
-      onState: noop, onEvent: noop, onApproval: (cb) => { window.__approve = cb; return () => {}; }, onError: noop, refreshTools: async () => ({}), artifactAction: async () => ({}), pickAttachments: async () => [], continueRun: async () => ({}) };
+      onState: noop, onEvent: noop, onApproval: (cb) => { window.__approve = cb; return () => {}; }, onError: noop, refreshTools: async () => ({}), capabilities: async () => { await new Promise((r) => setTimeout(r, sc === "checkingcaps" ? 60000 : 150)); return capsResult; }, artifactAction: async () => ({}), pickAttachments: async () => [], continueRun: async () => ({}) };
   });
   const sel = async (s) => { await page.click(s).catch(() => console.log("miss", s)); };
   const scenes = {
@@ -161,6 +224,10 @@ srv.listen(0, "127.0.0.1", async () => {
     menu: async () => { await page.hover(".run-card"); await sel(".run-more"); },
     dialog: async () => { await page.hover(".run-card"); await sel(".run-more"); await sel('[data-menu-action="continue"]'); },
     settings: async () => { await sel("#settings-toggle"); },
+    blocked: async () => { await sel("#new-run"); }, signedout: async () => { await sel("#new-run"); }, capserror: async () => { await sel("#new-run"); },
+    degraded: async () => { await sel("#gate-chip"); },
+    ready: async () => {}, stopped: async () => {}, checkingcaps: async () => { await sel("#new-run"); },
+    blockedrun: async () => { await page.fill("#prompt", "A mossy tree stump as a gaussian splat"); await page.dispatchEvent("#send", "click"); await page.waitForTimeout(300); },
     focus: async () => { for (let i = 0; i < 4; i++) await page.keyboard.press("Tab"); },
     approval: async () => { await page.evaluate(() => window.__approve({ requestId: 1, method: "item/commandExecution/requestApproval", params: { command: "blender --background --python build_pod.py", reason: "Codex wants to run Blender headless to build the pod." } })); },
   };

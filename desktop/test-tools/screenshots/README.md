@@ -13,7 +13,9 @@ npm run shots                                          # all scenes, dark, into 
 ```
 
 Scenes: `first checking offline plugin done image model checks text logs running failed menu dialog
-approval settings focus`. Pick some with `node test-tools/screenshots/harness.cjs first,model,failed`.
+approval settings focus`, plus the readiness scenes `blocked signedout degraded ready capserror stopped blockedrun checkingcaps`
+(the mocked `capabilities()` answers with a report in the schema of `docs/capabilities.md`; `capserror` answers `{ ok: false }`).
+Both themes: `THEME=light P=light- npm run shots`. Pick some with `node test-tools/screenshots/harness.cjs first,model,failed`.
 
 Environment variables:
 
