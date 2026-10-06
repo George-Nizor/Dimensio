@@ -1,6 +1,10 @@
 ![Forge3D banner](docs/images/forge3d-banner.png)
 
+<p align="center"><img src="docs/brand/forge3d-animated.svg" alt="Forge3D cube" width="96" /></p>
+
 # Forge3D
+
+Prompt-driven 3D modelling on the Codex App Server.
 
 Forge3D turns a prompt into a versioned local 3D run. The Windows desktop drives the user's Codex App
 Server, calls the Forge3D skill, keeps the transcript, and previews the result. Blender, Godot, WSL,
@@ -188,3 +192,7 @@ Blender and Godot headless checks need those applications installed. Game-facing
 with an engine import/runtime review.
 
 Forge3D is MIT licensed. Bundled integrations keep their own notices.
+
+## Family
+
+Forge3D is part of [Instrumenta](https://github.com/George-Nizor/Instrumenta), made by Bonehead Labs, and follows the Instrumenta brand v2: an ember cube, drawn as a freestanding object. The interface type (Fraunces, Commissioner, Spline Sans Mono) is SIL OFL 1.1, vendored in `desktop/src/renderer/brand/fonts` with its licences. Licence: MIT. See `docs/brand/README.md` for what was taken from the brand and what was kept.
