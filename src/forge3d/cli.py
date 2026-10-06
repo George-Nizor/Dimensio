@@ -8,6 +8,7 @@ from typing import Any, Sequence
 
 from . import __version__
 from .blender import Blender
+from .capabilities import collect as collect_capabilities, render_text as render_capabilities
 from .doctor import check_environment
 from .errors import Forge3DError
 from .models import (
@@ -58,6 +59,13 @@ def parser() -> argparse.ArgumentParser:
     doctor = commands.add_parser("doctor", help="Check Blender, Godot, MCP files, WSL, and CUDA")
     doctor.add_argument("--json", action="store_true", dest="as_json")
     doctor.set_defaults(handler=_doctor)
+
+    caps = commands.add_parser(
+        "capabilities",
+        help="Report what is installed and which routes (splat, blender, export, godot) can run",
+    )
+    caps.add_argument("--json", action="store_true", dest="as_json")
+    caps.set_defaults(handler=_capabilities)
 
     make = commands.add_parser("make", help="Create a procedural or image-derived asset")
     make.add_argument("prompt")
@@ -289,6 +297,15 @@ def _doctor(args: argparse.Namespace) -> int:
             if not check["ok"]:
                 print(f"       {check['fix']}")
     return 0 if report["ok"] else 1
+
+
+def _capabilities(args: argparse.Namespace) -> int:
+    report = collect_capabilities()
+    if args.as_json:
+        _print_json(report)
+    else:
+        print(render_capabilities(report))
+    return 0
 
 
 def _make(args: argparse.Namespace) -> int:
