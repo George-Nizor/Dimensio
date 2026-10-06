@@ -14,7 +14,7 @@ test("every glyph renders at 16, 24 and 48 px with presentation attributes only"
   for (const name of names) {
     for (const size of [16, 24, 48]) {
       const svg = render(name, { size });
-      assert.match(svg, new RegExp(`^<svg class="fi fi-${name}`), name);
+      assert.match(svg, new RegExp(`^<svg class="fi (fi-line )?fi-${name}[ "]`), name);
       assert.ok(svg.includes(`width="${size}"`), name);
       assert.doesNotMatch(svg, /\sstyle=|<script|<foreignObject|\shref=|\son\w+=|javascript:/i, name);
       assert.ok(svg.length > 100, name);
