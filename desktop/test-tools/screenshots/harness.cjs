@@ -161,6 +161,7 @@ srv.listen(0, "127.0.0.1", async () => {
     menu: async () => { await page.hover(".run-card"); await sel(".run-more"); },
     dialog: async () => { await page.hover(".run-card"); await sel(".run-more"); await sel('[data-menu-action="continue"]'); },
     settings: async () => { await sel("#settings-toggle"); },
+    focus: async () => { for (let i = 0; i < 4; i++) await page.keyboard.press("Tab"); },
     approval: async () => { await page.evaluate(() => window.__approve({ requestId: 1, method: "item/commandExecution/requestApproval", params: { command: "blender --background --python build_pod.py", reason: "Codex wants to run Blender headless to build the pod." } })); },
   };
   const only = process.argv[2] ? process.argv[2].split(",") : Object.keys(scenes);

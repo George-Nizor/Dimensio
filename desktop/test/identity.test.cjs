@@ -77,3 +77,67 @@ test("the Windows caption is replaced by the in-app bar without weakening isolat
   assert.match(styles, /-webkit-app-region: drag/);
   assert.match(styles, /-webkit-app-region: no-drag/);
 });
+
+test("the sheet is restylable from :root: no colour literal outside the token blocks", () => {
+  const body = styles.slice(styles.indexOf("/* ── primitives"));
+  const withoutUrls = body.replace(/url\([^)]*\)/g, "");
+  assert.deepEqual(withoutUrls.match(/rgba?\(|hsla?\(|(?<![\w%-])#[0-9a-fA-F]{3,8}\b(?=[;\s,)])/g) || [], []);
+});
+
+test("brand v2 surfaces: opaque ink-outlined objects with a hard extrusion, no glass, glow, gradient or ambient motion", () => {
+  assert.doesNotMatch(styles, /backdrop-filter/);
+  assert.doesNotMatch(styles, /(?<!-)(?:linear|radial|conic)-gradient\((?![^;]*var\(--muted\))/);
+  assert.doesNotMatch(styles, /animation:[^;]*infinite/);
+  assert.doesNotMatch(styles, /text-transform:\s*uppercase/);
+  assert.doesNotMatch(styles, /letter-spacing:\s*\.(?:[1-9]\d?)em/);
+  assert.match(styles, /--obj-border: 2px solid var\(--outline\)/);
+  assert.match(styles, /--obj-shadow: 3px 4px 0 var\(--extrude\)/);
+  assert.match(styles, /translate\(3px, 4px\)/);
+  assert.match(styles, /@media \(prefers-reduced-motion: reduce\)/);
+  assert.match(styles, /:focus-visible \{ outline: 2px solid var\(--accent-text\)/);
+  assert.doesNotMatch(renderer, /toUpperCase\(\)\}|empty-glow/);
+});
+
+test("themes: dark default on the family neutrals, a derived light, following the system until chosen", () => {
+  assert.match(styles, /color-scheme: light dark/);
+  assert.match(styles, /--fam-ink: #0d0c0a/);
+  assert.match(styles, /--fam-surface: #141210/);
+  assert.match(styles, /--fam-raised: #1d1a17/);
+  assert.match(styles, /--fam-line: #352f29/);
+  assert.match(styles, /--fam-text: #f2ede6/);
+  assert.match(styles, /--fam-muted: #a39a90/);
+  assert.match(styles, /--accent-deep: #7d331b/);
+  assert.match(styles, /--accent-text: light-dark\(var\(--accent-deep\), var\(--accent\)\)/);
+  assert.match(styles, /:root\[data-theme="light"\] \{ color-scheme: light; \}/);
+  assert.match(renderer, /forge3d\.theme/);
+  assert.match(renderer, /id="theme-toggle"/);
+});
+
+test("body text meets 4.5:1 on every surface in both themes", () => {
+  const lum = (hex) => {
+    const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255).map((c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4));
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  };
+  const ratio = (a, b) => { const [hi, lo] = [lum(a), lum(b)].sort((x, y) => y - x); return (hi + 0.05) / (lo + 0.05); };
+  const token = (name, side) => {
+    const value = styles.match(new RegExp(`--${name}: light-dark\\(([^;]+)\\);`))[1];
+    const [light, dark] = value.split(/,(?![^(]*\))/).map((part) => part.trim());
+    const pick = side === "light" ? light : dark;
+    return pick.startsWith("var(--") ? styles.match(new RegExp(`--${pick.slice(6, -1)}: (#[0-9a-f]{6})`))[1] : pick;
+  };
+  const surfaces = ["bar", "panel", "well", "raised", "raised-hover"];
+  for (const side of ["light", "dark"]) {
+    for (const text of ["text", "text-2", "muted", "ok", "warn", "danger"]) {
+      for (const surface of surfaces) {
+        assert.ok(ratio(token(text, side), token(surface, side)) >= 4.5, `${side}: ${text} on ${surface}`);
+      }
+    }
+  }
+  assert.ok(ratio(token("accent-text", "light") , token("panel", "light")) >= 4.5);
+  assert.ok(ratio("#ee7752", token("panel", "dark")) >= 4.5);
+});
+
+test("no invented tool versions in the status bar", () => {
+  assert.doesNotMatch(renderer, /" 4\.5"|" 4\.4"/);
+  assert.match(renderer, /state\.toolVersions\?\./);
+});

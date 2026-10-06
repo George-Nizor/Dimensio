@@ -13,7 +13,7 @@ npm run shots                                          # all scenes, dark, into 
 ```
 
 Scenes: `first checking offline plugin done image model checks text logs running failed menu dialog
-approval settings`. Pick some with `node test-tools/screenshots/harness.cjs first,model,failed`.
+approval settings focus`. Pick some with `node test-tools/screenshots/harness.cjs first,model,failed`.
 
 Environment variables:
 
