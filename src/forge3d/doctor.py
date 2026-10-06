@@ -21,7 +21,6 @@ def find_godot() -> Path | None:
         if found:
             return Path(found).resolve()
     patterns = [
-        r"C:\Users\*\Godot Projects\Godot_v*-stable*_win64\*console.exe",
         r"C:\Program Files\Godot\godot*.exe",
     ]
     candidates: list[Path] = []

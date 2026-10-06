@@ -10,7 +10,7 @@ Forge3D turns a prompt into a versioned local 3D run. The Windows desktop drives
 Server, calls the Forge3D skill, keeps the transcript, and previews the result. Blender, Godot, WSL,
 CUDA, and large models remain separate installations.
 
-Current source and desktop version: **0.2.2+codex.20260822.desktop1**.
+Current source and desktop version: **0.3.0**.
 
 ## Start here
 

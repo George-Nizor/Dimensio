@@ -33,6 +33,7 @@ const {
 const { resolveContained } = require("./lib/path-policy.cjs");
 const { automaticApproval } = require("./lib/approval-policy.cjs");
 const { exportArtifact, exportFormatsForArtifact } = require("./lib/export-service.cjs");
+const { createCapabilitiesService } = require("./lib/capabilities-service.cjs");
 
 protocol.registerSchemesAsPrivileged([
   {
@@ -149,6 +150,18 @@ function failActiveJob(error) {
     activeJob = null;
   }
   try { sendState(); } catch {}
+}
+
+let capabilitiesServiceInstance = null;
+function capabilitiesService() {
+  if (!capabilitiesServiceInstance) {
+    const binDirectory = app.isPackaged ? path.join(process.resourcesPath, "bin") : path.join(repoRoot, ".venv", "Scripts");
+    capabilitiesServiceInstance = createCapabilitiesService({
+      command: path.join(binDirectory, process.platform === "win32" ? "forge3d.exe" : "forge3d"),
+      env: { ...process.env, FORGE3D_TOOLKIT_ROOT: bundledToolkit(), FORGE3D_PLUGIN_ROOT: bundledPlugin() },
+    });
+  }
+  return capabilitiesServiceInstance;
 }
 
 async function ensureCodex() {
@@ -573,6 +586,7 @@ function registerIpc() {
     return payload;
   });
   nativeTheme.on("updated", applyChromeColors);
+  handle("forge3d:capabilities", (payload = {}) => capabilitiesService().get({ force: Boolean(payload?.force) }));
   handle("forge3d:refresh-tools", async (payload = {}) => {
     if (payload.force) externalTools(true);
     return currentState();

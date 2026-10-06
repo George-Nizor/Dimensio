@@ -29,6 +29,7 @@ contextBridge.exposeInMainWorld("forge3d", Object.freeze({
   repairPlugin: invoke("forge3d:repair-plugin"),
   refreshTools: invoke("forge3d:refresh-tools"),
   setTheme: invoke("forge3d:set-theme"),
+  capabilities: invoke("forge3d:capabilities"),
   onState: (listener) => subscribe("forge3d:state", listener),
   onEvent: (listener) => subscribe("forge3d:event", listener),
   onApproval: (listener) => subscribe("forge3d:approval", listener),
