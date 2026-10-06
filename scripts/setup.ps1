@@ -9,7 +9,12 @@ $ErrorActionPreference = "Stop"
 $scriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $repoRoot = Split-Path -Parent $scriptRoot
 $blenderExe = $env:BLENDER_EXECUTABLE
-$godotExe = "C:\Users\George\Godot Projects\Godot_v4.6.2-stable_mono_win64\Godot_v4.6.2-stable_mono_win64_console.exe"
+# Godot is optional: GODOT_EXECUTABLE, then godot/godot4 on PATH. Without it the Godot steps are skipped.
+$godotExe = $env:GODOT_EXECUTABLE
+if (-not $godotExe) {
+    $godotCommand = Get-Command godot, godot4 -ErrorAction SilentlyContinue | Select-Object -First 1
+    if ($godotCommand) { $godotExe = $godotCommand.Source }
+}
 $uvExe = Join-Path $env:USERPROFILE ".local\bin\uv.exe"
 $uvxExe = Join-Path $env:USERPROFILE ".local\bin\uvx.exe"
 $addonSource = Join-Path $repoRoot "vendor\blender-mcp\addon.py"
@@ -40,7 +45,7 @@ if (-not $blenderExe) {
     if (Test-Path -LiteralPath $steam) { $blenderExe = $steam }
 }
 
-foreach ($requiredPath in @($blenderExe, $godotExe, $uvExe, $uvxExe, $addonSource)) {
+foreach ($requiredPath in @($blenderExe, $uvExe, $uvxExe, $addonSource)) {
     if (-not (Test-Path -LiteralPath $requiredPath)) {
         throw "Required path is missing: $requiredPath"
     }
@@ -88,9 +93,13 @@ Invoke-Step "Cache the pinned Godot MCP server" {
     if ($LASTEXITCODE -ne 0) { throw "Godot MCP npm cache warm-up failed." }
 }
 
-Invoke-Step "Initialize the Godot review project and MCP toolkit" {
-    & $godotExe --headless --editor --path (Join-Path $repoRoot "godot") --import
-    if ($LASTEXITCODE -ne 0) { throw "Godot review project initialization failed." }
+if ($godotExe -and (Test-Path -LiteralPath $godotExe)) {
+    Invoke-Step "Initialize the Godot review project and MCP toolkit" {
+        & $godotExe --headless --editor --path (Join-Path $repoRoot "godot") --import
+        if ($LASTEXITCODE -ne 0) { throw "Godot review project initialization failed." }
+    }
+} else {
+    Write-Host "==> Godot not found; skipping the optional Godot review project (set GODOT_EXECUTABLE to enable it)"
 }
 
 if ($InstallModels) {

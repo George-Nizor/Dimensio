@@ -1,7 +1,7 @@
 import "./style.css";
-import "@fontsource/space-grotesk/500.css";
-import "@fontsource/space-grotesk/600.css";
-import brandMark from "./forge3d-mark.png";
+import "./brand/fonts/fonts.css";
+import "./brand/instrumenta-icons.css";
+import InstrumentaIcons from "./brand/instrumenta-icons.js";
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
@@ -9,6 +9,13 @@ import { SparkRenderer, SplatMesh } from "@sparkjsdev/spark";
 import { filmstripArtifacts, selectedArtifactForRun } from "./preview-routing.mjs";
 import { readRunSettings, writeRunSettings } from "./preferences.mjs";
 import { summarizeRunSteps } from "./run-presentation.mjs";
+import { deriveReadiness, runGate, setupHeadline, splitFix, statusEntries, toolVersionsFromReport, formatElapsed, sentenceCase } from "./readiness.mjs";
+import { stageState } from "./stage-state.mjs";
+import { icon, themeIcon } from "./icons.mjs";
+
+// Brand v2 cube from Instrumenta's icon library (a UMD file; the bundler hands over its exports). Built from presentation
+// attributes only, so it is safe under this window's Content-Security-Policy.
+const brandIcon = (size, label = "") => InstrumentaIcons.render("forge3d", { size, label });
 
 const api = window.forge3d;
 const app = document.querySelector("#app");
@@ -21,6 +28,13 @@ let approval = null;
 let previewDispose = () => {};
 let refreshTimer = null;
 let viewportApi = null;
+// The capability report (docs/capabilities.md): null until the first answer, then { ok: true, ...report } or
+// { ok: false, error, fix }. capsChecking is true while a check is in flight; the last answer stays on screen meanwhile.
+let capabilities = null;
+let capsChecking = false;
+let composing = false; // New run: no run is selected until one is picked or started
+let showSetup = false; // the person opened the readiness card from the status bar or the Run chip
+let previewKind = "";
 
 const panels = { library: false, inspector: true };
 const viewportTools = { transform: "orbit", shading: "rendered", grid: true };
@@ -37,54 +51,10 @@ function writePreference(key, value) {
 Object.assign(panels, readPreference("forge3d.panels", panels));
 Object.assign(viewportTools, readPreference("forge3d.viewport", viewportTools));
 
-const glyphs = {
-  add: '<path d="M12 5v14M5 12h14"/>',
-  archive: '<path d="M4 8h16v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"/><path d="M3 4h18v4H3zM10 12h4"/>',
-  attach: '<path d="m21.4 11.6-8.9 8.9a6 6 0 0 1-8.5-8.5l9.6-9.6a4 4 0 0 1 5.7 5.7L9.7 17.7a2 2 0 0 1-2.8-2.8l8.9-8.9"/>',
-  camera: '<path d="M14.5 4 16 7h4a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h4l1.5-3h5Z"/><circle cx="12" cy="13" r="3"/>',
-  check: '<path d="m5 13 4 4 10-11"/>',
-  checkCircle: '<circle cx="12" cy="12" r="9"/><path d="m8.2 12.2 2.6 2.6 5-6"/>',
-  chevronDown: '<path d="m6 9 6 6 6-6"/>',
-  chevronLeft: '<path d="m15 18-6-6 6-6"/>',
-  clipboard: '<path d="M9 4H7a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2"/><rect x="9" y="2.6" width="6" height="3.6" rx="1.2"/><path d="M9 11.5h6M9 15.5h4"/>',
-  close: '<path d="m6 6 12 12M18 6 6 18"/>',
-  copy: '<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/>',
-  cube: '<path d="m21 8-9-5-9 5 9 5 9-5Z"/><path d="m3 8 9 5 9-5M3 8v8l9 5 9-5V8M12 13v8"/>',
-  duplicate: '<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/>',
-  file: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6M12 18v-6M9 15h6"/>',
-  film: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 5v14M17 5v14M3 12h18"/>',
-  folder: '<path d="M3 6.5h6.2l2 2.2H21V19a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 19Z"/>',
-  frame: '<path d="M4 8V4h4M16 4h4v4M20 16v4h-4M8 20H4v-4"/><rect x="9" y="9" width="6" height="6"/>',
-  fullscreen: '<path d="M4 9V5a1 1 0 0 1 1-1h4M15 4h4a1 1 0 0 1 1 1v4M20 15v4a1 1 0 0 1-1 1h-4M9 20H5a1 1 0 0 1-1-1v-4"/>',
-  grid: '<rect x="4" y="4" width="16" height="16" rx="1"/><path d="M4 10h16M4 16h16M10 4v16M16 4v16"/>',
-  hand: '<path d="M9 11V5.6a1.6 1.6 0 0 1 3.2 0V11M12.2 11V4.4a1.6 1.6 0 0 1 3.2 0V11M15.4 11V6.6a1.6 1.6 0 0 1 3.2 0V15a6 6 0 0 1-6 6h-1.2a5 5 0 0 1-4.1-2.2l-3-4.3a1.7 1.7 0 0 1 2.5-2.2L9 14.6Z"/>',
-  image: '<rect x="3" y="4.5" width="18" height="15" rx="2"/><circle cx="8.6" cy="9.6" r="1.4"/><path d="m4 17.5 5-4.6 3.6 3.4 3-2.6L20 17"/>',
-  logs: '<rect x="3.5" y="4" width="17" height="16" rx="2"/><path d="m8 9.5 3 2.5-3 2.5M13 15h4"/>',
-  more: '<circle cx="5.2" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="18.8" cy="12" r="1.5"/>',
-  nodes: '<circle cx="5" cy="6" r="2"/><circle cx="19" cy="6" r="2"/><circle cx="12" cy="19" r="2"/><path d="M7 7.2 10.8 17M17 7.2 13.2 17M7 6h10"/>',
-  open: '<path d="M14 4h6v6M20 4 11 13"/><path d="M18 13.5V19a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 4 19V8a1.5 1.5 0 0 1 1.5-1.5H11"/>',
-  orbit: '<circle cx="12" cy="12" r="3"/><path d="M3.5 12c0-4.7 3.8-8.5 8.5-8.5 2.2 0 4.2.8 5.7 2.2M20.5 12c0 4.7-3.8 8.5-8.5 8.5-2.2 0-4.2-.8-5.7-2.2M17 2v4h4M7 22v-4H3"/>',
-  output: '<path d="M3.5 15v4a2 2 0 0 0 2 2h13a2 2 0 0 0 2-2v-4"/><path d="M12 16V3.5M8.4 7.1 12 3.5l3.6 3.6"/>',
-  play: '<path d="m8 5 11 7-11 7Z"/>',
-  resume: '<path d="M3.5 12a8.5 8.5 0 1 0 2.8-6.3M3.5 4v5h5"/>',
-  search: '<circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/>',
-  settings: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2h-4V21a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9A1.7 1.7 0 0 0 3 14H2.8v-4H3a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1A1.7 1.7 0 0 0 9 4.6 1.7 1.7 0 0 0 10 3V2.8h4V3a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.2v4H21a1.7 1.7 0 0 0-1.6 1Z"/>',
-  shield: '<path d="M12 3.2 20 6v5.9c0 4.5-3.3 8.4-8 9.1-4.7-.7-8-4.6-8-9.1V6Z"/><path d="m9 12 2.2 2.2L15.5 10"/>',
-  sparkle: '<path d="M12 3.2 13.9 8.6 19.3 10.5 13.9 12.4 12 17.8 10.1 12.4 4.7 10.5 10.1 8.6Z"/><path d="m18.2 15.2.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8Z"/>',
-  steer: '<path d="M21.5 2.5 10.8 13.2M21.5 2.5 14.9 21l-4.1-7.8L3 9.1Z"/>',
-  stop: '<rect x="6.5" y="6.5" width="11" height="11" rx="1.5"/>',
-  text: '<path d="M5 5.5h14M5 10.5h14M5 15.5h9"/>',
-  trash: '<path d="M4 7h16M9.5 7V4.5h5V7M6.5 7l.9 13h9.2l.9-13M10 11v6M14 11v6"/>',
-};
-
-function glyph(name, className = "") {
-  return `<svg class="ui-icon ${className}" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${glyphs[name] || ""}</svg>`;
-}
-
 const selectOptions = {
   workflow: [["auto", "Auto route"], ["authored-blender", "Authored Blender"], ["image-to-mesh", "Image to mesh"], ["gaussian-splat", "Gaussian splat"], ["process", "Process existing"], ["rig", "Rig"], ["animate", "Animate"], ["retarget", "Retarget"], ["validate", "Validate"]],
   quality: [["production", "Production"], ["balanced", "Balanced"], ["draft", "Draft"]],
-  target: [["splat", "SPLAT / PLY"], ["blend", "BLEND"], ["glb", "GLB"], ["gif", "GIF / sequence"]],
+  target: [["splat", "Splat / PLY"], ["blend", "Blend"], ["glb", "GLB"], ["gif", "GIF / sequence"]],
   tool: [["auto", "Auto"], ["blender", "Blender"], ["triposplat", "TripoSplat"], ["spar3d", "SPAR3D"]],
   effort: [["auto", "Model default"], ["low", "Low"], ["medium", "Medium"], ["high", "High"], ["xhigh", "Extra high"]],
 };
@@ -94,22 +64,24 @@ function optionMarkup(name) {
 
 app.innerHTML = `
   <header class="topbar">
-    <div class="brand" aria-label="Forge3D"><img src="${brandMark}" alt="" /><strong>Forge3D</strong></div>
+    <div class="brand ii-hover" id="brand" aria-label="Forge3D"><span class="brand-icon">${brandIcon(36)}</span><strong>Forge3D</strong></div>
 
     <div class="omnibox">
       <div class="omnibox-field">
         <textarea id="prompt" rows="1" aria-label="Forge3D prompt" placeholder="Describe the asset or change…"></textarea>
+        <button id="gate-chip" class="gate-chip hidden" type="button"></button>
         <kbd title="Ctrl + Enter runs the prompt">Ctrl ↵</kbd>
       </div>
       <div id="attachments" class="attachment-row"></div>
     </div>
 
     <div class="topbar-actions">
-      <button id="attach" class="ghost-action" title="Attach source files">${glyph("attach")}<span>Attach</span></button>
+      <button id="attach" class="ghost-action" title="Attach source files">${icon("attach", 24)}<span>Attach</span></button>
       <span class="v-sep"></span>
-      <button id="settings-toggle" class="icon-action" aria-expanded="false" title="Run settings" aria-label="Run settings">${glyph("settings")}</button>
-      <button id="cancel" class="icon-action danger hidden" title="Cancel the active run" aria-label="Cancel the active run">${glyph("stop")}</button>
-      <button id="send" class="run-button"></button>
+      <button id="theme-toggle" class="icon-action"></button>
+      <button id="settings-toggle" class="icon-action" aria-expanded="false" title="Run settings" aria-label="Run settings">${icon("gear", 24)}</button>
+      <button id="cancel" class="icon-action danger hidden" title="Cancel the active run" aria-label="Cancel the active run">${icon("stop", 24)}</button>
+      <button id="send" class="run-button" aria-disabled="false"></button>
     </div>
 
     <div id="topbar-progress" class="topbar-progress"></div>
@@ -119,18 +91,18 @@ app.innerHTML = `
     <div id="preview" class="viewport"></div>
 
     <nav class="toolrail" aria-label="Viewport tools">
-      <button class="rail-button" data-transform="orbit" title="Orbit" aria-label="Orbit">${glyph("orbit")}</button>
-      <button class="rail-button" data-transform="pan" title="Pan" aria-label="Pan">${glyph("hand")}</button>
-      <button class="rail-button" data-action="frame" title="Frame the asset" aria-label="Frame the asset">${glyph("frame")}</button>
+      <button class="rail-button" data-transform="orbit" data-icon="orbit" title="Orbit" aria-label="Orbit"></button>
+      <button class="rail-button" data-transform="pan" data-icon="pan" title="Pan" aria-label="Pan"></button>
+      <button class="rail-button" data-action="frame" data-icon="frame" title="Frame the asset" aria-label="Frame the asset"></button>
       <div class="rail-sep"></div>
-      <button class="rail-button" data-toggle="grid" title="Ground grid" aria-label="Ground grid">${glyph("grid")}</button>
+      <button class="rail-button" data-toggle="grid" data-icon="grid" title="Ground grid" aria-label="Ground grid"></button>
       <div class="rail-sep"></div>
-      <button class="rail-button" data-shading="matte" title="Clay shading" aria-label="Clay shading"><i class="shade-dot matte"></i></button>
-      <button class="rail-button" data-shading="rendered" title="Rendered shading" aria-label="Rendered shading"><i class="shade-dot rendered"></i></button>
-      <button class="rail-button" data-shading="wireframe" title="Wireframe" aria-label="Wireframe">${glyph("cube")}</button>
+      <button class="rail-button" data-shading="matte" data-icon="clay" title="Clay shading" aria-label="Clay shading"></button>
+      <button class="rail-button" data-shading="rendered" data-icon="rendered" title="Rendered shading" aria-label="Rendered shading"></button>
+      <button class="rail-button" data-shading="wireframe" data-icon="wire" title="Wireframe" aria-label="Wireframe"></button>
       <div class="rail-sep"></div>
-      <button class="rail-button" data-action="capture" title="Capture the viewport" aria-label="Capture the viewport">${glyph("camera")}</button>
-      <button class="rail-button" data-action="fullscreen" title="Fullscreen viewport" aria-label="Fullscreen viewport">${glyph("fullscreen")}</button>
+      <button class="rail-button" data-action="capture" data-icon="capture" title="Capture the viewport" aria-label="Capture the viewport"></button>
+      <button class="rail-button" data-action="fullscreen" data-icon="fullscreen" title="Fullscreen viewport" aria-label="Fullscreen viewport"></button>
     </nav>
 
     <div id="viewport-hud" class="viewport-hud"></div>
@@ -139,8 +111,8 @@ app.innerHTML = `
       <aside id="library" class="panel library" aria-label="Run library">
         <header class="panel-head"><h2>Runs</h2><span id="run-count" class="head-count"></span></header>
         <div class="panel-tools">
-          <button id="new-run" class="new-run">${glyph("add")}<span>New run</span></button>
-          <label class="search-wrap">${glyph("search")}<input id="run-search" class="search" type="search" placeholder="Search runs" /></label>
+          <button id="new-run" class="new-run">${icon("add", 16)}<span>New run</span></button>
+          <label class="search-wrap">${icon("search", 16)}<input id="run-search" class="search" type="search" placeholder="Search runs" /></label>
         </div>
         <div id="run-list" class="panel-body"></div>
       </aside>
@@ -148,7 +120,7 @@ app.innerHTML = `
       <aside id="inspector" class="panel inspector" aria-label="Run inspector">
         <header class="panel-head">
           <h2>Inspector</h2>
-          <button id="inspector-close" class="icon-action" title="Hide the inspector" aria-label="Hide the inspector">${glyph("close")}</button>
+          <button id="inspector-close" class="icon-action" title="Hide the inspector" aria-label="Hide the inspector">${icon("close", 16)}</button>
         </header>
         <div id="run-brief"></div>
         <div class="tabbar" role="tablist">
@@ -163,8 +135,8 @@ app.innerHTML = `
     </div>
 
     <div class="edge-rail">
-      <button id="library-toggle" class="edge-tab" aria-controls="library" aria-expanded="false" title="Run library (Ctrl+B)">Runs${glyph("chevronLeft")}</button>
-      <button id="inspector-toggle" class="edge-tab" aria-controls="inspector" aria-expanded="true" title="Inspector (Ctrl+I)">Inspect${glyph("chevronLeft")}</button>
+      <button id="library-toggle" class="edge-tab" aria-controls="library" aria-expanded="false" title="Run library (Ctrl+B)">Runs${icon("chevronLeft", 16)}</button>
+      <button id="inspector-toggle" class="edge-tab" aria-controls="inspector" aria-expanded="true" title="Inspector (Ctrl+I)">Inspect${icon("chevronLeft", 16)}</button>
     </div>
   </main>
 
@@ -174,7 +146,7 @@ app.innerHTML = `
   </section>
 
   <footer class="statusbar">
-    <div id="dependency-strip" class="dependency-strip"></div>
+    <button id="dependency-strip" class="dependency-strip" type="button" aria-controls="preview"></button>
     <div id="agent-state" class="agent-state"></div>
     <span class="spacer"></span>
     <time id="status-time"></time>
@@ -183,7 +155,7 @@ app.innerHTML = `
   <section id="settings-popover" class="popover hidden" aria-label="Run settings">
     <div class="popover-head">
       <h3>Run settings</h3>
-      <button id="settings-close" class="icon-action" title="Close" aria-label="Close run settings">${glyph("close")}</button>
+      <button id="settings-close" class="icon-action" title="Close" aria-label="Close run settings">${icon("close", 16)}</button>
     </div>
     <div class="popover-grid">
       <label class="field"><span>Workflow</span><select id="workflow">${optionMarkup("workflow")}</select></label>
@@ -202,7 +174,7 @@ app.innerHTML = `
 `;
 
 const elements = Object.fromEntries([
-  "prompt", "attachments", "attach", "send", "cancel", "settings-toggle", "settings-popover", "topbar-progress",
+  "prompt", "gate-chip", "attachments", "attach", "send", "cancel", "theme-toggle", "settings-toggle", "settings-popover", "topbar-progress",
   "preview", "viewport-hud", "library", "inspector", "run-list", "run-search", "run-count", "run-brief",
   "inspector-content", "inspector-actions", "library-toggle", "inspector-toggle",
   "pipeline", "filmstrip", "dependency-strip", "agent-state", "status-time",
@@ -210,6 +182,46 @@ const elements = Object.fromEntries([
   "approval-layer", "dialog-layer", "menu-layer", "toast-layer",
 ].map((id) => [id.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase()), document.querySelector(`#${id}`)]));
 
+
+/* ── theme ──────────────────────────────────────────────────── */
+
+// Follows the system until the person picks one; the choice persists. The sheet itself switches on
+// prefers-color-scheme (light-dark()), so "system" needs no script; data-theme pins light or dark.
+const THEME_ORDER = ["system", "light", "dark"];
+const THEME_NAMES = { system: "System", light: "Light", dark: "Dark" };
+const THEME_GLYPHS = { system: "monitor", light: "sun", dark: "moon" };
+let themeChoice = THEME_ORDER.includes(readPreference("forge3d.theme", "system")) ? readPreference("forge3d.theme", "system") : "system";
+let viewportRefresh = null;
+
+// Resolves a colour token (which may be a light-dark() pair) to the colour in use right now, for three.js.
+function tokenColor(name) {
+  const probe = document.createElement("span");
+  probe.style.cssText = `position:absolute;visibility:hidden;color:var(${name})`;
+  document.body.append(probe);
+  const value = getComputedStyle(probe).color;
+  probe.remove();
+  return value;
+}
+
+function applyTheme({ announce = true } = {}) {
+  const root = document.documentElement;
+  if (themeChoice === "system") delete root.dataset.theme; else root.dataset.theme = themeChoice;
+  const next = THEME_ORDER[(THEME_ORDER.indexOf(themeChoice) + 1) % THEME_ORDER.length];
+  const button = document.querySelector("#theme-toggle");
+  button.innerHTML = themeIcon(THEME_GLYPHS[themeChoice]);
+  button.title = `Theme: ${THEME_NAMES[themeChoice]}. Switch to ${THEME_NAMES[next].toLowerCase()}`;
+  button.setAttribute("aria-label", button.title);
+  if (announce) api.setTheme?.(themeChoice)?.catch?.(() => {});
+  viewportRefresh?.();
+}
+
+document.querySelector("#theme-toggle").addEventListener("click", () => {
+  themeChoice = THEME_ORDER[(THEME_ORDER.indexOf(themeChoice) + 1) % THEME_ORDER.length];
+  writePreference("forge3d.theme", themeChoice);
+  applyTheme();
+});
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => viewportRefresh?.());
+applyTheme();
 
 let runSettings = readRunSettings(localStorage);
 for (const key of ["workflow", "quality", "target", "tool", "effort"]) {
@@ -261,11 +273,7 @@ function basename(value) {
 }
 
 function statusLabel(status) {
-  return String(status || "unknown").replaceAll("_", " ");
-}
-
-function titleCase(value) {
-  return String(value || "").replaceAll("-", " ").replaceAll("_", " ").replace(/\b\w/g, (character) => character.toUpperCase());
+  return sentenceCase(status || "unknown");
 }
 
 function selectedRun() {
@@ -282,20 +290,48 @@ function isImageRole(role) {
 
 function artifactIcon(artifact) {
   const role = artifact?.preview_role;
-  if (role === "model") return "cube";
-  if (role === "gaussian-splat") return "sparkle";
+  if (role === "model") return "teapot";
+  if (role === "gaussian-splat") return "splat";
   if (role === "validation") return "shield";
   if (role === "animation" || role === "image-sequence") return "film";
-  if (isImageRole(role)) return "image";
-  return "text";
+  if (isImageRole(role)) return "render";
+  return "page";
 }
 
-function toast(message, kind = "info") {
+// Errors stay until dismissed (a repeat of the same message counts up instead of stacking); everything else
+// fades. kind: info, success (timed), warn (a mild nudge, timed), error (stays).
+function toast(message, kind = "info", { sticky = kind === "error", action = null } = {}) {
+  const key = `${kind}:${message}`;
+  const existing = sticky ? [...elements.toastLayer.children].find((node) => node.dataset.key === key) : null;
+  if (existing) {
+    const count = Number(existing.dataset.count || 1) + 1;
+    existing.dataset.count = String(count);
+    existing.querySelector(".toast-count").textContent = `×${count}`;
+    return;
+  }
   const item = document.createElement("div");
   item.className = `toast ${kind}`;
-  item.textContent = message;
+  item.dataset.key = key;
+  item.setAttribute("role", kind === "error" ? "alert" : "status");
+  item.innerHTML = `<span class="toast-text">${escapeHtml(message)}</span><span class="toast-count mono"></span>`;
+  if (action) {
+    const button = document.createElement("button");
+    button.className = "toast-action";
+    button.textContent = action.label;
+    button.addEventListener("click", () => { item.remove(); action.run(); });
+    item.append(button);
+  }
+  if (sticky) {
+    const dismiss = document.createElement("button");
+    dismiss.className = "toast-dismiss";
+    dismiss.title = "Dismiss";
+    dismiss.setAttribute("aria-label", "Dismiss this message");
+    dismiss.innerHTML = icon("close", 16);
+    dismiss.addEventListener("click", () => item.remove());
+    item.append(dismiss);
+  }
   elements.toastLayer.append(item);
-  setTimeout(() => item.remove(), 4800);
+  if (!sticky) setTimeout(() => item.remove(), 4800);
 }
 
 /* ── overlay primitives ─────────────────────────────────────── */
@@ -309,7 +345,7 @@ function openMenu(box, items) {
   const menu = document.createElement("div");
   menu.className = "menu";
   menu.innerHTML = items.map((item) => item === "-" ? "<hr />"
-    : `<button data-menu-action="${escapeHtml(item.id)}" class="${item.danger ? "danger" : ""}">${glyph(item.icon)}<span>${escapeHtml(item.label)}</span></button>`).join("");
+    : `<button data-menu-action="${escapeHtml(item.id)}" class="${item.danger ? "danger" : ""}">${icon(item.icon, 24, { hue: item.danger ? "rose" : undefined })}<span>${escapeHtml(item.label)}</span></button>`).join("");
   elements.menuLayer.append(menu);
   const size = menu.getBoundingClientRect();
   menu.style.top = `${Math.min(box.bottom + 6, innerHeight - size.height - 12)}px`;
@@ -362,32 +398,83 @@ function askDialog({ eyebrow = "Forge3D", title, body = "", detail = "", input =
   });
 }
 
-/* ── status bar ─────────────────────────────────────────────── */
+/* ── readiness and the status bar ──────────────────────────── */
+
+function currentSettings() {
+  return { workflow: elements.workflow.value, tool: elements.tool.value, target: elements.target.value };
+}
+
+function currentReadiness() {
+  return deriveReadiness({ capabilities, settings: currentSettings(), appServerError: state.appServerError || "" });
+}
+
+// Tool versions are shown only when the capability report carries a real one (state.toolVersions.blender = "5.0.1").
+// Until it does, the name stands alone; an older build printed made-up numbers.
+function toolVersion(name) {
+  const value = state.toolVersions?.[name.toLowerCase()];
+  return typeof value === "string" ? value.trim() : "";
+}
+
+const OVERALL_LABELS = { checking: "Checking setup", error: "Setup unchecked", blocked: "Setup needed", degraded: "Needs a look", ready: "Ready" };
+const OVERALL_DOTS = { checking: "checking", error: "attention", blocked: "offline", degraded: "attention", ready: "ready" };
 
 function renderDependencies() {
-  const tools = [
-    ["Codex", state.tools?.codex],
-    ["Blender", state.tools?.blender],
-    ["Godot", state.tools?.godot],
-    ["WSL", state.tools?.wsl],
-  ];
-  const known = tools.filter(([, value]) => value !== undefined);
-  const missing = known.filter(([, value]) => !value).map(([name]) => name);
-  const checking = known.length < tools.length;
-  const failed = Boolean(state.appServerError);
-  const overall = failed ? "offline" : missing.length ? "attention" : checking ? "checking" : "ready";
-  const overallLabel = failed ? "Toolchain offline" : missing.length ? "Toolchain attention" : checking ? "Checking toolchain" : "Local toolchain ready";
-  elements.dependencyStrip.innerHTML = `<span class="status-item ${overall}"><i></i>${overallLabel}</span><span class="status-divider"></span>${
-    tools.map(([name, value]) => `<span class="status-item ${value ? "ready" : value === undefined ? "checking" : "offline"}"><i></i>${name}${name === "Blender" && value ? " 4.5" : name === "Godot" && value ? " 4.4" : ""}</span>`).join("")}`;
+  const readiness = currentReadiness();
+  const overall = capsChecking && !capabilities ? "checking" : readiness.phase;
+  const tools = statusEntries(readiness, state.tools);
+  elements.dependencyStrip.title = "Show what Forge3D checked on this machine";
+  elements.dependencyStrip.setAttribute("aria-pressed", String(showSetup));
+  elements.dependencyStrip.innerHTML = `<span class="status-item ${OVERALL_DOTS[overall]}"><i></i>${OVERALL_LABELS[overall]}</span><span class="status-divider"></span>${
+    tools.map(({ name, state: toolState }) => {
+      const version = toolState === "checking" || toolState === "unset" ? "" : toolVersion(name);
+      return `<span class="status-item ${toolState}"><i></i>${name}${version ? ` <span class="mono">${escapeHtml(version)}</span>` : ""}</span>`;
+    }).join("")}`;
 
   const skill = state.skill;
   const needsRepair = skill && skill.state !== "ready";
+  const failed = Boolean(state.appServerError);
   const message = failed ? state.appServerError
-    : needsRepair ? (skill.state === "version-mismatch" ? `Plugin ${skill.installedVersion} → ${skill.bundledVersion}` : "Plugin repair available")
+    : needsRepair ? (skill.state === "version-mismatch" ? `Plugin <span class="mono">${escapeHtml(skill.installedVersion)}</span> → <span class="mono">${escapeHtml(skill.bundledVersion)}</span>` : "Plugin repair available")
     : "";
   elements.agentState.classList.toggle("hidden", !message);
-  elements.agentState.innerHTML = message ? `<span>${escapeHtml(message)}</span>${needsRepair ? '<button id="repair-skill" class="link-button">Repair</button>' : ""}` : "";
+  elements.agentState.innerHTML = message ? `<span>${needsRepair && !failed ? message : escapeHtml(message)}</span>${needsRepair ? '<button id="repair-skill" class="link-button">Repair</button>' : ""}` : "";
   document.querySelector("#repair-skill")?.addEventListener("click", repairPlugin);
+}
+
+// Asks the main process for the capability report. `force` is Check again; the first call is the startup check.
+// The main process never rejects, but a missing bridge or a thrown error is still reported, never read as ready.
+async function checkCapabilities(force = false) {
+  if (capsChecking) return;
+  const keepFocus = document.activeElement?.hasAttribute?.("data-recheck");
+  capsChecking = true;
+  refreshReadiness();
+  let result;
+  try {
+    if (typeof api.capabilities !== "function") throw new Error("This build of Forge3D has no capability check.");
+    result = await api.capabilities({ force });
+  } catch (error) {
+    result = { ok: false, error: error.message, fix: "Update or reinstall Forge3D." };
+  }
+  capabilities = result && typeof result === "object" ? result : { ok: false, error: "The capability check returned nothing.", fix: "" };
+  state.toolVersions = capabilities.ok ? toolVersionsFromReport(capabilities) : {};
+  capsChecking = false;
+  refreshReadiness();
+  if (keepFocus) elements.preview.querySelector("[data-recheck]")?.focus();
+}
+
+// Everything that depends on the report or on the settings that choose the route.
+function refreshReadiness() {
+  renderDependencies();
+  renderComposer();
+  renderInspectorActions();
+  if (previewKind !== "artifact") renderPreview();
+}
+
+function openSetup(open = true) {
+  showSetup = open;
+  renderDependencies();
+  renderPreview();
+  if (open) elements.preview.querySelector("[data-recheck]")?.focus();
 }
 
 function renderModelOptions() {
@@ -420,7 +507,7 @@ function runThumb(run) {
   const artifact = run.artifacts?.find((item) => item.preview_role === "primary-image")
     || run.artifacts?.find((item) => isImageRole(item.preview_role));
   if (artifact) return `<img src="${artifactUrl(run.run_id, artifact.path)}" alt="" loading="lazy" />`;
-  return glyph(run.artifacts?.length ? artifactIcon(run.artifacts[0]) : "cube");
+  return icon(run.artifacts?.length ? artifactIcon(run.artifacts[0]) : "teapot", 24);
 }
 
 function renderRuns() {
@@ -437,12 +524,12 @@ function renderRuns() {
           <span class="run-tile">${runThumb(run)}</span>
           <span class="run-lines">
             <strong>${escapeHtml(run.prompt || run.name || "Untitled run")}</strong>
-            <small><i class="run-state ${escapeHtml(run.status || "")}"></i><em>${escapeHtml(titleCase(run.workflow_route || run.status || "run"))}</em> · ${escapeHtml(formatClock(date))}</small>
+            <small><i class="run-state ${escapeHtml(run.status || "")}"></i><em>${escapeHtml(sentenceCase(run.workflow_route || run.status || "run"))}</em> · ${escapeHtml(formatClock(date))}</small>
           </span>
-          <button class="run-more" data-run-menu="${escapeHtml(run.run_id)}" title="Run actions" aria-label="Run actions">${glyph("more")}</button>
+          <button class="run-more" data-run-menu="${escapeHtml(run.run_id)}" title="Run actions" aria-label="Run actions">${icon("more", 16)}</button>
         </div>`).join("")}
     </section>`).join("")
-    : `<div class="empty-list">${glyph("search")}<span>${query ? "No runs match that search." : "No runs yet. Describe an asset to forge the first one."}</span></div>`;
+    : `<div class="empty-list">${icon("search", 48)}<span>${query ? "No runs match that search." : "No runs yet. Describe an asset to forge the first one."}</span></div>`;
 
   elements.runList.querySelectorAll("[data-run-id]").forEach((card) => {
     card.addEventListener("click", (event) => { if (!event.target.closest("[data-run-menu]")) selectRun(card.dataset.runId); });
@@ -456,7 +543,7 @@ function renderRuns() {
     selectRun(run.run_id);
     openMenu(box, [
       { id: "continue", icon: "resume", label: "Resume this run", run: () => runAction("continue") },
-      { id: "duplicate", icon: "duplicate", label: "Duplicate", run: () => runAction("duplicate") },
+      { id: "duplicate", icon: "copy", label: "Duplicate", run: () => runAction("duplicate") },
       "-",
       { id: "archive", icon: "archive", label: "Archive", run: () => runAction("archive") },
       { id: "trash", icon: "trash", label: "Move to trash", danger: true, run: () => runAction("trash") },
@@ -470,8 +557,18 @@ function summarizeValidation(validation) {
   const entries = Object.entries(validation || {});
   const flags = entries.filter(([, value]) => typeof value === "boolean");
   if (flags.length) return `${flags.filter(([, value]) => value).length}/${flags.length} checks passed`;
-  if (typeof validation?.status === "string") return titleCase(validation.status);
+  if (typeof validation?.status === "string") return sentenceCase(validation.status);
   return `${entries.length} result${entries.length === 1 ? "" : "s"}`;
+}
+
+// Progress is shown only where it is real. A rail is "full" for a stage that finished, "unknown" (a dotted track) for
+// work in flight whose length nobody knows, "ratio" where a true fraction exists (passed checks), and empty otherwise.
+// Time is the run's own clock: `since` is a start time in ms, and the ticker renders the elapsed time from it.
+function earliestStart(run) {
+  const starts = (run?.steps || []).map((step) => Date.parse(step.started_at)).filter((value) => !Number.isNaN(value));
+  if (starts.length) return Math.min(...starts);
+  const created = Date.parse(run?.created_at);
+  return Number.isNaN(created) ? null : created;
 }
 
 function pipelineStages(run) {
@@ -480,7 +577,6 @@ function pipelineStages(run) {
   const completed = steps.filter((step) => step.status === "completed").length;
   const running = steps.find((step) => step.status === "running" || step.status === "inProgress");
   const status = run?.status || null;
-  const live = Boolean(state.activeJob && run && state.activeJob.runId === run.run_id);
   const finished = status === "completed";
   const failed = status === "failed";
   const stopped = status === "interrupted" || status === "cancelled";
@@ -488,52 +584,103 @@ function pipelineStages(run) {
   const validation = run?.validation && Object.keys(run.validation).length ? run.validation : null;
   const reports = artifacts.filter((artifact) => artifact.preview_role === "validation");
   const checked = Boolean(validation) || reports.length > 0;
+  const none = { kind: "empty" };
+  const full = { kind: "full" };
+  const unknown = { kind: "unknown" };
 
-  const plan = !run ? { state: "idle", fill: 0, detail: "Waiting for a prompt" }
-    : starting ? { state: "active", fill: 0.55, detail: "Routing the request" }
-    : { state: "done", fill: 1, detail: run.workflow_route ? titleCase(run.workflow_route) : "Request routed" };
+  const plan = !run ? { state: "idle", rail: none, detail: "Waiting for a prompt" }
+    : starting ? { state: "active", rail: unknown, detail: "Routing the request" }
+    : { state: "done", rail: full, detail: run.workflow_route ? sentenceCase(run.workflow_route) : "Request routed" };
 
-  const buildFill = finished ? 1 : live ? 0.62 : completed ? 0.45 : 0;
   const currentActivity = running?.detail || running?.name;
-  const build = !run || starting ? { state: "idle", fill: 0, detail: "Not started" }
-    : failed ? { state: "failed", fill: buildFill, detail: run.failure || "The run failed" }
-    : stopped ? { state: "failed", fill: buildFill, detail: titleCase(status) }
-    : finished ? { state: "done", fill: 1, detail: `${completed} tool action${completed === 1 ? "" : "s"} complete` }
-    : { state: "active", fill: buildFill, detail: currentActivity ? titleCase(currentActivity) : completed ? `${completed} tool action${completed === 1 ? "" : "s"} complete · working` : "Starting local tools" };
+  const working = !finished && !failed && !stopped;
+  const build = !run || starting ? { state: "idle", rail: none, detail: "Not started" }
+    : failed ? { state: "failed", rail: full, detail: run.failure || "The run failed" }
+    : stopped ? { state: "failed", rail: full, detail: sentenceCase(status) }
+    : finished ? { state: "done", rail: full, detail: `${completed} tool action${completed === 1 ? "" : "s"} complete` }
+    : { state: "active", rail: unknown, since: working ? earliestStart(run) : null, detail: currentActivity ? sentenceCase(currentActivity) : completed ? `${completed} tool action${completed === 1 ? "" : "s"} complete · working` : "Starting local tools" };
 
-  const failedChecks = Object.values(validation || {}).some((value) => value === false);
-  const check = !run ? { state: "idle", fill: 0, detail: "Not started" }
-    : checked ? { state: failed ? "failed" : failedChecks ? "warn" : "done", fill: 1, detail: validation ? summarizeValidation(validation) : `${reports.length} report${reports.length === 1 ? "" : "s"}` }
-    : finished ? { state: "idle", fill: 0, detail: "No validation recorded" }
-    : build.state === "active" ? { state: "idle", fill: 0, detail: "Waiting for the build" }
-    : { state: "idle", fill: 0, detail: "Not started" };
+  const flags = Object.values(validation || {}).filter((value) => typeof value === "boolean");
+  const failedChecks = flags.some((value) => value === false);
+  const ratio = flags.length ? { kind: failedChecks ? "ratio" : "full", value: flags.filter(Boolean).length / flags.length } : full;
+  const check = !run ? { state: "idle", rail: none, detail: "Not started" }
+    : checked ? { state: failed ? "failed" : failedChecks ? "warn" : "done", rail: ratio, detail: validation ? summarizeValidation(validation) : `${reports.length} report${reports.length === 1 ? "" : "s"}` }
+    : finished ? { state: "idle", rail: none, detail: "No validation recorded" }
+    : build.state === "active" ? { state: "idle", rail: none, detail: "Waiting for the build" }
+    : { state: "idle", rail: none, detail: "Not started" };
 
-  const output = !run ? { state: "idle", fill: 0, detail: "No outputs yet" }
-    : artifacts.length ? { state: finished ? "done" : "active", fill: finished ? 1 : 0.6, detail: `${artifacts.length} artifact${artifacts.length === 1 ? "" : "s"}` }
-    : failed ? { state: "failed", fill: 0, detail: "Nothing produced" }
-    : { state: "idle", fill: 0, detail: "Preparing deliverables" };
+  const output = !run ? { state: "idle", rail: none, detail: "No outputs yet" }
+    : artifacts.length ? { state: finished ? "done" : "active", rail: finished ? full : unknown, detail: `${artifacts.length} artifact${artifacts.length === 1 ? "" : "s"}` }
+    : failed ? { state: "failed", rail: none, detail: "Nothing produced" }
+    : { state: "idle", rail: none, detail: "Preparing deliverables" };
 
   return [
-    { key: "plan", label: "Plan", icon: "clipboard", ...plan },
-    { key: "build", label: "Build", icon: "cube", ...build },
+    { key: "plan", label: "Plan", icon: "plan", ...plan },
+    { key: "build", label: "Build", icon: "anvil", ...build },
     { key: "check", label: "Check", icon: "shield", ...check },
-    { key: "output", label: "Output", icon: "output", ...output },
+    { key: "output", label: "Output", icon: "crate", ...output },
   ];
+}
+
+function elapsedMarkup(since) {
+  return `<span class="mono" data-elapsed-since="${since}">${escapeHtml(formatElapsed(Date.now() - since))}</span>`;
+}
+
+function railMarkup(rail) {
+  if (rail.kind === "full") return '<i class="stage-fill"></i>';
+  if (rail.kind === "ratio") return `<i class="stage-fill" style="width:${Math.round(rail.value * 100)}%"></i>`;
+  return "";
+}
+
+// Which icon a stage shows for its state: the stage's own tool while it is waiting or running, then the state's mark.
+const STAGE_MARKS = { done: "done", warn: "alert", failed: "failed" };
+let pipelineRunId = null;
+let pipelineStates = new Map();
+let pipelineMarkup = "";
+const stagePlaying = new Set(); // stages that just finished or failed: the tick pops, the mark shakes, once
+
+function stageIcon(stage) {
+  const mark = STAGE_MARKS[stage.state];
+  const playing = stagePlaying.has(stage.key);
+  if (mark) return icon(mark, 32, { playing });
+  return icon(stage.icon, 32, { hue: stage.state === "idle" ? "stone" : undefined, working: stage.state === "active" && stage.key === "build" });
 }
 
 function renderPipeline() {
   const run = selectedRun();
-  elements.pipeline.innerHTML = pipelineStages(run).map((stage) => `
+  const stages = pipelineStages(run);
+  const runId = run?.run_id || null;
+  if (runId !== pipelineRunId) {
+    pipelineRunId = runId;
+    pipelineStates = new Map();
+    stagePlaying.clear();
+  }
+  for (const stage of stages) {
+    const before = pipelineStates.get(stage.key);
+    if (before && before !== stage.state && (stage.state === "done" || stage.state === "failed")) {
+      stagePlaying.add(stage.key);
+      setTimeout(() => stagePlaying.delete(stage.key), 900);
+    }
+    pipelineStates.set(stage.key, stage.state);
+  }
+  const markup = stages.map((stage) => `
     <div class="stage-node ${stage.state}">
-      <span class="stage-icon">${glyph(stage.state === "done" ? "check" : stage.icon)}</span>
+      <span class="stage-icon">${stageIcon(stage)}</span>
       <div class="stage-body">
         <div class="stage-top">
-          <span class="stage-label">${stage.label.toUpperCase()}</span>
-          <span class="stage-rail"><i class="stage-fill" style="width:${Math.round(Math.min(1, stage.fill) * 100)}%"></i></span>
+          <span class="stage-label">${stage.label}</span>
+          <span class="stage-rail ${stage.rail.kind === "unknown" ? "unknown" : ""}" ${stage.rail.kind === "unknown" ? 'title="Length not known"' : ""}>${railMarkup(stage.rail)}</span>
         </div>
-        <div class="stage-detail">${escapeHtml(stage.detail)}</div>
+        <div class="stage-detail">${escapeHtml(stage.detail)}${stage.since ? ` · ${elapsedMarkup(stage.since)}` : ""}</div>
       </div>
     </div>`).join("");
+  // Redrawing identical markup would restart the anvil's loop and any pop in flight.
+  // The elapsed clocks tick on their own timer, so their text is left out of the comparison.
+  const same = markup.replace(/(data-elapsed-since="\d+">)[^<]*/g, "$1");
+  if (same !== pipelineMarkup) {
+    pipelineMarkup = same;
+    elements.pipeline.innerHTML = markup;
+  }
 }
 
 function renderFilmstrip() {
@@ -548,7 +695,7 @@ function renderFilmstrip() {
     <button class="film-tile ${artifact.path === active?.path ? "selected" : ""}" data-film-path="${escapeHtml(artifact.path)}" title="${escapeHtml(artifact.name)}">
       ${isImageRole(artifact.preview_role)
         ? `<img src="${artifactUrl(run.run_id, (artifact.frames && artifact.frames[0]) || artifact.path)}" alt="${escapeHtml(artifact.name)}" loading="lazy" />`
-        : `<span class="film-glyph">${glyph(artifactIcon(artifact))}<span>${escapeHtml(String(artifact.preview_role || "file").split("-")[0])}</span></span>`}
+        : `<span class="film-glyph">${icon(artifactIcon(artifact), 24)}<span>${escapeHtml(sentenceCase(String(artifact.preview_role || "file").split("-")[0]))}</span></span>`}
     </button>`).join("");
   elements.filmstrip.querySelectorAll("[data-film-path]").forEach((tile) => tile.addEventListener("click", () => selectArtifact(tile.dataset.filmPath)));
 }
@@ -578,7 +725,7 @@ function renderRunBrief() {
       <p>${escapeHtml(run.prompt || run.name || "Untitled run")}</p>
       <div class="run-brief-meta">
         <span class="pill ${escapeHtml(String(run.status || ""))}">${escapeHtml(statusLabel(run.status))}</span>
-        ${run.workflow_route ? `<span>${escapeHtml(titleCase(run.workflow_route))}</span>` : ""}
+        ${run.workflow_route ? `<span>${escapeHtml(sentenceCase(run.workflow_route))}</span>` : ""}
         <span>${escapeHtml(formatDate(run.updated_at || run.created_at))}</span>
       </div>
     </div>`;
@@ -588,37 +735,38 @@ function renderInspector() {
   const run = selectedRun();
   const tab = activeTab();
   if (!run) {
-    elements.inspectorContent.innerHTML = `<div class="empty-list">${glyph("cube")}<span>Select a run to inspect its steps, files, and logs.</span></div>`;
+    elements.inspectorContent.innerHTML = `<div class="empty-list">${icon("teapot", 48)}<span>Select a run to inspect its steps, files, and logs.</span></div>`;
     renderInspectorActions();
     return;
   }
   if (tab === "steps") {
     const phases = summarizeRunSteps(run);
+    const timing = (phase) => phase.live ? ` · ${elapsedMarkup(phase.startedAt)}` : phase.elapsedMs !== null ? ` · <span class="mono">${escapeHtml(formatElapsed(phase.elapsedMs))}</span>` : "";
     elements.inspectorContent.innerHTML = phases.length
       ? `<ol class="step-list">${phases.map((phase) => `
           <li>
             <i class="step-dot ${escapeHtml(phase.status)}"></i>
-            <div class="step-text"><strong>${escapeHtml(phase.label)}</strong><small>${escapeHtml(statusLabel(phase.status))} · ${escapeHtml(phase.detail)}</small></div>
+            <div class="step-text"><strong>${escapeHtml(phase.label)}</strong><small>${escapeHtml(statusLabel(phase.status))} · ${escapeHtml(phase.detail)}${timing(phase)}</small></div>
           </li>`).join("")}</ol>`
-      : `<div class="empty-list">${glyph("nodes")}<span>Progress appears as soon as local production starts.</span></div>`;
+      : `<div class="empty-list">${icon("plan", 48)}<span>Progress appears as soon as local production starts.</span></div>`;
   } else if (tab === "artifacts") {
     elements.inspectorContent.innerHTML = run.artifacts?.length
       ? `<div class="artifact-list">${run.artifacts.map((artifact) => `
           <button class="artifact-card ${artifact.path === selectedArtifact(run)?.path ? "selected" : ""}" data-artifact-path="${escapeHtml(artifact.path)}">
             <span class="artifact-thumb">${isImageRole(artifact.preview_role)
               ? `<img src="${artifactUrl(run.run_id, (artifact.frames && artifact.frames[0]) || artifact.path)}" alt="" loading="lazy" />`
-              : glyph(artifactIcon(artifact))}</span>
-            <span class="artifact-lines"><strong>${escapeHtml(artifact.name)}</strong><small>${escapeHtml(titleCase(artifact.preview_role))} · ${escapeHtml(formatBytes(artifact.size_bytes))}</small></span>
+              : icon(artifactIcon(artifact), 24)}</span>
+            <span class="artifact-lines"><strong>${escapeHtml(artifact.name)}</strong><small>${escapeHtml(sentenceCase(artifact.preview_role))} · <span class="mono">${escapeHtml(formatBytes(artifact.size_bytes))}</span></small></span>
           </button>`).join("")}</div>`
-      : `<div class="empty-list">${glyph("folder")}<span>Files are discovered inside this run directory only.</span></div>`;
+      : `<div class="empty-list">${icon("folder", 48)}<span>Files are discovered inside this run directory only.</span></div>`;
     elements.inspectorContent.querySelectorAll("[data-artifact-path]").forEach((button) => button.addEventListener("click", () => selectArtifact(button.dataset.artifactPath)));
   } else if (tab === "validation") {
     const validation = run.validation && Object.keys(run.validation).length ? run.validation : null;
     const reports = (run.artifacts || []).filter((artifact) => artifact.preview_role === "validation");
     const rows = validation ? Object.entries(validation).map(([key, value]) => `
-      <div><span>${escapeHtml(titleCase(key))}</span><strong class="${value === true ? "ok" : value === false ? "bad" : ""}">${escapeHtml(typeof value === "object" ? JSON.stringify(value) : String(value))}</strong></div>`).join("") : "";
-    elements.inspectorContent.innerHTML = `${validation ? `<div class="kv">${rows}</div>` : `<div class="empty-list">${glyph("shield")}<span>No inline validation result yet.</span></div>`}
-      ${reports.length ? `<div class="section-label">Reports</div>${reports.map((report) => `<button class="report-link" data-artifact-path="${escapeHtml(report.path)}">${glyph("file")}<span>${escapeHtml(report.name)}</span></button>`).join("")}` : ""}`;
+      <div><span>${escapeHtml(sentenceCase(key))}</span><strong class="${value === true ? "ok" : value === false ? "bad" : ""}">${escapeHtml(typeof value === "object" ? JSON.stringify(value) : String(value))}</strong></div>`).join("") : "";
+    elements.inspectorContent.innerHTML = `${validation ? `<div class="kv">${rows}</div>` : `<div class="empty-list">${icon("shield", 48)}<span>No inline validation result yet.</span></div>`}
+      ${reports.length ? `<div class="section-label">Reports</div>${reports.map((report) => `<button class="report-link" data-artifact-path="${escapeHtml(report.path)}">${icon("page", 24)}<span>${escapeHtml(report.name)}</span></button>`).join("")}` : ""}`;
     elements.inspectorContent.querySelectorAll("[data-artifact-path]").forEach((button) => button.addEventListener("click", () => selectArtifact(button.dataset.artifactPath)));
   } else {
     const entries = run.transcript || [];
@@ -637,10 +785,10 @@ function renderInspector() {
     elements.inspectorContent.innerHTML = entries.length
       ? `<div class="log-list">${entries.slice(-200).map((entry) => `
           <article class="log-entry ${escapeHtml(entry.kind)}">
-            <small>${escapeHtml(labels[entry.kind] || titleCase(entry.kind))} · ${escapeHtml(formatDate(entry.at))}</small>
+            <small>${escapeHtml(labels[entry.kind] || sentenceCase(entry.kind))} · ${escapeHtml(formatDate(entry.at))}</small>
             <pre>${escapeHtml(entry.text || entry.method || JSON.stringify(entry.params || {}))}</pre>
           </article>`).join("")}</div>`
-      : `<div class="empty-list">${glyph("logs")}<span>Assistant messages and useful tool output appear here.</span></div>`;
+      : `<div class="empty-list">${icon("page", 48)}<span>Assistant messages and useful tool output appear here.</span></div>`;
     elements.inspectorContent.scrollTop = elements.inspectorContent.scrollHeight;
   }
   renderInspectorActions();
@@ -650,23 +798,27 @@ function renderInspectorActions() {
   const run = selectedRun();
   const artifact = selectedArtifact(run);
   const lower = String(artifact?.path || "").toLowerCase();
+  const rows = (({ required, optional }) => [...required, ...optional])(currentReadiness());
+  const item = (id) => rows.find((row) => row.id === id);
+  const missing = (id, name) => capabilities?.ok && item(id) && !["ready", "degraded"].includes(item(id).state) ? `${name} is not set up on this machine` : "";
   const actions = [
-    { id: "reveal", icon: "folder", label: "Reveal in Explorer" },
-    { id: "copy", icon: "copy", label: "Copy path" },
-    { id: "open", icon: "open", label: "Open" },
+    { id: "reveal", icon: "folder", label: "Reveal", title: "Reveal this file in Explorer" },
+    { id: "copy", icon: "copy", label: "Copy path", title: "Copy this file's path" },
+    { id: "open", icon: "open", label: "Open", title: "Open this file with its default app" },
   ];
-  if ([".blend", ".glb", ".gltf", ".fbx", ".obj"].some((extension) => lower.endsWith(extension))) actions.push({ id: "blender", icon: "cube", label: "Open in Blender" });
-  if ([".blend", ".glb", ".gltf", ".fbx", ".obj", ".ply", ".splat", ".stl", ".usd", ".usda", ".usdc"].some((extension) => lower.endsWith(extension))) actions.push({ id: "export", icon: "output", label: "Export to another format" });
-  if ([".glb", ".gltf", ".splat", ".ply", ".sog"].some((extension) => lower.endsWith(extension))) actions.push({ id: "godot", icon: "play", label: "Review in Godot" });
-  elements.inspectorActions.innerHTML = actions.map((action) => `
-    <button data-artifact-action="${action.id}" title="${escapeHtml(action.label)}" aria-label="${escapeHtml(action.label)}" ${artifact ? "" : "disabled"}>${glyph(action.icon)}</button>`).join("");
+  if ([".blend", ".glb", ".gltf", ".fbx", ".obj"].some((extension) => lower.endsWith(extension))) actions.push({ id: "blender", icon: "blender", label: "Open in Blender", title: "Open this file in Blender", unavailable: missing("blender", "Blender") });
+  if ([".blend", ".glb", ".gltf", ".fbx", ".obj", ".ply", ".splat", ".stl", ".usd", ".usda", ".usdc"].some((extension) => lower.endsWith(extension))) actions.push({ id: "export", icon: "export", label: "Export…", title: "Export to another format" });
+  if ([".glb", ".gltf", ".splat", ".ply", ".sog"].some((extension) => lower.endsWith(extension))) actions.push({ id: "godot", icon: "gamepad", label: "Review in Godot", title: "Review this file in a Godot scene", unavailable: missing("godot", "Godot") });
+  elements.inspectorActions.innerHTML = artifact ? actions.map((action) => `
+    <button data-artifact-action="${action.id}" title="${escapeHtml(action.unavailable || action.title)}" ${action.unavailable ? "disabled" : ""}>${icon(action.icon, 24)}<span>${escapeHtml(action.label)}</span></button>`).join("")
+    : '<p class="foot-hint">Select a file to open, reveal or export it.</p>';
   elements.inspectorActions.querySelectorAll("[data-artifact-action]").forEach((button) => button.addEventListener("click", () => artifactAction(button.dataset.artifactAction)));
 }
 
 /* ── viewport ───────────────────────────────────────────────── */
 
 const clayMaterial = new THREE.MeshStandardMaterial({ color: 0x9ba1a8, roughness: 0.74, metalness: 0.02 });
-const wireMaterial = new THREE.MeshBasicMaterial({ color: 0xe2571c, wireframe: true });
+const wireMaterial = new THREE.MeshBasicMaterial({ color: 0xee7752, wireframe: true });
 
 function disposeThree(scene, renderer, animationId, observer) {
   cancelAnimationFrame(animationId.value);
@@ -709,23 +861,41 @@ function threeBase(container, withSpark = false) {
   renderer.setClearColor(0x000000, 0);
   renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.05;
+  // The Khronos PBR Neutral operator keeps base colours as authored; ACES would shift hue and saturation.
+  renderer.toneMapping = THREE.NeutralToneMapping;
+  renderer.toneMappingExposure = 1;
   container.append(renderer.domElement);
 
   let grid = null;
+  let base = null;
   if (withSpark) scene.add(new SparkRenderer({ renderer }));
   else {
-    scene.add(new THREE.HemisphereLight(0xd7e1ea, 0x0a0d12, 2.1));
-    const key = new THREE.DirectionalLight(0xffb27a, 3.2);
+    // Neutral studio lighting: white key, white fill, neutral sky and ground, so a material reads as authored.
+    scene.add(new THREE.HemisphereLight(0xffffff, 0x8a8a8a, 1.5));
+    const key = new THREE.DirectionalLight(0xffffff, 2.4);
     key.position.set(3, 6, 4);
-    const rim = new THREE.DirectionalLight(0x89b4e8, 1.1);
-    rim.position.set(-4, 2.5, -3.5);
-    grid = new THREE.GridHelper(14, 28, 0x46586a, 0x22303c);
-    grid.material.transparent = true;
-    grid.material.opacity = 0.5;
-    grid.visible = viewportTools.grid;
-    scene.add(key, rim, grid);
+    const fill = new THREE.DirectionalLight(0xffffff, 0.9);
+    fill.position.set(-4, 2.5, -3.5);
+    scene.add(key, fill);
+    const buildGrid = () => {
+      const made = new THREE.GridHelper(14, 28, tokenColor("--grid-major"), tokenColor("--grid-minor"));
+      made.material.transparent = true;
+      made.material.opacity = 0.6;
+      made.visible = viewportTools.grid;
+      return made;
+    };
+    grid = buildGrid();
+    scene.add(grid);
+    viewportRefresh = () => {
+      const visible = grid.visible;
+      scene.remove(grid);
+      grid.geometry.dispose();
+      grid.material.dispose();
+      grid = buildGrid();
+      grid.visible = visible;
+      scene.add(grid);
+      base.grid = grid;
+    };
   }
 
   const controls = new OrbitControls(camera, renderer.domElement);
@@ -742,7 +912,8 @@ function threeBase(container, withSpark = false) {
   const observer = new ResizeObserver(resize);
   observer.observe(container);
   resize();
-  return { scene, camera, renderer, controls, observer, grid };
+  base = { scene, camera, renderer, controls, observer, grid };
+  return base;
 }
 
 // A SplatMesh carries no mesh geometry, so Box3.setFromObject cannot see its extents.
@@ -851,25 +1022,180 @@ async function renderSplat(container, run, artifact) {
 
 function emptyViewport() {
   return `<div class="viewport-empty" aria-label="Empty viewport">
-    <span class="empty-glow"></span>
     <div class="empty-body">
-      <img src="${brandMark}" alt="" />
-      <h2>Nothing forged yet</h2>
+      <span class="empty-icon">${brandIcon(108)}</span>
+      <h2>What shall we forge?</h2>
       <p>Describe an asset in the prompt bar. Forge3D routes it, builds it locally, and shows the result here.</p>
     </div>
   </div>`;
+}
+
+/* ── state cards: what the viewport says when there is no file to show ── */
+
+function commandMarkup(code) {
+  return `<span class="cmd"><code>${escapeHtml(code)}</code><button class="cmd-copy" data-copy="${escapeHtml(code)}" title="Copy this command" aria-label="Copy the command ${escapeHtml(code)}">${icon("copy", 16)}<span>Copy</span></button></span>`;
+}
+
+function fixMarkup(fix) {
+  return splitFix(fix).map((part) => part.code !== undefined ? commandMarkup(part.code) : escapeHtml(part.text)).join("");
+}
+
+function setupRow(row) {
+  const problem = row.state !== "ready";
+  return `<li class="setup-row ${escapeHtml(row.state)}">
+    <i class="setup-dot" aria-hidden="true"></i>
+    <div class="setup-text">
+      <div class="setup-line"><strong>${escapeHtml(row.label)}</strong>${row.version ? `<span class="mono">${escapeHtml(row.version)}</span>` : ""}<span class="setup-state">${escapeHtml(row.stateWord)}</span>${row.blocksRoute ? '<span class="setup-tag">Blocks this run</span>' : ""}</div>
+      ${problem && row.reason ? `<p class="setup-reason">${escapeHtml(row.reason)}</p>` : ""}
+      ${problem && row.fix ? `<p class="setup-fix">${fixMarkup(row.fix)}</p>` : ""}
+    </div>
+  </li>`;
+}
+
+function setupGroup(title, rows) {
+  if (!rows.length) return "";
+  const ready = rows.filter((row) => row.state === "ready");
+  const problems = rows.filter((row) => row.state !== "ready");
+  // Problems get the full row (reason, fix, copyable command); what works is one compact line, so the fixes stay in view.
+  return `<section class="setup-group"><h3>${title}<span class="mono">${ready.length} of ${rows.length} ready</span></h3>
+    ${problems.length ? `<ul class="setup-rows">${problems.map(setupRow).join("")}</ul>` : ""}
+    ${ready.length ? `<ul class="setup-ready">${ready.map((row) => `<li><i class="setup-dot" aria-hidden="true"></i>${escapeHtml(row.label)}${row.version ? ` <span class="mono">${escapeHtml(row.version)}</span>` : ""}<span class="sr-only"> ready</span></li>`).join("")}</ul>` : ""}
+  </section>`;
+}
+
+function setupCard(forced) {
+  const readiness = currentReadiness();
+  const firstRun = !state.runs.length;
+  const head = setupHeadline(readiness, { firstRun });
+  const tone = readiness.phase === "blocked" ? "blocked" : readiness.phase === "ready" ? "ready" : readiness.phase === "checking" ? "checking" : "warn";
+  const checking = capsChecking;
+  const reportError = readiness.phase === "error";
+  return `<div class="viewport-empty state-wrap"><section class="state-card setup-card ${tone}" aria-label="Setup" aria-busy="${checking}">
+    <header class="state-head">
+      ${tone === "ready" || tone === "checking" ? `<span class="empty-icon small">${brandIcon(64)}</span>` : ""}
+      <h2>${escapeHtml(head.title)}</h2>
+      <p>${escapeHtml(head.lead)}</p>
+    </header>
+    ${reportError ? `<pre class="state-error">${escapeHtml(readiness.error)}</pre>` : ""}
+    ${reportError && readiness.fix ? `<p class="setup-fix lead-fix">${fixMarkup(readiness.fix)}</p>` : ""}
+    ${readiness.unavailableRoutes.length && readiness.phase === "ready" ? `<p class="state-note">Not available on this machine: ${escapeHtml(readiness.unavailableRoutes.join(", "))}. Auto routes around it.</p>` : ""}
+    <div class="state-actions">
+      <button class="btn ${tone === "blocked" || reportError ? "primary" : ""}" data-recheck ${checking ? "disabled" : ""}>${checking ? "Checking…" : "Check again"}</button>
+      ${forced || state.runs.length ? '<button class="btn ghost" data-close-setup>Close</button>' : ""}
+    </div>
+    ${readiness.checked ? `<div class="setup-groups">${setupGroup("Required", readiness.required)}${setupGroup("Optional", readiness.optional)}</div>` : ""}
+  </section></div>`;
+}
+
+function failedCard(stateInfo, run) {
+  return `<div class="viewport-empty state-wrap"><section class="state-card failed" aria-label="Run failed">
+    <header class="state-head">
+      <h2>The build stopped</h2>
+      <p>${escapeHtml(run.prompt || run.name || "This run")} did not produce a file.</p>
+    </header>
+    <pre class="state-error">${escapeHtml(stateInfo.message)}</pre>
+    ${stateInfo.hint ? `<p class="state-note">${escapeHtml(stateInfo.hint)}</p>` : ""}
+    <div class="state-actions">
+      <button class="btn primary" data-state-action="retry">Try again</button>
+      <button class="btn" data-state-action="edit">Edit the prompt</button>
+      <button class="btn ghost" data-state-action="logs">Open logs</button>
+    </div>
+  </section></div>`;
+}
+
+function stoppedCard(stateInfo, run) {
+  return `<div class="viewport-empty state-wrap"><section class="state-card stopped" aria-label="Run stopped">
+    <header class="state-head">
+      <h2>The run was ${stateInfo.status === "cancelled" ? "cancelled" : "interrupted"}</h2>
+      <p>${escapeHtml(run.prompt || run.name || "This run")} stopped before it made a file. Anything it already wrote is kept.</p>
+    </header>
+    <div class="state-actions">
+      <button class="btn primary" data-state-action="resume">Resume</button>
+      <button class="btn" data-state-action="edit">Edit the prompt</button>
+      <button class="btn ghost" data-state-action="logs">Open logs</button>
+    </div>
+  </section></div>`;
+}
+
+function runningCard(stateInfo, run) {
+  const detail = stateInfo.starting ? "Starting Codex and routing the request" : stateInfo.activity ? sentenceCase(stateInfo.activity) : "Waiting for the next step";
+  return `<div class="viewport-empty state-wrap"><section class="state-card running" aria-label="Run in progress" aria-busy="true">
+    <header class="state-head">
+      <span class="empty-icon small">${brandIcon(64)}</span>
+      <h2>Working on it</h2>
+      <p>${escapeHtml(run.prompt || run.name || "")}</p>
+    </header>
+    <div class="state-rail unknown" title="Length not known"></div>
+    <p class="state-progress"><strong>${escapeHtml(detail)}</strong>
+      <span>${stateInfo.done} action${stateInfo.done === 1 ? "" : "s"} done${stateInfo.startedAt ? ` · ${elapsedMarkup(stateInfo.startedAt)}` : ""}</span></p>
+    <p class="state-note">Forge3D cannot tell how far along a build is, so it shows the step and the time instead of a percentage.</p>
+    <div class="state-actions"><button class="btn ghost" data-state-action="logs">Open logs</button></div>
+  </section></div>`;
+}
+
+function finishedCard() {
+  return `<div class="blank-state"><h2>Finished, with nothing to preview</h2><p>This run produced no file the viewport can show. Check Files or Logs in the inspector.</p></div>`;
+}
+
+function editPrompt(run) {
+  elements.prompt.value = run.prompt || "";
+  autoGrowPrompt();
+  elements.prompt.focus();
+}
+
+async function onStateAction(action) {
+  const run = selectedRun();
+  if (!run) return;
+  if (action === "logs") {
+    setPanel("inspector", true);
+    document.querySelectorAll(".tab").forEach((tab) => tab.classList.toggle("active", tab.dataset.tab === "logs"));
+    renderInspector();
+  } else if (action === "edit") {
+    editPrompt(run);
+  } else if (action === "resume") {
+    runAction("continue");
+  } else if (action === "retry") {
+    editPrompt(run);
+    startOrSteer();
+  }
+}
+
+function bindStateCard() {
+  elements.preview.querySelector("[data-recheck]")?.addEventListener("click", () => checkCapabilities(true));
+  elements.preview.querySelector("[data-close-setup]")?.addEventListener("click", () => openSetup(false));
+  elements.preview.querySelectorAll("[data-state-action]").forEach((button) => button.addEventListener("click", () => onStateAction(button.dataset.stateAction)));
+  elements.preview.querySelectorAll("[data-copy]").forEach((button) => button.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(button.dataset.copy);
+      toast("Command copied", "success");
+    } catch (error) {
+      toast(`Could not copy: ${error.message}`, "error");
+    }
+  }));
 }
 
 async function renderPreview() {
   previewDispose();
   previewDispose = () => {};
   viewportApi = null;
+  viewportRefresh = null;
   const run = selectedRun();
   const artifact = selectedArtifact(run);
   renderHud();
-  if (!run || !artifact) {
+  const view = stageState({
+    run, hasArtifact: Boolean(artifact), forceSetup: showSetup, hasRuns: state.runs.length > 0,
+    live: Boolean(state.activeJob && run && state.activeJob.runId === run.run_id), readiness: currentReadiness(),
+  });
+  previewKind = view.kind;
+  if (view.kind !== "artifact") {
     elements.preview.classList.add("inset-panels");
-    elements.preview.innerHTML = emptyViewport();
+    elements.preview.innerHTML = view.kind === "setup" ? setupCard(view.forced)
+      : view.kind === "failed" ? failedCard(view, run)
+      : view.kind === "stopped" ? stoppedCard(view, run)
+      : view.kind === "running" ? runningCard(view, run)
+      : view.kind === "finished" ? finishedCard()
+      : emptyViewport();
+    bindStateCard();
     return;
   }
   selectedArtifactPath = artifact.path;
@@ -909,13 +1235,13 @@ async function renderPreview() {
       pre.textContent = `Could not load ${artifact.name}: ${error.message}`;
     }
   } else {
-    elements.preview.innerHTML = `<div class="blank-state">${glyph(artifactIcon(artifact))}<h2>${escapeHtml(artifact.name)}</h2><p>${escapeHtml(artifact.media_type)} · ${escapeHtml(formatBytes(artifact.size_bytes))}</p><p>This file has no embedded preview. Use Reveal or Open in the inspector.</p></div>`;
+    elements.preview.innerHTML = `<div class="blank-state">${icon(artifactIcon(artifact), 48)}<h2>${escapeHtml(artifact.name)}</h2><p>${escapeHtml(artifact.media_type)} · <span class="mono">${escapeHtml(formatBytes(artifact.size_bytes))}</span></p><p>This file has no embedded preview. Use Reveal or Open in the inspector.</p></div>`;
   }
 }
 
 function captureViewport() {
   const canvas = elements.preview.querySelector("canvas");
-  if (!canvas) return toast("The viewport has no rendered 3D output to capture", "error");
+  if (!canvas) return toast("The viewport has no rendered 3D output to capture", "warn");
   try {
     canvas.toBlob((blob) => {
       if (!blob) return toast("The viewport could not be captured", "error");
@@ -943,13 +1269,46 @@ function renderAttachments() {
   }));
 }
 
+let wasActive = false;
+let strikeUntil = 0; // the hammer finishes its strike on the Run button before it turns into Steer
+function strikeHammer() {
+  const hammer = elements.send.querySelector(".fi");
+  if (!hammer || elements.send.dataset.mode !== "run") return;
+  hammer.classList.add("is-playing");
+  strikeUntil = Date.now() + 550;
+  setTimeout(renderComposer, 560);
+}
 function renderComposer() {
   const active = state.activeJob;
-  elements.send.innerHTML = active ? `${glyph("steer")}<span>Steer</span>` : `${glyph("play")}<span>Run</span>`;
+  const gate = runGate(currentReadiness());
+  const blocked = !active && !gate.allowed;
+  const sendMode = active ? "steer" : "run";
+  if (elements.send.dataset.mode !== sendMode && Date.now() >= strikeUntil) { // not redrawn every render, so a strike in flight is not cut off
+    elements.send.dataset.mode = sendMode;
+    elements.send.innerHTML = active ? `${icon("send", 24)}<span>Steer</span>` : `${icon("hammer", 24)}<span>Run</span>`;
+  }
   elements.send.classList.toggle("steering", Boolean(active));
-  elements.send.title = active ? "Send a steering note to the running job" : "Run the prompt";
+  // aria-disabled rather than disabled: the button stays focusable and pressing it opens the setup card that says why.
+  elements.send.classList.toggle("blocked", blocked);
+  elements.send.setAttribute("aria-disabled", String(blocked));
+  elements.send.title = active ? "Send a steering note to the running job"
+    : blocked ? gate.message
+    : gate.level === "warn" ? `Run the prompt. Warning: ${gate.message}`
+    : "Run the prompt";
+  const showChip = !active && Boolean(gate.chip);
+  elements.gateChip.classList.toggle("hidden", !showChip);
+  elements.gateChip.className = `gate-chip ${gate.level}${showChip ? "" : " hidden"}`;
+  elements.gateChip.textContent = gate.chip;
+  elements.gateChip.title = `${gate.message} Click to see what Forge3D checked.`;
   elements.cancel.classList.toggle("hidden", !active);
   elements.topbarProgress.classList.toggle("on", Boolean(active));
+  // The cube lifts its lid for a few seconds when a job starts, then rests again.
+  if (active && !wasActive) {
+    const brand = document.getElementById("brand");
+    brand.classList.add("ii-play");
+    setTimeout(() => brand.classList.remove("ii-play"), 3300);
+  }
+  wasActive = Boolean(active);
   elements.prompt.placeholder = active ? "Steer the running job…" : "Describe the asset or change…";
 }
 
@@ -965,7 +1324,7 @@ function renderApproval() {
   const persistence = request._meta?.persist;
   const canPersistSession = persistence === "session" || persistence === "always" || (Array.isArray(persistence) && persistence.includes("session"));
   const title = network ? `Network access to ${network.host || "an external host"}`
-    : isMcp ? `${titleCase(params.serverName || "Local")} tool approval`
+    : isMcp ? `${sentenceCase(params.serverName || "Local")} tool approval`
       : approval.method.includes("fileChange") ? "Approve file changes" : "Approve command";
   const detail = network ? `${network.protocol || "network"} access${network.port ? ` on port ${network.port}` : ""}`
     : request.message || params.command || params.reason || JSON.stringify(params, null, 2);
@@ -991,7 +1350,7 @@ function renderApproval() {
 }
 
 function renderAll({ preview = true } = {}) {
-  if (!selectedRunId && state.runs.length) selectedRunId = state.runs[0].run_id;
+  if (!selectedRunId && state.runs.length && !composing) selectedRunId = state.runs[0].run_id;
   if (selectedRunId && !state.runs.some((run) => run.run_id === selectedRunId)) selectedRunId = state.runs[0]?.run_id || null;
   renderDependencies();
   renderModelOptions();
@@ -1003,11 +1362,12 @@ function renderAll({ preview = true } = {}) {
   renderComposer();
   renderApproval();
   renderHud();
-  if (preview) renderPreview();
+  if (preview || previewKind === "running") renderPreview();
 }
 
 function selectRun(runId) {
   if (runId === selectedRunId) return;
+  composing = false;
   selectedRunId = runId;
   selectedArtifactPath = null;
   renderAll();
@@ -1033,7 +1393,18 @@ function updateDockOffset() {
   const styles = getComputedStyle(document.documentElement);
   const width = (name) => parseFloat(styles.getPropertyValue(name)) || 0;
   const open = (panels.library ? width("--lib-w") + 12 : 0) + (panels.inspector ? width("--insp-w") + 12 : 0);
-  document.querySelector(".stage").style.setProperty("--dock-offset", `${open + 60}px`);
+  document.querySelector(".stage").style.setProperty("--dock-offset", `${open + 88}px`);
+}
+
+// Rail icons: the glyph's own colour while its tool is on, stone while it rests. Momentary actions rest in stone.
+function paintRail() {
+  document.querySelectorAll(".rail-button[data-icon]").forEach((button) => {
+    const on = button.classList.contains("active");
+    const paint = on ? "on" : "off";
+    if (button.dataset.painted === paint) return;
+    button.dataset.painted = paint;
+    button.innerHTML = icon(button.dataset.icon, 24, { hue: on ? undefined : "stone" });
+  });
 }
 
 function setViewportTool(key, value) {
@@ -1043,6 +1414,7 @@ function setViewportTool(key, value) {
     if (key === "grid") button.classList.toggle("active", Boolean(value));
     else button.classList.toggle("active", button.dataset[key] === value);
   });
+  paintRail();
   if (key === "grid") viewportApi?.setGrid(Boolean(value));
   if (key === "shading") viewportApi?.setShading(value);
   if (key === "transform") viewportApi?.setTransform();
@@ -1068,10 +1440,18 @@ function scheduleRefresh() {
 
 async function startOrSteer() {
   const text = elements.prompt.value.trim();
+  if (!state.activeJob) {
+    const gate = runGate(currentReadiness());
+    if (!gate.allowed) {
+      openSetup(true);
+      return toast(gate.message, "warn");
+    }
+  }
   if (!text) {
     elements.prompt.focus();
-    return toast("Write a prompt first", "error");
+    return toast("Write a prompt first", "warn");
   }
+  if (!state.activeJob) strikeHammer();
   elements.send.disabled = true;
   try {
     if (state.activeJob) {
@@ -1092,6 +1472,7 @@ async function startOrSteer() {
         outputSettings: {},
       });
       state = { ...state, ...result };
+      composing = false;
       selectedRunId = state.activeJob?.runId || state.runs[0]?.run_id;
       selectedArtifactPath = null;
       attachments = [];
@@ -1147,7 +1528,7 @@ async function repairPlugin() {
 
 async function runAction(action) {
   const run = selectedRun();
-  if (!run) return toast("Select a run first", "error");
+  if (!run) return toast("Select a run first", "warn");
   try {
     if (action === "continue") {
       const text = await askDialog({
@@ -1162,6 +1543,7 @@ async function runAction(action) {
       renderAll({ preview: false });
     } else if (action === "duplicate") {
       const duplicate = await api.duplicate({ runId: run.run_id });
+      composing = false;
       selectedRunId = duplicate.run_id;
       await refreshState(true);
       toast("Run duplicated", "success");
@@ -1186,7 +1568,7 @@ async function runAction(action) {
 async function artifactAction(action) {
   const run = selectedRun();
   const artifact = selectedArtifact(run);
-  if (!run || !artifact) return toast("Select an output first", "error");
+  if (!run || !artifact) return toast("Select an output first", "warn");
   try {
     if (action === "export") {
       const result = await api.exportArtifact({ runId: run.run_id, path: artifact.path });
@@ -1201,6 +1583,7 @@ async function artifactAction(action) {
 }
 
 function resetForNewRun() {
+  composing = true;
   selectedRunId = null;
   selectedArtifactPath = null;
   elements.prompt.focus();
@@ -1250,7 +1633,7 @@ elements.attach.addEventListener("click", async () => {
 });
 
 for (const key of ["workflow", "quality", "target", "tool", "model", "effort"]) {
-  elements[key].addEventListener("change", persistRunSettings);
+  elements[key].addEventListener("change", () => { persistRunSettings(); refreshReadiness(); });
 }
 elements.settingsToggle.addEventListener("click", () => toggleSettings());
 document.querySelector("#settings-close").addEventListener("click", () => toggleSettings(false));
@@ -1285,6 +1668,7 @@ document.addEventListener("keydown", (event) => {
   if (event.key === "Escape") {
     closeMenu();
     toggleSettings(false);
+    if (showSetup && !document.querySelector(".scrim")) openSetup(false);
     return;
   }
   if (!(event.ctrlKey || event.metaKey) || event.shiftKey || event.altKey) return;
@@ -1294,7 +1678,17 @@ document.addEventListener("keydown", (event) => {
   else if (key === "i" && !typing) { event.preventDefault(); setPanel("inspector", !panels.inspector); }
 });
 
+elements.gateChip.addEventListener("click", () => openSetup(true));
+elements.dependencyStrip.addEventListener("click", () => openSetup(!showSetup));
+
 addEventListener("resize", updateDockOffset);
+
+// Elapsed times are drawn from a start time and kept current here; nothing else moves on a timer.
+setInterval(() => {
+  document.querySelectorAll("[data-elapsed-since]").forEach((node) => {
+    node.textContent = formatElapsed(Date.now() - Number(node.dataset.elapsedSince));
+  });
+}, 1000);
 
 function updateStatusTime() {
   elements.statusTime.textContent = new Intl.DateTimeFormat(undefined, { hour: "numeric", minute: "2-digit" }).format(new Date());
@@ -1311,6 +1705,7 @@ autoGrowPrompt();
 updateStatusTime();
 setInterval(updateStatusTime, 30000);
 renderAll();
+checkCapabilities(false); // not awaited: a cold WSL can take seconds, and the window must not wait for it
 
 api.onState((next) => { state = { ...state, ...next }; renderAll({ preview: !state.activeJob }); });
 api.onEvent(() => scheduleRefresh());
@@ -1318,7 +1713,7 @@ api.onApproval((request) => { approval = request; renderApproval(); });
 api.onError((message) => toast(message, "error"));
 
 try {
-  state = await api.bootstrap();
+  state = { ...state, ...(await api.bootstrap()) };
   renderAll();
 } catch (error) {
   state.appServerError = error.message;

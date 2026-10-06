@@ -34,7 +34,7 @@ function localCodexExecutable() {
 
 function localGodotExecutable() {
   const roots = [
-    path.join(os.homedir(), "Godot Projects"),
+    path.join(process.env.LOCALAPPDATA || path.join(os.homedir(), "AppData", "Local"), "Programs", "Godot"),
     path.join(process.env.ProgramFiles || "C:\\Program Files", "Godot"),
   ];
   const candidates = [];

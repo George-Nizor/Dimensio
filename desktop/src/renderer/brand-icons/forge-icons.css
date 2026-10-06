@@ -1,0 +1,90 @@
+/* Forge3D brand icons: layout and the few motion moments. Pairs with forge-icons.mjs, which draws
+   with presentation attributes only; every animation here keys off an m-* class it leaves behind.
+
+   Triggers (put the class on the icon or any ancestor):
+     .is-playing   a one-shot: hammer strike, tick pop, crate/teapot/bin lid lift, failed shake
+     .is-working   the one loop: the anvil bobs, only while work is really happening
+   Hover or focus of a button or link holding the icon gives the brand hop. */
+
+.fi {
+  flex: none;
+  overflow: visible;
+  vertical-align: middle;
+}
+.fi .fi-body,
+.fi .m-strike,
+.fi .m-bob,
+.fi .m-shake,
+.fi .m-lid,
+.fi .m-tick {
+  transform-box: fill-box;
+}
+.fi .fi-body { transform-origin: 50% 90%; }
+.fi .m-strike { transform-origin: 90% 90%; }
+.fi .m-bob { transform-origin: 50% 100%; }
+.fi .m-shake { transform-origin: 50% 50%; }
+.fi .m-lid { transform-origin: 50% 100%; }
+.fi .m-tick { transform-origin: 50% 50%; }
+
+:is(a, button):is(:hover, :focus-visible) > .fi:not(.fi-line) .fi-body {
+  animation: fi-hop 0.55s ease;
+}
+@keyframes fi-hop {
+  40% { transform: translateY(-2.5px) rotate(-3deg); }
+}
+
+.is-playing .fi .m-strike,
+.fi.is-playing .m-strike {
+  animation: fi-strike 0.5s cubic-bezier(0.5, 0, 0.3, 1);
+}
+@keyframes fi-strike {
+  35% { transform: rotate(14deg); }
+  60% { transform: rotate(-16deg); }
+  80% { transform: rotate(3deg); }
+}
+
+.is-working .fi .m-bob,
+.fi.is-working .m-bob {
+  animation: fi-bob 1.4s ease-in-out infinite;
+}
+@keyframes fi-bob {
+  50% { transform: translateY(-2px); }
+}
+
+.is-playing .fi .m-tick,
+.fi.is-playing .m-tick {
+  animation: fi-tick 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes fi-tick {
+  0% { transform: scale(0.4) rotate(-14deg); }
+}
+
+.is-playing .fi .m-lid,
+.fi.is-playing .m-lid {
+  animation: fi-lid 0.7s ease;
+}
+@keyframes fi-lid {
+  35%, 60% { transform: translateY(-4px) rotate(-5deg); }
+}
+
+.is-playing .fi .m-shake,
+.fi.is-playing .m-shake {
+  animation: fi-shake 0.45s ease;
+}
+@keyframes fi-shake {
+  20% { transform: translateX(-2px) rotate(-4deg); }
+  40% { transform: translateX(2px) rotate(4deg); }
+  60% { transform: translateX(-1.5px) rotate(-2deg); }
+  80% { transform: translateX(1px); }
+}
+
+html[data-motion="reduced"] .fi .fi-body,
+html[data-motion="reduced"] .fi [class^="m-"] {
+  animation: none !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .fi .fi-body,
+  .fi [class^="m-"] {
+    animation: none !important;
+  }
+}

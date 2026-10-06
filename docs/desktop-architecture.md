@@ -31,8 +31,8 @@ The shipped UI uses the viewport-first workstation recorded in
 - The filmstrip opens outputs without replacing the run context.
 - A hairline status bar reports the local toolchain.
 
-The app uses the approved Topology Loop mark. Space Grotesk handles the name and display labels; Segoe
-UI Variable handles controls.
+The app uses the Instrumenta brand v2 cube. Fraunces handles the name and panel titles, Commissioner
+the interface, and Spline Sans Mono code, versions, sizes and IDs (see `docs/brand/README.md`).
 
 ## Codex App Server
 

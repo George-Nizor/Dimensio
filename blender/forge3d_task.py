@@ -28,7 +28,7 @@ import bpy
 from mathutils import Matrix, Vector
 
 
-TOOL_VERSION = "0.2.2+codex.20260822.desktop1"
+TOOL_VERSION = "0.3.0"
 REPORT_PREFIX = "FORGE3D_RESULT="
 GENERATED_BY_KEY = "forge3d_generated_by"
 EPSILON = 1.0e-8

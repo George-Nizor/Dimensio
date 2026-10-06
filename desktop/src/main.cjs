@@ -10,6 +10,7 @@ const {
   clipboard,
   dialog,
   ipcMain,
+  nativeTheme,
   net,
   protocol,
   session,
@@ -32,6 +33,7 @@ const {
 const { resolveContained } = require("./lib/path-policy.cjs");
 const { automaticApproval } = require("./lib/approval-policy.cjs");
 const { exportArtifact, exportFormatsForArtifact } = require("./lib/export-service.cjs");
+const { createCapabilitiesService } = require("./lib/capabilities-service.cjs");
 
 protocol.registerSchemesAsPrivileged([
   {
@@ -148,6 +150,18 @@ function failActiveJob(error) {
     activeJob = null;
   }
   try { sendState(); } catch {}
+}
+
+let capabilitiesServiceInstance = null;
+function capabilitiesService() {
+  if (!capabilitiesServiceInstance) {
+    const binDirectory = app.isPackaged ? path.join(process.resourcesPath, "bin") : path.join(repoRoot, ".venv", "Scripts");
+    capabilitiesServiceInstance = createCapabilitiesService({
+      command: path.join(binDirectory, process.platform === "win32" ? "forge3d.exe" : "forge3d"),
+      env: { ...process.env, FORGE3D_TOOLKIT_ROOT: bundledToolkit(), FORGE3D_PLUGIN_ROOT: bundledPlugin() },
+    });
+  }
+  return capabilitiesServiceInstance;
 }
 
 async function ensureCodex() {
@@ -369,12 +383,30 @@ function onCodexNotification(message) {
 
 // The renderer paints its own application bar, so on Windows the native caption is
 // hidden and only the system window controls are drawn over the reserved inset.
+// The colours follow the theme (renderer style.css: --bar and --muted, dark and light).
+const CHROME_COLORS = {
+  dark: { bar: "#141210", symbol: "#a39a90" },
+  light: { bar: "#faf7f2", symbol: "#5c544c" },
+};
+
+function chromeColors() {
+  return nativeTheme.shouldUseDarkColors ? CHROME_COLORS.dark : CHROME_COLORS.light;
+}
+
 function titleBarOptions() {
   if (process.platform !== "win32") return {};
+  const colors = chromeColors();
   return {
     titleBarStyle: "hidden",
-    titleBarOverlay: { color: "#0f1013", symbolColor: "#9aa1aa", height: TITLE_BAR_HEIGHT },
+    titleBarOverlay: { color: colors.bar, symbolColor: colors.symbol, height: TITLE_BAR_HEIGHT },
   };
+}
+
+function applyChromeColors() {
+  if (!mainWindow || mainWindow.isDestroyed()) return;
+  const colors = chromeColors();
+  mainWindow.setBackgroundColor(colors.bar);
+  if (process.platform === "win32") mainWindow.setTitleBarOverlay({ color: colors.bar, symbolColor: colors.symbol, height: TITLE_BAR_HEIGHT });
 }
 
 function createWindow() {
@@ -383,7 +415,7 @@ function createWindow() {
     height: 980,
     minWidth: 1100,
     minHeight: 720,
-    backgroundColor: "#0a0a0c",
+    backgroundColor: chromeColors().bar,
     title: "Forge3D",
     show: false,
     ...titleBarOptions(),
@@ -548,6 +580,13 @@ function registerIpc() {
     sendState();
     return { ...result, skill: currentSkill };
   });
+  handle("forge3d:set-theme", async (payload) => {
+    if (!["system", "light", "dark"].includes(payload)) throw new Error("Unknown theme");
+    nativeTheme.themeSource = payload;
+    return payload;
+  });
+  nativeTheme.on("updated", applyChromeColors);
+  handle("forge3d:capabilities", (payload = {}) => capabilitiesService().get({ force: Boolean(payload?.force) }));
   handle("forge3d:refresh-tools", async (payload = {}) => {
     if (payload.force) externalTools(true);
     return currentState();
