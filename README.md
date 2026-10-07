@@ -6,18 +6,16 @@
 
 Prompt-driven 3D modelling on the Codex App Server.
 
-Forge3D turns a prompt into a versioned local 3D run. The Windows desktop drives the user's Codex App
+Forge3D turns a prompt into a versioned local 3D run. The Windows desktop drives your own Codex App
 Server, calls the Forge3D skill, keeps the transcript, and previews the result. Blender, Godot, WSL,
-CUDA, and large models remain separate installations.
-
-Current source and desktop version: **0.3.0**.
+CUDA, and large models stay separate installations. Version 0.3.0, Windows x64.
 
 ## Start here
 
-The ordinary launch path is the Forge3D card in Instrumenta. Instrumenta installs the managed bundle,
-checks its hash, keeps the previous version for rollback, and opens `Forge3D.exe`.
+The usual route is the Forge3D card in Instrumenta, which installs the managed bundle, checks its
+hash, keeps the previous version for rollback, and opens `Forge3D.exe`.
 
-For a source checkout:
+From a source checkout:
 
 ```powershell
 .\scripts\setup.ps1 -InstallModels -InstallPersonalPlugin
@@ -27,91 +25,82 @@ npm install
 npm start
 ```
 
-Restart Codex after installing or repairing the personal plugin so its skill catalogue is refreshed.
+`setup.ps1` also takes `-DryRun`. Restart Codex after installing or repairing the personal plugin so
+it refreshes its skill list.
 
-## Pick the right asset route
+## Requirements
+
+Blender 5.x, Godot 4.6, Python 3.11 or newer, Node.js 22 or newer (for the Godot MCP server), `uv`,
+and the Codex CLI. Godot is optional. The TripoSplat route also needs WSL2 Ubuntu with CUDA access
+and an NVIDIA GPU with about 8 GB of VRAM. `forge3d doctor` reports what is missing.
+
+## Asset routes
 
 | Route | Good fit | Main output |
 | --- | --- | --- |
 | Authored Blender | Editable props, buildings, rigs, animation, collision, LODs | `.blend` source and a validated `.glb` |
 | TripoSplat | Static props where the reference image matters more than mesh editing | Gaussian `.splat` or `.ply` data with a collision proxy |
 
-The Blender route makes conventional geometry. The TripoSplat route makes a Gaussian visual asset
-whose unseen surfaces are inferred from one image. A splat is not a polygon mesh. Renaming the file
-will not persuade Blender otherwise.
+The Blender route makes conventional geometry. TripoSplat makes a Gaussian visual asset whose unseen
+surfaces are inferred from one image. A splat is not a polygon mesh, and renaming the file will not
+persuade Blender otherwise. Model weights are not committed or bundled.
+
+Example prompts:
+
+> Build an industrial generator in Blender. Keep the `.blend`, add collision and two LODs, export a
+> GLB, then validate the import in Godot.
+
+> Turn this isolated prop image into a TripoSplat asset. Add a simple collision proxy and verify the
+> splat in the interactive preview.
+
+A good source image has one complete subject, a little margin, diffuse light, and nothing in front of
+it. Check `prepared-input.webp` before blaming the model for a crop it was given.
 
 ## The desktop
 
-The interface is a viewport-first workstation:
+A viewport-first workstation: prompt, attachments, run settings and Run in the top bar; a full-bleed
+viewport with orbit, pan, framing, shading, capture and fullscreen tools on the left; run history and
+a Steps / Files / Checks / Logs inspector on the right; a Plan, Build, Check, Output dock with a
+filmstrip of artifacts at the bottom; one status bar for Codex and tool readiness.
 
-- The top bar holds the prompt, attachments, run settings, and Run.
-- A full-bleed viewport carries the current image, model, animation, or splat.
-- The left rail contains orbit, pan, framing, shading, capture, and fullscreen tools.
-- Run history and the Steps / Files / Checks / Logs inspector float on the right and can collapse.
-- The bottom dock shows Plan, Build, Check, Output, and a filmstrip of artifacts.
-- One thin status bar reports Codex and external-tool readiness.
+One job runs at a time. You can steer or cancel it, and the streamed transcript and workflow state
+are written to disk as it goes. Interrupted jobs stay in the library with their Codex thread IDs for
+an explicit continuation.
 
-One job runs at a time. You can steer or cancel it while the streamed transcript and workflow state
-are written to disk. Interrupted jobs remain in the library and keep their Codex thread IDs for an
-explicit continuation.
+Contained local commands, run-file edits and local Blender or Godot tool calls are approved
+automatically for the session. Network requests, writes outside the run directory and remote provider
+actions still ask. The desktop is local-only: it does not use cloud providers.
 
-Forge3D automatically accepts contained local commands, run-file edits, and local Blender or Godot
-tool calls for the active session. Network requests, writes outside the run directory, and remote
-provider actions still ask. Cloud access starts off and must be approved for each job.
+Previews by type:
 
-## Preview support
+- PNG, JPEG, WebP and GIF render directly; ordered image folders play as 12 fps sequences.
+- GLB and glTF use Three.js with animation playback and automatic framing.
+- SPLAT, SOG and Gaussian PLY use SparkJS, so a splat can be orbited and inspected in place.
+- Validation JSON, text and logs render in the inspector. Unsupported files show metadata and keep
+  their Reveal and Open actions.
 
-The desktop routes artifacts by type:
-
-- PNG, JPEG, WebP, and GIF render directly.
-- Ordered image folders play as 12 fps sequences.
-- GLB and glTF models use bundled Three.js controls, animation playback, and automatic framing.
-- PLY, SPLAT, and SOG assets use bundled SparkJS with the tested TripoSplat coordinate conversion.
-- Validation JSON, text files, and logs render in the inspector.
-- An unsupported file still shows metadata and keeps its Reveal and Open actions.
-
-A splat preview is interactive: orbit, pan, and inspect the coloured Gaussian result inside Forge3D.
-This is the useful bit. A screenshot alone rather defeats the point of having spatial data.
+Per-file actions: reveal, open, open in Blender, review in Godot, copy path, and export to another
+format through headless Blender. Per-run actions: duplicate, archive, and trash to the Recycle Bin.
+Paths are checked against the run root first.
 
 ## Runs and files
 
-Every job gets a self-contained folder:
+Each job gets a self-contained folder:
 
 ```text
 %USERPROFILE%\Documents\Forge3D\runs\<timestamp>-<slug>-<id>
 ```
 
-Attachments are copied into that folder before Codex starts. `run.json` records the prompt, route,
-settings, steps, relative artifacts, validation, timestamps, transcript, and Codex thread/turn IDs.
-Schema v1 remains readable; new runs use schema v2.
+Attachments are copied in before Codex starts. `run.json` records the prompt, route, settings,
+steps, relative artifacts, validation, timestamps, transcript, and Codex thread and turn IDs. New
+runs use schema v2; v1 stays readable. Forge3D never overwrites an existing asset output, so each
+version gets a new folder.
 
-Generated review assets, logs, configuration, and caches live under:
-
-```text
-%LOCALAPPDATA%\Instrumenta\Forge3D
-```
-
-The file menu exposes run-scoped actions: reveal, open, open in Blender, review in Godot, copy path,
-duplicate, archive, and Recycle Bin trash. Paths are checked against the run root before use.
-
-## Prompt examples
-
-An editable prop:
-
-> Build an industrial generator in Blender. Keep the `.blend`, add collision and two LODs, export a
-> GLB, then validate the import in Godot.
-
-An image-faithful static prop:
-
-> Turn this isolated prop image into a TripoSplat asset. Add a simple collision proxy and verify the
-> splat in the interactive preview.
-
-A clean source image has one complete subject, a little margin, diffuse light, and no foreground
-occlusion. Check `prepared-input.webp` before blaming the model for a crop it was given.
+Review assets, logs, configuration and caches live in `%LOCALAPPDATA%\Instrumenta\Forge3D`.
 
 ## Command line
 
-The desktop is the normal interface. The CLI is useful for diagnostics and repeatable jobs:
+The desktop is the normal interface. The CLI is for diagnostics and repeatable jobs:
 
 ```powershell
 forge3d doctor
@@ -125,7 +114,7 @@ forge3d humanoid-retarget --help
 forge3d validate --help
 ```
 
-A local TripoSplat run looks like this:
+A local TripoSplat run:
 
 ```powershell
 forge3d models run triposplat C:\path\to\reference.png `
@@ -133,29 +122,15 @@ forge3d models run triposplat C:\path\to\reference.png `
   --gaussians 262144
 ```
 
-Forge3D never replaces an existing asset output. Use a new versioned folder.
-
-## External tools
-
-The tested Windows x64 setup uses Blender 5.x, Godot 4.6, Python 3.11 or newer, Node.js 22 or newer,
-`uv`, and the installed Codex CLI. TripoSplat also needs WSL2 Ubuntu, NVIDIA CUDA access, and an NVIDIA
-GPU with at least 8 GB of VRAM.
-
-Launch Blender with the local bridge when an interactive scene review is needed:
+For interactive scene review, start Blender with its MCP bridge:
 
 ```powershell
 .\scripts\start-blender-mcp.ps1
 .\scripts\start-blender-mcp.ps1 -BlendFile C:\path\to\asset-v001.blend
 ```
 
-## Model and upload policy
-
-TripoSplat is the accepted local route for image-faithful static visuals. Other providers keep their
-recorded licence and capability limits in `forge3d models info <name>` and
-[`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md). Model weights are not committed or bundled.
-
-No cloud provider receives a file unless the job has cloud consent and the remote action is approved.
-Provider charges remain visible.
+The CLI also has an opt-in Tripo cloud fallback (`forge3d models cloud-run`). It uploads nothing
+without `--approve-upload` for that job, and provider charges stay visible.
 
 ## Repository map
 
@@ -170,13 +145,13 @@ src/forge3d/   dependency-light host CLI
 tests/         Python integration and policy tests
 ```
 
-Useful reading:
+Further reading:
 
 - [Desktop process, security, approvals, and preview routing](docs/desktop-architecture.md)
 - [Run schema and crash recovery](docs/run-schema-v2.md)
 - [Humanoid retarget workflow](docs/humanoid-retarget.md)
 - [Windows packaging and troubleshooting](docs/releasing.md)
-- [Brand identity](docs/brand-identity.md)
+- [Brand identity](docs/brand-identity.md) and [brand v2 alignment](docs/brand/README.md)
 - [Publication audit](docs/publication-audit.md)
 
 ## Verify a change
@@ -188,11 +163,15 @@ npm --prefix desktop run build
 .\blender\tests\smoke.ps1
 ```
 
-Blender and Godot headless checks need those applications installed. Game-facing assets should finish
-with an engine import/runtime review.
+The Blender and Godot headless checks need those applications installed. Game-facing assets should
+finish with an engine import and runtime review.
 
-Forge3D is MIT licensed. Bundled integrations keep their own notices.
+## Licence
 
-## Family
+Forge3D is MIT licensed. Bundled integrations keep their own notices, listed in
+[`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md); other providers' licences and limits are in
+`forge3d models info <name>`.
 
-Forge3D is part of [Instrumenta](https://github.com/George-Nizor/Instrumenta), made by Bonehead Labs, and follows the Instrumenta brand v2: an ember cube, drawn as a freestanding object. The interface type (Fraunces, Commissioner, Spline Sans Mono) is SIL OFL 1.1, vendored in `desktop/src/renderer/brand/fonts` with its licences. Licence: MIT. See `docs/brand/README.md` for what was taken from the brand and what was kept.
+---
+
+<sub>Part of [Instrumenta](https://github.com/George-Nizor/Instrumenta), made by [Bonehead Labs](https://boneheadlabs.org). Brand v2: ember cube, interface type Fraunces, Commissioner and Spline Sans Mono (SIL OFL 1.1, vendored in `desktop/src/renderer/brand/fonts` with its licences). Licence: MIT.</sub>
