@@ -1,6 +1,6 @@
 # Forge3D desktop architecture
 
-Forge3D 0.2.2 wraps the prompt-first toolkit in a local Electron client. It runs one Codex job at a
+Forge3D 0.3.0 wraps the prompt-first toolkit in a local Electron client. It runs one Codex job at a
 time and stores the complete job under `%USERPROFILE%\Documents\Forge3D\runs`.
 
 ## Process boundary

@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "id": "forge3d",
   "name": "Forge3D",
-  "description": "Prompt-first local 3D creation, processing, rigging, animation, preview, and validation.",
+  "description": "Prompt-driven 3D modelling on the Codex App Server.",
   "version": "0.3.0",
   "repository": {
     "provider": "github",
