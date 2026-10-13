@@ -1,7 +1,8 @@
 # Forge3D run schema v2
 
-Every run directory contains one atomically written `run.json`. User runs are outside source control
-at `%USERPROFILE%\Documents\Forge3D\runs\<timestamp>-<slug>-<id>`.
+Every run directory contains one atomically written `run.json`. User runs are outside source control,
+inside the open project at `<project folder>\runs\<timestamp>-<slug>-<id>` (see
+[desktop architecture](desktop-architecture.md#projects)).
 
 ## Required v2 fields
 

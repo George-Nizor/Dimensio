@@ -7,7 +7,8 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { SparkRenderer, SplatMesh } from "@sparkjsdev/spark";
 import { filmstripArtifacts, selectedArtifactForRun } from "./preview-routing.mjs";
-import { readRunSettings, writeRunSettings } from "./preferences.mjs";
+import { normalizeRunSettings, readRunSettings, writeRunSettings } from "./preferences.mjs";
+import { displayFolder, fileMenuModel, projectTitle, shortcutCommand } from "./project-view.mjs";
 import { summarizeRunSteps } from "./run-presentation.mjs";
 import { deriveReadiness, runGate, setupHeadline, splitFix, statusEntries, toolVersionsFromReport, formatElapsed, sentenceCase } from "./readiness.mjs";
 import { stageState } from "./stage-state.mjs";
@@ -20,7 +21,8 @@ const brandIcon = (size, label = "") => InstrumentaIcons.render("forge3d", { siz
 const api = window.forge3d;
 const app = document.querySelector("#app");
 
-let state = { runs: [], tools: {}, models: [], skill: null, activeJob: null };
+// project: undefined until the main process has answered, then null (the start screen) or the open project.
+let state = { runs: [], tools: {}, models: [], skill: null, activeJob: null, project: undefined, recent: [], recoverable: [], preferences: { reopenLast: false } };
 let selectedRunId = null;
 let selectedArtifactPath = null;
 let attachments = [];
@@ -64,7 +66,11 @@ function optionMarkup(name) {
 
 app.innerHTML = `
   <header class="topbar">
-    <div class="brand ii-hover" id="brand" aria-label="Forge3D"><span class="brand-icon">${brandIcon(36)}</span><strong>Forge3D</strong></div>
+    <div class="topbar-lead">
+      <div class="brand ii-hover" id="brand" aria-label="Forge3D"><span class="brand-icon">${brandIcon(36)}</span><strong>Forge3D</strong></div>
+      <button id="file-menu" class="ghost-action file-button" type="button" aria-haspopup="menu" aria-expanded="false" title="Projects: new, open, save">File${icon("chevronDown", 16)}</button>
+      <span id="project-name" class="project-name hidden"></span>
+    </div>
 
     <div class="omnibox">
       <div class="omnibox-field">
@@ -167,6 +173,8 @@ app.innerHTML = `
     </div>
   </section>
 
+  <section id="start-screen" class="start-screen hidden" aria-label="Start"></section>
+
   <div id="approval-layer"></div>
   <div id="dialog-layer"></div>
   <div id="menu-layer"></div>
@@ -179,7 +187,7 @@ const elements = Object.fromEntries([
   "inspector-content", "inspector-actions", "library-toggle", "inspector-toggle",
   "pipeline", "filmstrip", "dependency-strip", "agent-state", "status-time",
   "workflow", "quality", "target", "tool", "model", "effort",
-  "approval-layer", "dialog-layer", "menu-layer", "toast-layer",
+  "approval-layer", "dialog-layer", "menu-layer", "toast-layer", "file-menu", "project-name", "start-screen",
 ].map((id) => [id.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase()), document.querySelector(`#${id}`)]));
 
 
@@ -228,6 +236,8 @@ for (const key of ["workflow", "quality", "target", "tool", "effort"]) {
   if ([...elements[key].options].some((option) => option.value === runSettings[key])) elements[key].value = runSettings[key];
 }
 
+// The selects hold the open project's run settings. The last ones used are also kept per user, so a new project
+// starts from them.
 function persistRunSettings() {
   runSettings = writeRunSettings(localStorage, {
     workflow: elements.workflow.value,
@@ -237,6 +247,18 @@ function persistRunSettings() {
     model: elements.model.value,
     effort: elements.effort.value,
   });
+  if (!state.project) return;
+  api.project?.setSettings(runSettings).then((summary) => {
+    if (summary && state.project) { state.project = summary; renderProjectChrome(); }
+  }).catch((error) => toast(error.message, "error"));
+}
+
+function applyRunSettings(settings) {
+  runSettings = normalizeRunSettings(settings);
+  for (const key of ["workflow", "quality", "target", "tool", "effort"]) {
+    if ([...elements[key].options].some((option) => option.value === runSettings[key])) elements[key].value = runSettings[key];
+  }
+  if ([...elements.model.options].some((option) => option.value === runSettings.model)) elements.model.value = runSettings.model;
 }
 
 /* ── helpers ────────────────────────────────────────────────── */
@@ -337,28 +359,44 @@ function toast(message, kind = "info", { sticky = kind === "error", action = nul
 /* ── overlay primitives ─────────────────────────────────────── */
 
 function closeMenu() {
+  for (const menu of elements.menuLayer.children) menu.onClose?.();
   elements.menuLayer.innerHTML = "";
 }
 
-function openMenu(box, items) {
+// items: { id, icon, label, run, danger?, hint?, disabled?, title? }, "-" for a rule, { heading } for a label.
+function openMenu(box, items, { align = "right", label = "", onClose = null } = {}) {
   closeMenu();
   const menu = document.createElement("div");
   menu.className = "menu";
+  menu.setAttribute("role", "menu");
+  if (label) menu.setAttribute("aria-label", label);
   menu.innerHTML = items.map((item) => item === "-" ? "<hr />"
-    : `<button data-menu-action="${escapeHtml(item.id)}" class="${item.danger ? "danger" : ""}">${icon(item.icon, 24, { hue: item.danger ? "rose" : undefined })}<span>${escapeHtml(item.label)}</span></button>`).join("");
+    : item.heading ? `<div class="menu-heading">${escapeHtml(item.heading)}</div>`
+    : `<button role="menuitem" data-menu-action="${escapeHtml(item.id)}" class="${item.danger ? "danger" : ""}" ${item.disabled ? "disabled" : ""} ${item.title ? `title="${escapeHtml(item.title)}"` : ""}>${icon(item.icon, 24, { hue: item.danger ? "rose" : item.disabled ? "stone" : undefined })}<span>${escapeHtml(item.label)}</span>${item.hint ? `<kbd>${escapeHtml(item.hint)}</kbd>` : ""}</button>`).join("");
   elements.menuLayer.append(menu);
+  menu.onClose = onClose;
   const size = menu.getBoundingClientRect();
   menu.style.top = `${Math.min(box.bottom + 6, innerHeight - size.height - 12)}px`;
-  menu.style.left = `${Math.max(12, Math.min(box.right - size.width, innerWidth - size.width - 12))}px`;
+  const left = align === "left" ? box.left : box.right - size.width;
+  menu.style.left = `${Math.max(12, Math.min(left, innerWidth - size.width - 12))}px`;
   menu.querySelectorAll("[data-menu-action]").forEach((button) => button.addEventListener("click", () => {
-    const chosen = items.find((item) => item !== "-" && item.id === button.dataset.menuAction);
+    const chosen = items.find((item) => item !== "-" && !item.heading && item.id === button.dataset.menuAction);
     closeMenu();
     chosen?.run?.();
   }));
+  menu.addEventListener("keydown", (event) => {
+    if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return;
+    event.preventDefault();
+    const buttons = [...menu.querySelectorAll("button:not(:disabled)")];
+    const index = buttons.indexOf(document.activeElement);
+    buttons[(index + (event.key === "ArrowDown" ? 1 : -1) + buttons.length) % buttons.length]?.focus();
+  });
   setTimeout(() => document.addEventListener("pointerdown", function once(event) {
+    if (!menu.isConnected) return;
     if (menu.contains(event.target)) return document.addEventListener("pointerdown", once, { once: true });
     closeMenu();
   }, { once: true }), 0);
+  return menu;
 }
 
 function askDialog({ eyebrow = "Forge3D", title, body = "", detail = "", input = null, confirmLabel = "Continue", danger = false }) {
@@ -1258,6 +1296,158 @@ function captureViewport() {
   }
 }
 
+/* ── projects: the start screen, the File menu, and the title ── */
+
+// The open project's identity. When it changes, the composer, selection and run settings are taken from the
+// project instead of carrying over from the one before.
+let projectKey;
+let sentView = "";
+
+function syncProject() {
+  const project = state.project;
+  const key = project === undefined ? undefined : project ? project.id : null;
+  if (key === projectKey) return;
+  projectKey = key;
+  if (key === undefined) return;
+  composing = false;
+  attachments = [];
+  elements.prompt.value = "";
+  autoGrowPrompt();
+  renderAttachments();
+  selectedRunId = project?.view?.selected_run_id || null;
+  selectedArtifactPath = project?.view?.selected_artifact || null;
+  sentView = JSON.stringify({ selected_run_id: selectedRunId, selected_artifact: selectedArtifactPath });
+  if (project && Object.keys(project.settings || {}).length) applyRunSettings({ ...runSettings, ...project.settings });
+  showSetup = false;
+}
+
+// Where the person is in the project travels with it (saved with the project, never making it unsaved).
+function syncView() {
+  if (!state.project) return;
+  const view = JSON.stringify({ selected_run_id: selectedRunId, selected_artifact: selectedArtifactPath });
+  if (view === sentView) return;
+  sentView = view;
+  api.project?.setView(JSON.parse(view)).catch(() => {});
+}
+
+function renderProjectChrome() {
+  const project = state.project;
+  const noProject = project === null;
+  app.classList.toggle("no-project", noProject);
+  document.title = projectTitle(project);
+  elements.projectName.classList.toggle("hidden", !project);
+  if (project) {
+    elements.projectName.innerHTML = `<span class="project-label">${escapeHtml(project.name)}</span>${project.dirty ? '<i class="dirty-dot" aria-label="Unsaved changes"></i>' : ""}`;
+    elements.projectName.title = project.untitled
+      ? "Not saved yet. Its runs are kept in a temporary folder until you save (Ctrl+S)."
+      : `${project.file}${project.dirty ? " · unsaved changes" : ""}`;
+  }
+  renderStartScreen();
+}
+
+function recentRow(entry) {
+  return `<li class="recent-row ${entry.missing ? "missing" : ""}">
+    <button class="recent-open" data-open-recent="${escapeHtml(entry.path)}" ${entry.missing ? "disabled" : ""} title="${escapeHtml(entry.missing ? `Not found: ${entry.path}` : entry.path)}">
+      <span class="recent-icon">${icon("runs", 24, { hue: entry.missing ? "stone" : undefined })}</span>
+      <span class="recent-lines"><strong>${escapeHtml(entry.name)}</strong><small class="mono">${escapeHtml(displayFolder(entry.folder))}</small></span>
+      <span class="recent-when">${entry.missing ? "Not found" : escapeHtml(entry.opened_at ? formatDate(entry.opened_at) : "")}</span>
+    </button>
+    <button class="icon-action recent-remove" data-remove-recent="${escapeHtml(entry.path)}" title="Remove from the list" aria-label="Remove ${escapeHtml(entry.name)} from the recent list">${icon("close", 16)}</button>
+  </li>`;
+}
+
+function renderStartScreen() {
+  const visible = state.project === null;
+  elements.startScreen.classList.toggle("hidden", !visible);
+  if (!visible) { elements.startScreen.innerHTML = ""; return; }
+  const recent = state.recent || [];
+  const recoverable = state.recoverable || [];
+  elements.startScreen.innerHTML = `
+    <div class="start-body">
+      <header class="start-head">
+        <span class="empty-icon">${brandIcon(84)}</span>
+        <div>
+          <h1>Forge3D</h1>
+          <p>Each project keeps its own runs, files and run settings in one folder.</p>
+        </div>
+      </header>
+      <div class="start-actions">
+        <button class="btn primary start-action" data-start="new">${icon("add", 16)}<span>New project</span><kbd>Ctrl N</kbd></button>
+        <button class="btn start-action" data-start="open">${icon("folder", 24)}<span>Open project…</span><kbd>Ctrl O</kbd></button>
+      </div>
+      ${recoverable.length ? `<section class="start-section recovered">
+        <h2>Unsaved work</h2>
+        <p class="start-note">Forge3D closed before these untitled projects were saved. Recover one, then save it.</p>
+        <ul class="recent-list">${recoverable.map((item) => `<li class="recent-row"><button class="recent-open" data-recover="${escapeHtml(item.id)}">
+          <span class="recent-icon">${icon("resume", 24)}</span>
+          <span class="recent-lines"><strong>Untitled project</strong><small>Last changed ${escapeHtml(formatDate(item.modified_at))}</small></span>
+          <span class="recent-when">Recover</span></button></li>`).join("")}</ul>
+      </section>` : ""}
+      <section class="start-section">
+        <div class="start-section-head"><h2>Recent projects</h2>${recent.length ? '<button class="link-button" data-start="clear-recent">Clear</button>' : ""}</div>
+        ${recent.length ? `<ul class="recent-list">${recent.map(recentRow).join("")}</ul>`
+          : '<p class="start-note">Projects you open or save appear here.</p>'}
+      </section>
+      <label class="check start-reopen"><input type="checkbox" id="reopen-last" ${state.preferences?.reopenLast ? "checked" : ""} /> Reopen the last project when Forge3D starts</label>
+    </div>`;
+  elements.startScreen.querySelectorAll("[data-start]").forEach((button) => button.addEventListener("click", () => projectCommand(button.dataset.start)));
+  elements.startScreen.querySelectorAll("[data-open-recent]").forEach((button) => button.addEventListener("click", () => projectCommand("open", { path: button.dataset.openRecent })));
+  elements.startScreen.querySelectorAll("[data-remove-recent]").forEach((button) => button.addEventListener("click", () => projectCommand("remove-recent", { path: button.dataset.removeRecent })));
+  elements.startScreen.querySelectorAll("[data-recover]").forEach((button) => button.addEventListener("click", () => projectCommand("recover", { id: button.dataset.recover })));
+  elements.startScreen.querySelector("#reopen-last")?.addEventListener("change", (event) => projectCommand("preferences", { reopenLast: event.target.checked }));
+}
+
+let fileMenuClosedAt = 0;
+function openFileMenu() {
+  // A click on File while its menu is open closes it: the pointerdown already did, so the click must not reopen it.
+  if (Date.now() - fileMenuClosedAt < 300) return;
+  const items = fileMenuModel({ project: state.project, recent: state.recent, busy: Boolean(state.activeJob) }).map((item) => {
+    if (item === "-" || item.heading) return item;
+    if (item.path) return { ...item, run: () => projectCommand("open", { path: item.path }) };
+    return { ...item, run: () => projectCommand(item.id) };
+  });
+  elements.fileMenu.setAttribute("aria-expanded", "true");
+  const menu = openMenu(elements.fileMenu.getBoundingClientRect(), items, {
+    align: "left",
+    label: "File",
+    onClose: () => { elements.fileMenu.setAttribute("aria-expanded", "false"); fileMenuClosedAt = Date.now(); },
+  });
+  menu.classList.add("file-menu");
+  menu.querySelector("button:not(:disabled)")?.focus();
+}
+
+let projectBusy = false;
+async function projectCommand(command, payload = {}) {
+  if (projectBusy) return;
+  const project = api.project;
+  if (!project) return toast("This build of Forge3D has no project support", "error");
+  projectBusy = true;
+  try {
+    let result = null;
+    if (command === "new") result = await project.create({ settings: runSettings });
+    else if (command === "open") result = await project.open(payload);
+    else if (command === "recover") result = await project.openRecovered(payload);
+    else if (command === "save") result = await project.save();
+    else if (command === "save-as") result = await project.saveAs();
+    else if (command === "close") result = await project.close();
+    else if (command === "reveal") await project.reveal();
+    else if (command === "remove-recent") result = await project.removeRecent(payload);
+    else if (command === "clear-recent") result = await project.clearRecent();
+    else if (command === "preferences") result = await project.setPreferences(payload);
+    if (result) {
+      const { canceled, saved, ...next } = result;
+      state = { ...state, ...next };
+      renderAll();
+      if (saved) toast(`Saved ${state.project?.name || "the project"}`, "success");
+      if (command === "new" && !canceled) elements.prompt.focus();
+    }
+  } catch (error) {
+    toast(error.message.replace(/^Error invoking remote method '[^']+': (Error: )?/, ""), "error");
+  } finally {
+    projectBusy = false;
+  }
+}
+
 /* ── composer, approvals, and orchestration ─────────────────── */
 
 function renderAttachments() {
@@ -1350,6 +1540,7 @@ function renderApproval() {
 }
 
 function renderAll({ preview = true } = {}) {
+  syncProject();
   if (!selectedRunId && state.runs.length && !composing) selectedRunId = state.runs[0].run_id;
   if (selectedRunId && !state.runs.some((run) => run.run_id === selectedRunId)) selectedRunId = state.runs[0]?.run_id || null;
   renderDependencies();
@@ -1362,6 +1553,8 @@ function renderAll({ preview = true } = {}) {
   renderComposer();
   renderApproval();
   renderHud();
+  renderProjectChrome();
+  syncView();
   if (preview || previewKind === "running") renderPreview();
 }
 
@@ -1375,6 +1568,7 @@ function selectRun(runId) {
 
 function selectArtifact(path) {
   selectedArtifactPath = path;
+  syncView();
   renderInspector();
   renderFilmstrip();
   renderPreview();
@@ -1671,7 +1865,17 @@ document.addEventListener("keydown", (event) => {
     if (showSetup && !document.querySelector(".scrim")) openSetup(false);
     return;
   }
+  const command = shortcutCommand(event);
+  if (command) {
+    event.preventDefault();
+    if (document.querySelector(".scrim")) return; // a Forge3D dialog is open
+    closeMenu();
+    if ((command === "save" || command === "save-as") && !state.project) return;
+    projectCommand(command);
+    return;
+  }
   if (!(event.ctrlKey || event.metaKey) || event.shiftKey || event.altKey) return;
+  if (!state.project) return; // the start screen has no workstation to drive
   const key = event.key.toLowerCase();
   if (key === "k") { event.preventDefault(); elements.prompt.focus(); elements.prompt.select(); }
   else if (key === "b") { event.preventDefault(); setPanel("library", !panels.library); }
@@ -1679,6 +1883,7 @@ document.addEventListener("keydown", (event) => {
 });
 
 elements.gateChip.addEventListener("click", () => openSetup(true));
+elements.fileMenu.addEventListener("click", openFileMenu);
 elements.dependencyStrip.addEventListener("click", () => openSetup(!showSetup));
 
 addEventListener("resize", updateDockOffset);
@@ -1711,6 +1916,12 @@ api.onState((next) => { state = { ...state, ...next }; renderAll({ preview: !sta
 api.onEvent(() => scheduleRefresh());
 api.onApproval((request) => { approval = request; renderApproval(); });
 api.onError((message) => toast(message, "error"));
+
+try {
+  // The project and the recent list come back at once; bootstrap waits for Codex App Server, which can take seconds.
+  state = { ...state, ...(await api.refreshTools({})) };
+  renderAll();
+} catch { /* bootstrap below reports a failure */ }
 
 try {
   state = { ...state, ...(await api.bootstrap()) };

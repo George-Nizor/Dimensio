@@ -208,11 +208,26 @@ srv.listen(0, "127.0.0.1", async () => {
     new MutationObserver((list) => { for (const r of list) { if (r.type === "attributes") fixImg(r.target); else r.addedNodes.forEach((n) => { if (n.nodeType === 1) { if (n.tagName === "IMG") fixImg(n); n.querySelectorAll?.("img").forEach(fixImg); } }); } })
       .observe(document, { subtree: true, childList: true, attributes: true, attributeFilter: ["src"] });
     const noop = () => () => {};
-    window.forge3d = { bootstrap: async () => ({ version: "0.2.2", activeJob: active, appServerError: err, skill, tools, runs, models: [{ id: "gpt-5", displayName: "GPT-5" }] }),
-      onState: noop, onEvent: noop, onApproval: (cb) => { window.__approve = cb; return () => {}; }, onError: noop, refreshTools: async () => ({}), capabilities: async () => { await new Promise((r) => setTimeout(r, sc === "checkingcaps" ? 60000 : 150)); return capsResult; }, artifactAction: async () => ({}), pickAttachments: async () => [], continueRun: async () => ({}) };
+    // Projects: the start screen has none open; every other scene works inside one.
+    const home = "C:\\Users\\George\\Documents\\Forge3D";
+    const recent = [
+      { path: `${home}\\Projects\\Medical pod\\Medical pod.forge3d`, name: "Medical pod", folder: `${home}\\Projects\\Medical pod`, opened_at: iso(70), missing: false },
+      { path: `${home}\\Earlier runs.forge3d`, name: "Earlier runs", folder: home, opened_at: iso(60 * 30), missing: false },
+      { path: "D:\\Art\\Controller\\Controller.forge3d", name: "Controller", folder: "D:\\Art\\Controller", opened_at: iso(60 * 24 * 6), missing: true },
+    ];
+    const project = ["start", "startempty"].includes(sc) ? null
+      : { id: "p1", name: sc === "untitled" ? "Untitled project" : "Medical pod", file: sc === "untitled" ? null : recent[0].path, folder: recent[0].folder, untitled: sc === "untitled", dirty: ["untitled", "filemenu"].includes(sc), settings: {}, view: {} };
+    if (sc === "untitled") runs = [done];
+    const projectState = () => ({ project, runs, recent: sc === "startempty" ? [] : recent, recoverable: sc === "start" ? [{ id: "20261009T221500Z-1a2b3c4d", modified_at: iso(60 * 14) }] : [], preferences: { reopenLast: false } });
+    const projectApi = { create: async () => projectState(), open: async () => projectState(), openRecovered: async () => projectState(), save: async () => projectState(), saveAs: async () => projectState(),
+      close: async () => projectState(), reveal: async () => ({}), setSettings: async () => project, setView: async () => null, removeRecent: async () => projectState(), clearRecent: async () => projectState(), setPreferences: async () => projectState() };
+    window.forge3d = { bootstrap: async () => ({ version: "0.2.2", activeJob: active, appServerError: err, skill, tools, runs, models: [{ id: "gpt-5", displayName: "GPT-5" }], ...projectState() }),
+      project: projectApi, onState: noop, onEvent: noop, onApproval: (cb) => { window.__approve = cb; return () => {}; }, onError: noop, refreshTools: async () => projectState(), capabilities: async () => { await new Promise((r) => setTimeout(r, sc === "checkingcaps" ? 60000 : 150)); return capsResult; }, artifactAction: async () => ({}), pickAttachments: async () => [], continueRun: async () => ({}) };
   });
   const sel = async (s) => { await page.click(s).catch(() => console.log("miss", s)); };
   const scenes = {
+    start: async () => {}, startempty: async () => {}, untitled: async () => {},
+    filemenu: async () => { await sel("#file-menu"); },
     first: async () => {}, checking: async () => {}, offline: async () => {}, plugin: async () => {}, done: async () => {},
     image: async () => { await sel('[data-tab="artifacts"]'); await sel('[data-artifact-path="renders/hero.png"]'); },
     model: async () => { await sel('[data-tab="artifacts"]'); await sel('[data-artifact-path="model.glb"]'); await page.waitForTimeout(2500); },

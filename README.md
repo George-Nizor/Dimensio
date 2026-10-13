@@ -58,7 +58,15 @@ it. Check `prepared-input.webp` before blaming the model for a crop it was given
 
 ## The desktop
 
-A viewport-first workstation: prompt, attachments, run settings and Run in the top bar; a full-bleed
+Forge3D opens on a start screen: **New project**, **Open project…**, your recent projects, and any
+untitled work a crash left behind. The **File** menu beside the name has New (Ctrl+N), Open (Ctrl+O),
+the recent list, Save (Ctrl+S), Save as (Ctrl+Shift+S), Show project folder and Close project. The
+window title carries the project name, with `●` while it has unsaved changes, and closing, opening
+or starting another project asks whether to save first. Tick "Reopen the last project when Forge3D
+starts" on the start screen to skip it; passing a `.forge3d` path on the command line opens that
+project directly.
+
+Inside a project it is a viewport-first workstation: prompt, attachments, run settings and Run in the top bar; a full-bleed
 viewport with orbit, pan, framing, shading, capture and fullscreen tools on the left; run history and
 a Steps / Files / Checks / Logs inspector on the right; a Plan, Build, Check, Output dock with a
 filmstrip of artifacts at the bottom; one status bar for Codex and tool readiness.
@@ -83,13 +91,25 @@ Per-file actions: reveal, open, open in Blender, review in Godot, copy path, and
 format through headless Blender. Per-run actions: duplicate, archive, and trash to the Recycle Bin.
 Paths are checked against the run root first.
 
-## Runs and files
+## Projects, runs and files
 
-Each job gets a self-contained folder:
+A project is a folder with one manifest and its runs:
 
 ```text
-%USERPROFILE%\Documents\Forge3D\runs\<timestamp>-<slug>-<id>
+%USERPROFILE%\Documents\Forge3D\Projects\Bottle\     (the default location; any folder works)
+  Bottle.forge3d                                     project manifest: id, run settings, last selection
+  runs\<timestamp>-<slug>-<id>\                     one self-contained folder per job
 ```
+
+Runs are written as they happen, so a Save only has the project's own state to write: its run
+settings and where you left off. A new project is untitled, and its runs are kept under
+`%LOCALAPPDATA%\Instrumenta\Forge3D\untitled` until the first Save moves them into the chosen
+folder. Discarding an untitled project sends that folder to the Recycle Bin. Save as on a saved
+project copies it, runs and all, and leaves the original where it was.
+
+Runs made before projects existed (`Documents\Forge3D\runs`) became a
+project called **Earlier runs** the first time this version started. A manifest was added beside
+the folder and nothing was moved. It shows in the recent list.
 
 Attachments are copied in before Codex starts. `run.json` records the prompt, route, settings,
 steps, relative artifacts, validation, timestamps, transcript, and Codex thread and turn IDs. New

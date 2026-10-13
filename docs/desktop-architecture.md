@@ -1,7 +1,42 @@
 # Forge3D desktop architecture
 
 Forge3D 0.3.0 wraps the prompt-first toolkit in a local Electron client. It runs one Codex job at a
-time and stores the complete job under `%USERPROFILE%\Documents\Forge3D\runs`.
+time and stores each complete job inside the open project, under `<project folder>\runs`.
+
+## Projects
+
+`src/lib/project-store.cjs` holds the rules and `src/main.cjs` owns the session. A project is a
+folder holding `<Name>.forge3d` (format `forge3d-project`, schema 1: project id, timestamps, app
+version, `runs_directory: "runs"`, the run settings, and the selected run and artifact) and a
+`runs/` directory that `RunStore` reads exactly as before. The project's name is the file's name.
+
+- **Launch.** The start screen is the default. A `.forge3d` path in `argv`, or the most recent
+  project when "Reopen the last project" is on, opens straight away instead. Nothing is selected
+  automatically until a project is open.
+- **New.** Creates an untitled project in a scratch folder under
+  `%LOCALAPPDATA%\Instrumenta\Forge3D\untitled`. It counts as unsaved once it holds a run.
+- **Save / Save as.** The native Save dialog's choice `X\Name.forge3d` becomes `X\Name\Name.forge3d`,
+  unless it already is an empty folder of that name. A non-empty folder is refused. An untitled
+  project's `runs/` is moved (copied, then removed, across drives). A saved project's Save as copies
+  it and gets a new project id.
+- **Unsaved changes.** An untitled project with runs, or changed run settings in a saved one. The
+  selection is saved with the project but never makes it unsaved. New, Open, Close and closing the
+  window ask Save / Don't save / Cancel through a native message box. Don't save on an untitled
+  project moves its folder to the Recycle Bin.
+- **Busy.** New, Open, Save as and Close are refused while a job is running, because the agent's
+  writable root is inside the project.
+- **Codex.** App Server is started in the open project's runs folder (the state root on the start
+  screen). Switching projects retires the old server, and the next request starts a new one.
+- **Recent projects** are kept per user in `%LOCALAPPDATA%\Instrumenta\Forge3D\config\recent-projects.json`
+  (ten, newest first, missing ones flagged), along with the reopen preference.
+- **Crash recovery.** Empty scratch folders are pruned at start. Ones holding runs are offered on
+  the start screen under "Unsaved work".
+- **Earlier runs.** On first start, a `Documents\Forge3D\runs` library from before projects gains
+  `Documents\Forge3D\Earlier runs.forge3d` and joins the recent list. Nothing is moved.
+
+The renderer draws the start screen and the File menu (`src/renderer/project-view.mjs` holds the
+menu model, shortcuts and title rules). The window title, `● Name — Forge3D` while unsaved, is set
+by the main process. The page's own `<title>` never replaces it.
 
 ## Process boundary
 
@@ -22,8 +57,9 @@ receives a general filesystem API.
 The shipped UI uses the viewport-first workstation recorded in
 [the brand guide](brand-identity.md):
 
-- One application bar contains the approved mark, prompt omnibox, attachment action, settings, and
-  the primary Run control.
+- One application bar contains the approved mark, the File menu and project name, the prompt omnibox,
+  the attachment action, settings, and the primary Run control. With no project open, only the
+  mark, File and the theme remain, above the start screen.
 - The viewport fills the workspace below it and shows a studio field when no artifact is selected.
 - A compact icon rail on the left controls the view.
 - Run history and the inspector float on the right. Either panel can collapse into an edge tab.
