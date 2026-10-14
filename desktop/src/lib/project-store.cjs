@@ -156,11 +156,20 @@ function isEmptyDirectory(folder) {
 // Turns what a Save dialog returned into the folder and manifest the project will use. "D:\Art\Bottle.forge3d"
 // becomes "D:\Art\Bottle\Bottle.forge3d", so a project never spills its runs/ beside unrelated files. Picking a file
 // inside an empty folder of the same name ("D:\Art\Bottle\Bottle.forge3d") uses that folder as it is.
+// A project name as typed: trimmed, without a trailing .forge3d, and usable as a Windows file and folder name.
+function projectStem(name) {
+  let stem = String(name ?? "").trim();
+  if (stem.toLowerCase().endsWith(PROJECT_EXTENSION)) stem = stem.slice(0, -PROJECT_EXTENSION.length).trim();
+  if (!stem || stem === "." || stem === ".." || /[<>:"/\\|?*\u0000-\u001f]/.test(stem)) throw new Error("Choose a project name without path characters");
+  if (/[. ]$/.test(stem)) throw new Error("A project name cannot end with a dot or a space");
+  if (stem.length > 120) throw new Error("Choose a project name of 120 characters or fewer");
+  return stem;
+}
+
 function layoutForSavePath(chosen) {
   if (typeof chosen !== "string" || !path.isAbsolute(chosen)) throw new Error("A project location must be an absolute path");
   const extension = path.extname(chosen);
-  const stem = (extension.toLowerCase() === PROJECT_EXTENSION ? path.basename(chosen, extension) : path.basename(chosen)).trim();
-  if (!stem || stem === "." || stem === ".." || /[<>:"/\\|?*\u0000-\u001f]/.test(stem)) throw new Error("Choose a project name without path characters");
+  const stem = projectStem(extension.toLowerCase() === PROJECT_EXTENSION ? path.basename(chosen, extension) : path.basename(chosen));
   const parent = path.dirname(path.resolve(chosen));
   const parentNamed = path.basename(parent).toLowerCase() === stem.toLowerCase();
   const reuseParent = parentNamed && !projectFilesIn(parent).length && !fs.existsSync(path.join(parent, RUNS_DIRECTORY));
@@ -195,6 +204,49 @@ function materializeProject(layout, { sourceFolder = null, move = false, manifes
   }
   fs.mkdirSync(target, { recursive: true });
   return writeProject(layout.file, manifest);
+}
+
+/* ── renaming and deleting a saved project ─────────────────── */
+
+// Renames a saved project: its .forge3d file, and its folder too when the folder carries the project's name (the
+// layout Save makes). An adopted library such as Documents\Forge3D keeps its folder name. Returns the new
+// { file, folder, name }. Nothing is left half-renamed: a folder that cannot be renamed puts the file back.
+function renameProject(file, name) {
+  const stem = projectStem(name);
+  const folder = path.dirname(file);
+  const oldStem = projectName(file);
+  if (stem === oldStem) return { file, folder, name: stem };
+  const ownsFolder = path.basename(folder).toLowerCase() === oldStem.toLowerCase();
+  const nextFolder = ownsFolder ? path.join(path.dirname(folder), stem) : folder;
+  if (ownsFolder && !samePath(nextFolder, folder) && fs.existsSync(nextFolder)) {
+    throw new Error(`A folder named "${stem}" already exists beside this project. Choose another name.`);
+  }
+  const renamedFile = path.join(folder, `${stem}${PROJECT_EXTENSION}`);
+  if (!samePath(renamedFile, file) && fs.existsSync(renamedFile)) throw new Error(`"${stem}${PROJECT_EXTENSION}" already exists in the project folder. Choose another name.`);
+  renameWithRetry(file, renamedFile);
+  if (nextFolder !== folder) {
+    try {
+      renameWithRetry(folder, nextFolder);
+    } catch (error) {
+      try { renameWithRetry(renamedFile, file); } catch { /* reported below */ }
+      throw new Error(`Forge3D could not rename the project folder: ${error.message}`);
+    }
+  }
+  return { file: path.join(nextFolder, `${stem}${PROJECT_EXTENSION}`), folder: nextFolder, name: stem };
+}
+
+const IGNORABLE_FILES = new Set(["desktop.ini", "thumbs.db", ".ds_store"]);
+
+// What deleting a project moves to the Recycle Bin: the whole folder when it holds nothing but the project (its
+// .forge3d file and runs/), so it comes back in one piece; otherwise only those two, so other files in the folder
+// (Documents\Forge3D also holds Projects\) stay where they are.
+function projectTrashTargets(file) {
+  const folder = path.dirname(file);
+  const runs = path.join(folder, RUNS_DIRECTORY);
+  const own = new Set([path.basename(file).toLowerCase(), RUNS_DIRECTORY]);
+  const entries = fs.readdirSync(folder).map((entry) => entry.toLowerCase()).filter((entry) => !IGNORABLE_FILES.has(entry));
+  if (entries.every((entry) => own.has(entry))) return { whole: true, targets: [folder] };
+  return { whole: false, targets: [file, ...(fs.existsSync(runs) ? [runs] : [])] };
 }
 
 /* ── untitled scratch projects ─────────────────────────────── */
@@ -372,8 +424,11 @@ module.exports = {
   newManifest,
   projectFromArgv,
   projectName,
+  projectStem,
+  projectTrashTargets,
   readProject,
   recoverableScratch,
+  renameProject,
   retireScratch,
   runsRoot,
   sameSettings,

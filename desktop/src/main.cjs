@@ -48,8 +48,10 @@ const {
   newManifest,
   projectFromArgv,
   projectName,
+  projectTrashTargets,
   readProject,
   recoverableScratch,
+  renameProject,
   retireScratch,
   runsRoot,
   sameSettings,
@@ -61,6 +63,11 @@ const {
   writeProject,
   writeProjectView,
 } = require("./lib/project-store.cjs");
+
+// One Forge3D at a time. A second launch hands its command line to this one, which comes to the front and opens a
+// project named there.
+const singleInstance = app.requestSingleInstanceLock();
+if (!singleInstance) app.quit();
 
 protocol.registerSchemesAsPrivileged([
   {
@@ -351,6 +358,74 @@ async function openRecovered(payload = {}) {
   if (!proceed) return { canceled: true, ...currentState() };
   await leaveSession({ discard });
   return openSession({ folder, untitled: true, manifest: newManifest({ appVersion: BUNDLE_VERSION }) });
+}
+
+// Renames the open, saved project (its file, and its folder when the folder carries its name). The agent is
+// stopped first, as for Save, because the runs folder moves with it.
+async function renameOpenProject(payload = {}) {
+  if (!project) throw new Error("No project is open");
+  if (project.untitled) throw new Error("Save the project first. Its name is chosen when it is saved.");
+  assertIdle("renaming the project");
+  flushRunEvents();
+  await releaseProjectFolder();
+  const previous = project.file;
+  const renamed = renameProject(previous, payload.name);
+  if (renamed.file === previous) return currentState();
+  recentProjects.remove(previous);
+  recentProjects.add(renamed.file);
+  project = { ...project, file: renamed.file, folder: renamed.folder };
+  runStore = new RunStore(runsRoot(renamed.folder));
+  sendState();
+  return currentState();
+}
+
+// Moves the open, saved project to the Recycle Bin after asking, and returns to the start screen.
+async function deleteOpenProject() {
+  if (!project) throw new Error("No project is open");
+  if (project.untitled) throw new Error("This project is not saved. Close it and choose Don't save to discard it.");
+  assertIdle("deleting the project");
+  const file = project.file;
+  const name = projectName(file);
+  const { whole, targets } = projectTrashTargets(file);
+  const { response } = await dialog.showMessageBox(mainWindow, {
+    type: "warning",
+    title: "Delete project",
+    message: `Move "${name}" to the Recycle Bin?`,
+    detail: whole
+      ? "Its folder goes to the Recycle Bin with every run and file in it. You can restore it from there."
+      : "The project file and its runs folder go to the Recycle Bin. Other files in the folder stay where they are.",
+    buttons: ["Move to Recycle Bin", "Cancel"],
+    defaultId: 1,
+    cancelId: 1,
+    noLink: true,
+  });
+  if (response !== 0) return { canceled: true, ...currentState() };
+  flushRunEvents();
+  await releaseProjectFolder();
+  project = null;
+  runStore = null;
+  for (const target of targets) {
+    try {
+      await shell.trashItem(target);
+    } catch (error) {
+      sendState();
+      throw new Error(`Forge3D could not move ${target} to the Recycle Bin: ${error.message}`);
+    }
+  }
+  recentProjects.remove(file);
+  refreshRecoverable();
+  sendState();
+  return currentState();
+}
+
+// A second launch: bring this window forward and open the project it named, if any.
+function onSecondInstance(argv = []) {
+  if (!mainWindow || mainWindow.isDestroyed()) return;
+  if (mainWindow.isMinimized()) mainWindow.restore();
+  mainWindow.show();
+  mainWindow.focus();
+  const file = projectFromArgv(argv.slice(1));
+  if (file) openProject({ path: file }).catch((error) => send("forge3d:error", `Forge3D could not open ${path.basename(file)}: ${error.message}`));
 }
 
 async function closeProject() {
@@ -916,6 +991,8 @@ function registerIpc() {
   handle("forge3d:project-save", async () => ({ saved: await saveProject(), ...currentState() }));
   handle("forge3d:project-save-as", async () => ({ saved: await saveProjectAs(), ...currentState() }));
   handle("forge3d:project-close", () => closeProject());
+  handle("forge3d:project-rename", (payload = {}) => renameOpenProject(payload));
+  handle("forge3d:project-delete", () => deleteOpenProject());
   handle("forge3d:project-reveal", async () => {
     if (!project) throw new Error("No project is open");
     if (project.file) shell.showItemInFolder(project.file);
@@ -965,6 +1042,7 @@ function registerIpc() {
 }
 
 app.whenReady().then(async () => {
+  if (!singleInstance) return;
   const legacyLibrary = path.join(app.getPath("documents"), "Forge3D");
   const localStateRoot = path.join(process.env.LOCALAPPDATA || app.getPath("appData"), "Instrumenta", "Forge3D");
   const resourceBase = app.isPackaged ? process.resourcesPath : path.join(repoRoot, "desktop");
@@ -1016,6 +1094,7 @@ app.whenReady().then(async () => {
   });
 });
 
+app.on("second-instance", (_event, argv) => onSecondInstance(argv));
 app.on("before-quit", () => {
   try { flushRunEvents(); } catch {}
   agents?.closeAllNow();

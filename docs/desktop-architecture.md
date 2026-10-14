@@ -27,8 +27,14 @@ version, `runs_directory: "runs"`, the run settings, and the selected run and ar
   window ask Save / Don't save / Cancel through a native message box. Don't save on an untitled
   project moves its folder to the Recycle Bin. Closing the window during a run first asks whether to
   stop the run, even when nothing is unsaved; stopping keeps its files and the run can be resumed.
-- **Busy.** New, Open, Save as and Close are refused while a job is running, because the agent's
-  writable root is inside the project.
+- **Rename and delete** (File menu, saved projects only). Rename renames the `.forge3d` file, and the
+  folder too when it carries the project's name. Delete asks first, then moves the project to the
+  Recycle Bin: the whole folder when it holds nothing but the project, otherwise only the file and
+  `runs/`, so other files beside an adopted library stay put. Both stop the agent first.
+- **Busy.** New, Open, Save as, Rename, Delete and Close are refused while a job is running, because
+  the agent's writable root is inside the project.
+- **One instance.** `app.requestSingleInstanceLock()`: a second launch brings the window forward and
+  opens a `.forge3d` path from its command line.
 - **Agent.** Claude Code runs in the run's own folder, one process per run. Codex's App Server is
   started in the open project's runs folder (the state root on the start screen). Switching projects
   retires the old server, and the next request starts a new one.

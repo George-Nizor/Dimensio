@@ -18,7 +18,7 @@ test("the File menu offers New, Open, recent projects, Save, Save as and Close",
   const { fileMenuModel } = await view();
   const items = fileMenuModel({ project: { name: "Spoon", file: "D:\\Spoon\\Spoon.forge3d" }, recent });
   const ids = items.filter((item) => item !== "-" && !item.heading).map((item) => item.id);
-  assert.deepEqual(ids.filter((id) => !id.startsWith("recent:")), ["new", "open", "clear-recent", "save", "save-as", "reveal", "close"]);
+  assert.deepEqual(ids.filter((id) => !id.startsWith("recent:")), ["new", "open", "clear-recent", "save", "save-as", "rename", "reveal", "close", "delete"]);
   assert.equal(items.find((item) => item.id === "new").hint, "Ctrl+N");
   assert.equal(items.find((item) => item.id === "save-as").hint, "Ctrl+Shift+S");
   assert.equal(items.find((item) => item.label === "Pod").disabled, true, "a missing project cannot be opened");
@@ -67,4 +67,16 @@ test("titles and folders read the way the main process writes them", async () =>
   assert.equal(projectTitle({ name: "Untitled project", dirty: true }), "● Untitled project — Forge3D");
   assert.equal(displayFolder("C:\\Users\\George\\Documents\\Forge3D"), "~\\Documents\\Forge3D");
   assert.equal(displayFolder("D:\\Art"), "D:\\Art");
+});
+
+test("rename and delete are for a saved project with no run in flight", async () => {
+  const { fileMenuModel } = await view();
+  const state = (options) => Object.fromEntries(fileMenuModel(options).filter((item) => item.id).map((item) => [item.id, Boolean(item.disabled)]));
+  const saved = { name: "Spoon", file: "D:\\Spoon\\Spoon.forge3d", untitled: false };
+  assert.deepEqual([state({ project: saved }).rename, state({ project: saved }).delete], [false, false]);
+  const untitled = { name: "Untitled project", file: null, untitled: true };
+  assert.deepEqual([state({ project: untitled }).rename, state({ project: untitled }).delete], [true, true]);
+  assert.equal(fileMenuModel({ project: untitled }).find((item) => item.id === "rename").title, "Save the project first");
+  assert.deepEqual([state({ project: saved, busy: true }).rename, state({ project: saved, busy: true }).delete], [true, true]);
+  assert.equal(fileMenuModel({ project: null }).find((item) => item.id === "delete").disabled, true);
 });

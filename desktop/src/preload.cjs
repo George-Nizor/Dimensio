@@ -41,6 +41,8 @@ contextBridge.exposeInMainWorld("forge3d", Object.freeze({
     save: invoke("forge3d:project-save"),
     saveAs: invoke("forge3d:project-save-as"),
     close: invoke("forge3d:project-close"),
+    changeName: invoke("forge3d:project-rename"),
+    trash: invoke("forge3d:project-delete"),
     reveal: invoke("forge3d:project-reveal"),
     setSettings: invoke("forge3d:project-settings"),
     setView: invoke("forge3d:project-view"),

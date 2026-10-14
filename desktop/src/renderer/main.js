@@ -1498,6 +1498,12 @@ async function projectCommand(command, payload = {}) {
     else if (command === "save") result = await project.save();
     else if (command === "save-as") result = await project.saveAs();
     else if (command === "close") result = await project.close();
+    else if (command === "rename") {
+      const name = await askDialog({ eyebrow: "Project", title: "Rename project", body: "The project file gets the new name, and so does its folder when the folder has the project's name.", input: { value: state.project?.name || "" }, confirmLabel: "Rename" });
+      if (name === null || !name.trim() || name.trim() === state.project?.name) return;
+      result = await project.changeName({ name });
+      toast(`Renamed to ${result.project?.name || name.trim()}`, "success");
+    } else if (command === "delete") result = await project.trash();
     else if (command === "reveal") await project.reveal();
     else if (command === "remove-recent") result = await project.removeRecent(payload);
     else if (command === "clear-recent") result = await project.clearRecent();

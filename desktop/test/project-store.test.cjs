@@ -16,8 +16,11 @@ const {
   materializeProject,
   newManifest,
   projectFromArgv,
+  projectStem,
+  projectTrashTargets,
   readProject,
   recoverableScratch,
+  renameProject,
   retireScratch,
   runsRoot,
   SAVED_MARKER,
@@ -253,4 +256,67 @@ test("fix 3: closing the window during a run always asks, even with nothing unsa
   assert.match(close, /closeAction\(\{ running, project, dirty: projectDirty\(\) \}\)/);
   assert.ok(close.indexOf("confirmStopRun") < close.indexOf("confirmLeave"), "the run is asked about before saving");
   assert.match(body("stopActiveRun"), /setStatus\(job\.runId, "interrupted", reason\)/);
+});
+
+test("fix 4: renaming a project renames its file, and its folder when the folder has its name", (t) => {
+  const root = temporaryDirectory(t);
+  const file = path.join(root, "Bottle", "Bottle.forge3d");
+  fs.mkdirSync(path.join(root, "Bottle", "runs"), { recursive: true });
+  writeProject(file, newManifest());
+  const renamed = renameProject(file, "  Glass bottle.forge3d ");
+  assert.deepEqual(renamed, { file: path.join(root, "Glass bottle", "Glass bottle.forge3d"), folder: path.join(root, "Glass bottle"), name: "Glass bottle" });
+  assert.equal(fs.existsSync(renamed.file), true);
+  assert.equal(fs.existsSync(path.join(renamed.folder, "runs")), true);
+  assert.equal(fs.existsSync(path.join(root, "Bottle")), false);
+  assert.deepEqual(renameProject(renamed.file, "Glass bottle"), { file: renamed.file, folder: renamed.folder, name: "Glass bottle" });
+
+  // A folder that does not carry the project's name (the adopted library) keeps its name.
+  const library = path.join(root, "Forge3D");
+  fs.mkdirSync(path.join(library, "Projects"), { recursive: true });
+  const earlier = path.join(library, "Earlier runs.forge3d");
+  writeProject(earlier, newManifest());
+  assert.deepEqual(renameProject(earlier, "Old work"), { file: path.join(library, "Old work.forge3d"), folder: library, name: "Old work" });
+
+  fs.mkdirSync(path.join(root, "Taken"));
+  assert.throws(() => renameProject(renamed.file, "Taken"), /already exists/);
+  assert.equal(fs.existsSync(renamed.file), true, "nothing moved");
+  for (const bad of ["", "a/b", "x:y", "dots.", "..", " "]) assert.throws(() => projectStem(bad), /project name/);
+});
+
+test("fix 4: deleting a project trashes its folder when it holds only the project, else only the project's parts", (t) => {
+  const root = temporaryDirectory(t);
+  const file = path.join(root, "Bottle", "Bottle.forge3d");
+  fs.mkdirSync(path.join(root, "Bottle", "runs"), { recursive: true });
+  writeProject(file, newManifest());
+  fs.writeFileSync(path.join(root, "Bottle", "desktop.ini"), "");
+  assert.deepEqual(projectTrashTargets(file), { whole: true, targets: [path.join(root, "Bottle")] });
+
+  const library = path.join(root, "Forge3D");
+  fs.mkdirSync(path.join(library, "runs"), { recursive: true });
+  fs.mkdirSync(path.join(library, "Projects"));
+  const earlier = path.join(library, "Earlier runs.forge3d");
+  writeProject(earlier, newManifest());
+  assert.deepEqual(projectTrashTargets(earlier), { whole: false, targets: [earlier, path.join(library, "runs")] }, "Projects\\ beside it is never touched");
+
+  const remove = body("deleteOpenProject");
+  assert.match(remove, /showMessageBox/);
+  assert.ok(remove.indexOf("showMessageBox") < remove.indexOf("shell.trashItem"), "asks before anything moves");
+  assert.ok(remove.indexOf("releaseProjectFolder") < remove.indexOf("shell.trashItem"), "the agent is stopped first");
+  assert.match(remove, /recentProjects\.remove\(file\)/);
+  assert.match(body("renameOpenProject"), /releaseProjectFolder\(\)[^]*renameProject\(previous, payload\.name\)/);
+});
+
+test("fix 4: one Forge3D at a time; a second launch focuses the window and opens the project it names", (t) => {
+  assert.match(main, /const singleInstance = app\.requestSingleInstanceLock\(\);\nif \(!singleInstance\) app\.quit\(\);/);
+  assert.match(main, /app\.whenReady\(\)\.then\(async \(\) => \{\n  if \(!singleInstance\) return;/);
+  assert.match(main, /app\.on\("second-instance", \(_event, argv\) => onSecondInstance\(argv\)\)/);
+  const second = body("onSecondInstance");
+  assert.match(second, /mainWindow\.focus\(\)/);
+  assert.match(second, /projectFromArgv\(argv\.slice\(1\)\)[^]*openProject\(\{ path: file \}\)/);
+  // The argv a second instance hands over carries Chromium switches; only an existing .forge3d path counts.
+  const root = temporaryDirectory(t);
+  const file = path.join(root, "Pod.forge3d");
+  writeProject(file, newManifest());
+  assert.equal(projectFromArgv(["--allow-file-access-from-files", "--original-process-start-time=1", file]), file);
+  assert.equal(projectFromArgv(["--flag", path.join(root, "Gone.forge3d")]), null);
 });
