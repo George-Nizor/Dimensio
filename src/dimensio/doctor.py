@@ -110,7 +110,7 @@ def check_environment(root: Path | None = None) -> dict[str, Any]:
     file_checks = [
         (
             "blender-task-library",
-            toolkit / "blender" / "forge3d_task.py",
+            toolkit / "blender" / "dimensio_task.py",
             True,
         ),
         (

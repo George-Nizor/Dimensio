@@ -1,4 +1,4 @@
-"""Forge3D's dependency-free host orchestration package."""
+"""Dimensio's dependency-free host orchestration package."""
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-"""Bounded TripoSplat inference entry point for Forge3D's isolated WSL worker."""
+"""Bounded TripoSplat inference entry point for Dimensio's isolated WSL worker."""
 
 from __future__ import annotations
 

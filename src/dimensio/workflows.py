@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Any, Iterable
 
 from .blender import Blender
-from .errors import Forge3DError
+from .errors import DimensioError
 from .models import ModelManager, ModelRunResult, get_model
 from .runs import Run
 
@@ -27,12 +27,12 @@ def make_asset(
     ignore_vram: bool = False,
 ) -> Run:
     if reference is not None and recipe is not None:
-        raise Forge3DError("Use either a reference backend or a recipe, not both.")
+        raise DimensioError("Use either a reference backend or a recipe, not both.")
     if reference is not None and recipe_params:
-        raise Forge3DError("--params applies only to procedural recipes.")
+        raise DimensioError("--params applies only to procedural recipes.")
     if reference is None and recipe is None:
-        raise Forge3DError(
-            "A free-form prompt needs the forge3d skill, run by an agent "
+        raise DimensioError(
+            "A free-form prompt needs the dimensio skill, run by an agent "
             "(Claude Code or Codex), to author the model. For direct CLI use, "
             "supply --reference or an explicit --recipe."
         )
@@ -154,7 +154,7 @@ def process_asset(
 ) -> Run:
     source = source.expanduser().resolve()
     if not source.is_file():
-        raise Forge3DError(f"Input mesh does not exist: {source}")
+        raise DimensioError(f"Input mesh does not exist: {source}")
     run = run or Run.create(
         name=name or source.stem,
         command="process",
@@ -187,7 +187,7 @@ def process_asset(
             "lods",
             "collision",
         }:
-            raise Forge3DError(f"Unsupported process step: {task_name}")
+            raise DimensioError(f"Unsupported process step: {task_name}")
         destination = working_paths[(index - 1) % len(working_paths)]
         step = run.start_step(task_name, backend="blender")
         try:
@@ -286,9 +286,9 @@ def rig_asset(
 ) -> Run:
     source = source.expanduser().resolve()
     if backend not in {"blender", "skintokens"}:
-        raise Forge3DError(f"Unsupported rigging backend: {backend}")
+        raise DimensioError(f"Unsupported rigging backend: {backend}")
     if backend == "blender" and use_skeleton:
-        raise Forge3DError("--use-skeleton is only available with SkinTokens")
+        raise DimensioError("--use-skeleton is only available with SkinTokens")
     run = Run.create(
         name=name or f"{source.stem}-rigged",
         command="rig",
@@ -310,7 +310,7 @@ def rig_asset(
                     "input": source,
                     "output": canonical,
                     "report": rig_report,
-                    "rig_name": "Forge3D_Rig",
+                    "rig_name": "Dimensio_Rig",
                 },
                 timeout=3_600,
             )
@@ -362,7 +362,7 @@ def rig_asset(
             "report": report,
         }
         if backend == "blender":
-            validation_args["objects"] = "Forge3D_Rig"
+            validation_args["objects"] = "Dimensio_Rig"
         blender.task("rig-validate", validation_args)
         validation = _load_report(report)
         run.finish_step(step, outputs={"rig_validation_report": report})
@@ -375,10 +375,10 @@ def rig_asset(
             blender,
             canonical,
             export_args={
-                "armature": "Forge3D_Rig",
+                "armature": "Dimensio_Rig",
                 "deform_bones_only": True,
             },
-            preview_args={"armature": "Forge3D_Rig"},
+            preview_args={"armature": "Dimensio_Rig"},
         )
     else:
         _export_game_outputs(run, blender, canonical)
@@ -580,7 +580,7 @@ def humanoid_retarget_animation(
     profile_data = json.loads(profile.read_text(encoding="utf-8"))
     target_armature = profile_data.get("target_armature")
     if not isinstance(target_armature, str) or not target_armature:
-        raise Forge3DError("Humanoid profile requires target_armature")
+        raise DimensioError("Humanoid profile requires target_armature")
     _export_game_outputs(
         run,
         blender,
@@ -628,7 +628,7 @@ def prepare_animation_request(
     run.manifest["status"] = "awaiting_codex"
     run.manifest["outputs"]["codex_request"] = str(request_path)
     run.manifest["next_step"] = (
-        "Use the forge3d skill and Blender MCP to perform this animation request."
+        "Use the dimensio skill and Blender MCP to perform this animation request."
     )
     run.write()
     return run
@@ -668,12 +668,12 @@ def validate_asset(
 def _select_image_model(backend: str) -> str:
     if backend != "auto":
         return get_model(backend).key
-    raise Forge3DError(
+    raise DimensioError(
         "Automatic image-to-mesh selection is disabled because no local "
         "backend is both production-quality and unconditionally licensed for "
         "commercial game work. Choose `--backend spar3d` only after confirming "
         "current Stability commercial eligibility and accepting its terms. "
-        "For static visual reconstruction use `forge3d models run triposplat`; "
+        "For static visual reconstruction use `dimensio models run triposplat`; "
         "TripoSplat is Gaussian data and is deliberately not accepted as a mesh."
     )
 
@@ -738,16 +738,16 @@ def _export_game_outputs(
 
 def _require_output(path: Path, operation: str) -> None:
     if not path.is_file():
-        raise Forge3DError(f"{operation} did not create its expected output: {path}")
+        raise DimensioError(f"{operation} did not create its expected output: {path}")
 
 
 def _load_report(path: Path) -> dict[str, Any]:
     if not path.is_file():
-        raise Forge3DError(f"Validation did not create its report: {path}")
+        raise DimensioError(f"Validation did not create its report: {path}")
     try:
         data = json.loads(path.read_text(encoding="utf-8"))
     except json.JSONDecodeError as exc:
-        raise Forge3DError(f"Invalid validation report {path}: {exc}") from exc
+        raise DimensioError(f"Invalid validation report {path}: {exc}") from exc
     if not isinstance(data, dict):
-        raise Forge3DError(f"Validation report must contain a JSON object: {path}")
+        raise DimensioError(f"Validation report must contain a JSON object: {path}")
     return data

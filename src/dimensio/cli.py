@@ -10,7 +10,7 @@ from . import __version__
 from .blender import Blender
 from .capabilities import collect as collect_capabilities, render_text as render_capabilities
 from .doctor import check_environment
-from .errors import Forge3DError
+from .errors import DimensioError
 from .models import (
     CLOUD_PROVIDERS,
     MODELS,
@@ -50,7 +50,7 @@ RUNNABLE_IMAGE_MODEL_KEYS = tuple(
 
 def parser() -> argparse.ArgumentParser:
     result = argparse.ArgumentParser(
-        prog="forge3d",
+        prog="dimensio",
         description="Lean local 3D workflow helpers for Blender and Godot, driven by Claude Code or Codex.",
     )
     result.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
@@ -67,7 +67,7 @@ def parser() -> argparse.ArgumentParser:
     caps.add_argument("--json", action="store_true", dest="as_json")
     caps.add_argument(
         "--agent", choices=("claude", "codex"),
-        help="The agent the routes need (default: FORGE3D_AGENT, else claude)",
+        help="The agent the routes need (default: DIMENSIO_AGENT, else claude)",
     )
     caps.set_defaults(handler=_capabilities)
 
@@ -280,11 +280,11 @@ def main(argv: Sequence[str] | None = None) -> int:
     args = parser().parse_args(argv)
     try:
         return int(args.handler(args) or 0)
-    except Forge3DError as exc:
-        print(f"forge3d: {exc}", file=sys.stderr)
+    except DimensioError as exc:
+        print(f"dimensio: {exc}", file=sys.stderr)
         return 2
     except KeyboardInterrupt:
-        print("forge3d: interrupted", file=sys.stderr)
+        print("dimensio: interrupted", file=sys.stderr)
         return 130
 
 
@@ -293,7 +293,7 @@ def _doctor(args: argparse.Namespace) -> int:
     if args.as_json:
         _print_json(report)
     else:
-        print(f"Forge3D root: {report['root']}")
+        print(f"Dimensio root: {report['root']}")
         for check in report["checks"]:
             marker = "OK" if check["ok"] else ("FAIL" if check["required"] else "WARN")
             detail = check.get("version") or check.get("detail") or check.get("path", "")
@@ -438,7 +438,7 @@ def _models_info(args: argparse.Namespace) -> int:
         for key, value in vars(model).items()
     }
     data["install_command"] = (
-        f"forge3d models install {model.key}"
+        f"dimensio models install {model.key}"
         + (" --accept-license" if model.acceptance_required else "")
     )
     if args.as_json:

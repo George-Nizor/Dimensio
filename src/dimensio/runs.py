@@ -11,7 +11,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Iterable
 
-from .errors import Forge3DError
+from .errors import DimensioError
 from .paths import is_within, output_root, slugify
 
 SCHEMA_VERSION = 2
@@ -43,7 +43,7 @@ def file_hash(path: Path) -> str:
 def describe_input(path: Path) -> dict[str, Any]:
     resolved = path.expanduser().resolve()
     if not resolved.is_file():
-        raise Forge3DError(f"Input file does not exist: {resolved}")
+        raise DimensioError(f"Input file does not exist: {resolved}")
     stat = resolved.stat()
     return {
         "path": str(resolved),
@@ -62,7 +62,7 @@ def versioned_run_dir(base: Path, name: str) -> Path:
             return candidate
         except FileExistsError:
             continue
-    raise Forge3DError(f"Too many versions already exist for {slug!r}")
+    raise DimensioError(f"Too many versions already exist for {slug!r}")
 
 
 def _media_type(path: Path) -> str:
@@ -104,7 +104,7 @@ def describe_artifact(
     resolved = candidate.resolve()
     root = run_root.resolve()
     if not is_within(resolved, root):
-        raise Forge3DError(f"Artifact must remain inside the run directory: {resolved}")
+        raise DimensioError(f"Artifact must remain inside the run directory: {resolved}")
     relative = resolved.relative_to(root).as_posix()
     descriptor: dict[str, Any] = {
         "name": name,
@@ -121,17 +121,17 @@ def describe_artifact(
 
 def _validate_manifest(data: Any, manifest_path: Path) -> dict[str, Any]:
     if not isinstance(data, dict):
-        raise Forge3DError(f"Run manifest must be an object: {manifest_path}")
+        raise DimensioError(f"Run manifest must be an object: {manifest_path}")
     version = data.get("schema_version")
     if version not in SUPPORTED_SCHEMA_VERSIONS:
-        raise Forge3DError(
+        raise DimensioError(
             f"Unsupported run schema {version!r} in {manifest_path}; "
             f"expected one of {sorted(SUPPORTED_SCHEMA_VERSIONS)}"
         )
     if not isinstance(data.get("run_id"), str) or not data["run_id"]:
-        raise Forge3DError(f"Run manifest has no run_id: {manifest_path}")
+        raise DimensioError(f"Run manifest has no run_id: {manifest_path}")
     if version == 2 and not isinstance(data.get("artifacts"), list):
-        raise Forge3DError(f"Run schema v2 requires an artifacts list: {manifest_path}")
+        raise DimensioError(f"Run schema v2 requires an artifacts list: {manifest_path}")
     return data
 
 
@@ -188,9 +188,9 @@ class Run:
         try:
             data = json.loads(manifest_path.read_text(encoding="utf-8"))
         except FileNotFoundError as exc:
-            raise Forge3DError(f"No run.json found in {directory}") from exc
+            raise DimensioError(f"No run.json found in {directory}") from exc
         except json.JSONDecodeError as exc:
-            raise Forge3DError(f"Invalid run manifest {manifest_path}: {exc}") from exc
+            raise DimensioError(f"Invalid run manifest {manifest_path}: {exc}") from exc
         return cls(
             directory=directory.resolve(),
             manifest=_validate_manifest(data, manifest_path),

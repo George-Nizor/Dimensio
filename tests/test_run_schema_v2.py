@@ -5,8 +5,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from forge3d.errors import Forge3DError
-from forge3d.runs import Run
+from dimensio.errors import DimensioError
+from dimensio.runs import Run
 
 
 class RunSchemaV2Tests(unittest.TestCase):
@@ -50,7 +50,7 @@ class RunSchemaV2Tests(unittest.TestCase):
             outside.write_bytes(b"glTF")
             run = Run.create(name="Contained", command="process", base=root / "runs")
             step = run.start_step("export")
-            with self.assertRaisesRegex(Forge3DError, "inside the run directory"):
+            with self.assertRaisesRegex(DimensioError, "inside the run directory"):
                 run.finish_step(step, outputs={"model": outside})
 
     def test_unknown_schema_is_rejected(self) -> None:
@@ -60,7 +60,7 @@ class RunSchemaV2Tests(unittest.TestCase):
                 json.dumps({"schema_version": 99, "run_id": "future"}),
                 encoding="utf-8",
             )
-            with self.assertRaisesRegex(Forge3DError, "Unsupported run schema"):
+            with self.assertRaisesRegex(DimensioError, "Unsupported run schema"):
                 Run.load(directory)
 
 

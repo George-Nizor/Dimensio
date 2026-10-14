@@ -4,7 +4,7 @@ import json
 import re
 from pathlib import Path
 
-from forge3d import __version__
+from dimensio import __version__
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -22,7 +22,7 @@ def test_release_identity_is_consistent() -> None:
     assert (ROOT / "desktop" / "assets" / "icon.ico").is_file()
     assert (ROOT / "desktop" / "assets" / "icon.svg").is_file()
     assert (ROOT / "desktop" / "assets" / "icon.png").is_file()
-    blender_source = (ROOT / "blender" / "forge3d_task.py").read_text(encoding="utf-8")
+    blender_source = (ROOT / "blender" / "dimensio_task.py").read_text(encoding="utf-8")
     assert re.search(r'^TOOL_VERSION = "0\.3\.0"$', blender_source, re.MULTILINE)
 
 def test_version_is_plain_semver() -> None:

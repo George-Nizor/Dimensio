@@ -1,15 +1,15 @@
 from __future__ import annotations
 
 
-class Forge3DError(RuntimeError):
+class DimensioError(RuntimeError):
     """Expected user-facing failure."""
 
 
-class ToolNotFoundError(Forge3DError):
+class ToolNotFoundError(DimensioError):
     """A required executable or integration is unavailable."""
 
 
-class CommandError(Forge3DError):
+class CommandError(DimensioError):
     """A child process returned a non-zero status."""
 
     def __init__(

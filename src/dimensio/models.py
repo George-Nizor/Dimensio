@@ -9,7 +9,14 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Iterable
 
-from .errors import Forge3DError, ToolNotFoundError
+from .environment import (
+    INSTALL_MARKER,
+    LEGACY_INSTALL_MARKER,
+    LEGACY_MODELS_SUBDIR,
+    MODELS_SUBDIR,
+    setting,
+)
+from .errors import DimensioError, ToolNotFoundError
 from .paths import slugify, toolkit_root, workspace_root
 from .process import CommandResult, CommandRunner, WSL, executable
 
@@ -227,7 +234,7 @@ def get_model(key: str) -> Model:
         return MODELS[key.casefold()]
     except KeyError as exc:
         choices = ", ".join(MODELS)
-        raise Forge3DError(f"Unknown model {key!r}. Choose one of: {choices}") from exc
+        raise DimensioError(f"Unknown model {key!r}. Choose one of: {choices}") from exc
 
 
 def catalog_rows() -> list[dict[str, Any]]:
@@ -266,9 +273,7 @@ class ModelManager:
 
     @property
     def models_root(self) -> str:
-        configured = _clean_wsl_path(
-            _environment_value("FORGE3D_WSL_MODELS_DIR")
-        )
+        configured = _clean_wsl_path(setting("WSL_MODELS_DIR"))
         if configured:
             return configured
         if self._models_root is None:
@@ -277,10 +282,19 @@ class ModelManager:
             if result.returncode or not home.startswith("/"):
                 raise ToolNotFoundError(
                     "Could not determine the WSL home directory. Set "
-                    "FORGE3D_WSL_MODELS_DIR to an absolute WSL path."
+                    "DIMENSIO_WSL_MODELS_DIR to an absolute WSL path."
                 )
-            self._models_root = f"{home.rstrip('/')}/.local/share/forge3d/models"
+            home = home.rstrip("/")
+            root = f"{home}/{MODELS_SUBDIR}"
+            legacy = f"{home}/{LEGACY_MODELS_SUBDIR}"
+            # Models Forge3D installed stay where they are and are used from there.
+            if not self._is_directory(root) and self._is_directory(legacy):
+                root = legacy
+            self._models_root = root
         return self._models_root
+
+    def _is_directory(self, path: str) -> bool:
+        return self.wsl.run(["test", "-d", path], check=False).returncode == 0
 
     def model_dir(self, model: Model) -> str:
         return f"{self.models_root}/{model.directory_name}"
@@ -297,15 +311,13 @@ class ModelManager:
             return False
         if model.acceptance_required and not self.license_accepted(model):
             return False
-        result = self.wsl.run(
-            [
-                "test",
-                "-f",
-                f"{self.model_dir(model)}/.forge3d-install-complete",
-            ],
-            check=False,
+        return any(
+            self.wsl.run(
+                ["test", "-f", f"{self.model_dir(model)}/{marker}"], check=False
+            ).returncode
+            == 0
+            for marker in (INSTALL_MARKER, LEGACY_INSTALL_MARKER)
         )
-        return result.returncode == 0
 
     def revision(self, model: Model) -> str:
         if not self.is_installed(model):
@@ -318,7 +330,7 @@ class ModelManager:
 
     def install_plan(self, model: Model, revision: str = "main") -> str:
         if not _SAFE_REVISION.fullmatch(revision):
-            raise Forge3DError(f"Unsafe git revision: {revision!r}")
+            raise DimensioError(f"Unsafe git revision: {revision!r}")
         target = self.model_dir(model)
         quoted_target = shlex.quote(target)
         repo = shlex.quote(model.repository)
@@ -353,7 +365,7 @@ class ModelManager:
                 "{ echo 'uv is required in WSL: https://docs.astral.sh/uv/' >&2; "
                 "exit 3; }",
                 f"cd {quoted_target}",
-                "rm -f .forge3d-install-complete",
+                f"rm -f {INSTALL_MARKER} {LEGACY_INSTALL_MARKER}",
                 f"uv venv --python {shlex.quote(model.python)} .venv",
                 *_install_commands(
                     model,
@@ -361,7 +373,7 @@ class ModelManager:
                     triposg_shim=self._triposg_shim(model),
                     triposg_constraints=self._triposg_constraints(model),
                 ),
-                "git rev-parse HEAD > .forge3d-install-complete",
+                f"git rev-parse HEAD > {INSTALL_MARKER}",
                 "git rev-parse HEAD",
             ]
         )
@@ -418,7 +430,7 @@ class ModelManager:
         if model.acceptance_required and not (
             accept_license or self.license_accepted(model)
         ):
-            raise Forge3DError(
+            raise DimensioError(
                 f"{model.name} requires explicit acceptance of "
                 f"{model.license_name}. Review {model.license_url}, then rerun "
                 "with --accept-license."
@@ -430,7 +442,7 @@ class ModelManager:
         )
 
     def record_license_acceptance(self, model: Model) -> None:
-        directory = self.root / ".forge3d" / "licenses"
+        directory = self.root / ".dimensio" / "licenses"
         directory.mkdir(parents=True, exist_ok=True)
         record = {
             "model": model.key,
@@ -444,7 +456,14 @@ class ModelManager:
         )
 
     def license_accepted(self, model: Model) -> bool:
-        path = self.root / ".forge3d" / "licenses" / f"{model.key}.json"
+        # A licence accepted under Forge3D was recorded in .forge3d/licenses and still counts.
+        return any(
+            self._accepted_in(self.root / folder / "licenses" / f"{model.key}.json", model)
+            for folder in (".dimensio", ".forge3d")
+        )
+
+    @staticmethod
+    def _accepted_in(path: Path, model: Model) -> bool:
         try:
             record = json.loads(path.read_text(encoding="utf-8"))
         except (FileNotFoundError, json.JSONDecodeError, OSError):
@@ -489,15 +508,15 @@ class ModelManager:
             capability in model.capabilities
             for capability in ("image-to-mesh", "image-to-parts", "image-to-splat")
         ):
-            raise Forge3DError(f"{model.name} is not an image-derived asset backend")
+            raise DimensioError(f"{model.name} is not an image-derived asset backend")
         self._require_license(model)
         image = image.expanduser().resolve()
         if not image.is_file():
-            raise Forge3DError(f"Reference image does not exist: {image}")
+            raise DimensioError(f"Reference image does not exist: {image}")
         if model.key == "triposplat" and (
             not 32_768 <= gaussians <= 262_144 or gaussians % 32
         ):
-            raise Forge3DError(
+            raise DimensioError(
                 "TripoSplat gaussians must be 32768-262144 and a multiple of 32"
             )
         self._require_installed(model)
@@ -505,7 +524,7 @@ class ModelManager:
 
         output_dir = output_dir.expanduser().resolve()
         if output_dir.exists():
-            raise Forge3DError(
+            raise DimensioError(
                 f"Output already exists; choose a new versioned directory: {output_dir}"
             )
         output_dir.mkdir(parents=True)
@@ -552,11 +571,11 @@ class ModelManager:
         timeout: float = 3_600,
     ) -> ModelRunResult:
         if "rig" not in model.capabilities:
-            raise Forge3DError(f"{model.name} is not a rigging backend")
+            raise DimensioError(f"{model.name} is not a rigging backend")
         self._require_license(model)
         mesh = mesh.expanduser().resolve()
         if not mesh.is_file():
-            raise Forge3DError(f"Mesh does not exist: {mesh}")
+            raise DimensioError(f"Mesh does not exist: {mesh}")
         self._require_installed(model)
         self._check_vram(model, ignore=ignore_vram)
         output = output.expanduser().resolve()
@@ -587,7 +606,7 @@ class ModelManager:
             ]
         result = self.wsl.run(command, cwd=model_dir, timeout=timeout)
         if not output.is_file():
-            raise Forge3DError(
+            raise DimensioError(
                 f"{model.name} completed but did not create the expected file: {output}"
             )
         return ModelRunResult(
@@ -601,18 +620,18 @@ class ModelManager:
 
     def _require_license(self, model: Model) -> None:
         if model.acceptance_required and not self.license_accepted(model):
-            raise Forge3DError(
+            raise DimensioError(
                 f"{model.name} requires explicit acceptance of "
                 f"{model.license_name}. Review {model.license_url}, then run "
-                f"`forge3d models install {model.key} --accept-license`."
+                f"`dimensio models install {model.key} --accept-license`."
             )
 
     def _require_installed(self, model: Model) -> None:
         if not self.is_ready(model):
-            raise Forge3DError(
+            raise DimensioError(
                 f"{model.name} is not fully installed or its recorded terms "
                 "are stale. Run: "
-                f"forge3d models install {model.key}"
+                f"dimensio models install {model.key}"
             )
 
     def _check_vram(self, model: Model, *, ignore: bool) -> None:
@@ -621,12 +640,12 @@ class ModelManager:
         if free is None:
             if ignore:
                 return
-            raise Forge3DError(
+            raise DimensioError(
                 "Could not query free GPU memory inside WSL. Check CUDA with "
                 "`wsl nvidia-smi`, or rerun with --ignore-vram."
             )
         if free < required and not ignore:
-            raise Forge3DError(
+            raise DimensioError(
                 f"{model.name} expects about {model.vram_gb} GB VRAM, but only "
                 f"{free / 1024:.1f} GB is currently free. Close GPU-heavy apps, "
                 "choose a smaller backend, or explicitly use --ignore-vram."
@@ -638,14 +657,14 @@ def cloud_estimate(provider: str, inputs: Iterable[Path]) -> dict[str, Any]:
         details = CLOUD_PROVIDERS[provider]
     except KeyError as exc:
         choices = ", ".join(CLOUD_PROVIDERS)
-        raise Forge3DError(
+        raise DimensioError(
             f"Unknown cloud provider {provider!r}. Choose one of: {choices}"
         ) from exc
     described: list[dict[str, Any]] = []
     for value in inputs:
         path = value.expanduser().resolve()
         if not path.is_file():
-            raise Forge3DError(f"Potential upload does not exist: {path}")
+            raise DimensioError(f"Potential upload does not exist: {path}")
         described.append({"path": str(path), "size_bytes": path.stat().st_size})
     return {
         "provider": provider,
@@ -659,7 +678,7 @@ def cloud_estimate(provider: str, inputs: Iterable[Path]) -> dict[str, Any]:
         ),
         "next_step": (
             "Check current price and terms, obtain explicit approval for these "
-            "files and one job, then run `forge3d models cloud-run tripo ... "
+            "files and one job, then run `dimensio models cloud-run tripo ... "
             "--approve-upload`. Only Tripo has an executable fallback."
         ),
     }
@@ -680,40 +699,40 @@ def run_tripo_cloud(
     uv_executable: str | None = None,
 ) -> dict[str, Any]:
     if not approve_upload:
-        raise Forge3DError(
+        raise DimensioError(
             "Cloud upload refused. Review the estimate and explicitly approve "
             "this one job with --approve-upload."
         )
     if not _environment_value("TRIPO_API_KEY"):
-        raise Forge3DError(
+        raise DimensioError(
             "TRIPO_API_KEY is not set. Store the key in the environment; do not "
             "put it in a command, prompt, or project file."
         )
 
     source = image.expanduser().resolve()
     if not source.is_file():
-        raise Forge3DError(f"Image does not exist: {source}")
+        raise DimensioError(f"Image does not exist: {source}")
     if source.stat().st_size > 20 * 1024 * 1024:
-        raise Forge3DError("Tripo image uploads are limited to 20 MB")
+        raise DimensioError("Tripo image uploads are limited to 20 MB")
     destination = output.expanduser().resolve()
     if destination.exists():
-        raise Forge3DError(
+        raise DimensioError(
             f"Cloud output already exists: {destination}. Choose a new version."
         )
     if model_version not in TRIPO_MODEL_VERSIONS:
         choices = ", ".join(TRIPO_MODEL_VERSIONS)
-        raise Forge3DError(f"Unsupported Tripo model version. Choose one of: {choices}")
+        raise DimensioError(f"Unsupported Tripo model version. Choose one of: {choices}")
     if faces is not None and not 48 <= faces <= 20_000:
-        raise Forge3DError("Tripo --faces must be between 48 and 20000")
+        raise DimensioError("Tripo --faces must be between 48 and 20000")
     if texture_quality not in {"standard", "detailed"}:
-        raise Forge3DError("Tripo texture quality must be standard or detailed")
+        raise DimensioError("Tripo texture quality must be standard or detailed")
     if timeout <= 0:
-        raise Forge3DError("Cloud timeout must be greater than zero")
+        raise DimensioError("Cloud timeout must be greater than zero")
 
     uv = uv_executable or _find_uv()
     script = toolkit_root() / "scripts" / "tripo_cloud.py"
     if not script.is_file():
-        raise Forge3DError(f"Tripo cloud runner is missing: {script}")
+        raise DimensioError(f"Tripo cloud runner is missing: {script}")
     command = [
         uv,
         "run",
@@ -743,15 +762,15 @@ def run_tripo_cloud(
     (runner or CommandRunner()).run(command, timeout=timeout + 300)
     marker = destination / "cloud-result.json"
     if not marker.is_file():
-        raise Forge3DError(
+        raise DimensioError(
             f"Tripo completed without a result manifest: {marker}"
         )
     try:
         data = json.loads(marker.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
-        raise Forge3DError(f"Could not read Tripo result manifest: {marker}") from exc
+        raise DimensioError(f"Could not read Tripo result manifest: {marker}") from exc
     if data.get("status") != "success" or not data.get("files"):
-        raise Forge3DError(f"Tripo result manifest is incomplete: {marker}")
+        raise DimensioError(f"Tripo result manifest is incomplete: {marker}")
     return data
 
 
@@ -777,8 +796,8 @@ def _clean_wsl_path(value: str | None) -> str | None:
     if not value:
         return None
     if not value.startswith("/"):
-        raise Forge3DError(
-            "FORGE3D_WSL_MODELS_DIR must be an absolute Linux path inside WSL"
+        raise DimensioError(
+            "DIMENSIO_WSL_MODELS_DIR must be an absolute Linux path inside WSL"
         )
     return value.rstrip("/")
 
@@ -807,9 +826,9 @@ def _install_commands(
         quoted_constraints = shlex.quote(triposg_constraints)
         return [
             torch,
-            "grep -iv '^diso\\b' requirements.txt > .forge3d-requirements.txt",
+            "grep -iv '^diso\\b' requirements.txt > .dimensio-requirements.txt",
             (
-                f"{pip} -r .forge3d-requirements.txt "
+                f"{pip} -r .dimensio-requirements.txt "
                 f"-c {quoted_constraints}"
             ),
             (
@@ -848,7 +867,7 @@ def _install_commands(
         return [
             torch,
             f"{pip} numpy safetensors pillow tqdm huggingface_hub",
-            f"cp {quoted_runner} .forge3d_run.py",
+            f"cp {quoted_runner} .dimensio_run.py",
             (
                 "HF_HUB_DISABLE_TELEMETRY=1 "
                 f"{python} -c "
@@ -919,7 +938,7 @@ def _image_command(
     if model.key == "triposplat":
         return [
             ".venv/bin/python",
-            ".forge3d_run.py",
+            ".dimensio_run.py",
             image,
             "--output-dir",
             output,
@@ -965,7 +984,7 @@ def _image_command(
             "--render",
         ]
         return command, None
-    raise Forge3DError(f"No image command is defined for {model.name}")
+    raise DimensioError(f"No image command is defined for {model.name}")
 
 
 def _discover_artifact(output_dir: Path, expected: Path | None) -> Path:
@@ -980,7 +999,7 @@ def _discover_artifact(output_dir: Path, expected: Path | None) -> Path:
         if path.is_file() and path.suffix.casefold() in extensions
     ]
     if not choices:
-        raise Forge3DError(
+        raise DimensioError(
             f"Model inference completed but no mesh was found in {output_dir}"
         )
     return max(choices, key=lambda path: path.stat().st_mtime_ns).resolve()

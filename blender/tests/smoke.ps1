@@ -9,13 +9,13 @@ param(
 $ErrorActionPreference = "Continue"
 $Here = Split-Path -Parent $MyInvocation.MyCommand.Path
 $BlenderRoot = Split-Path -Parent $Here
-$TaskRunner = Join-Path $BlenderRoot "forge3d_task.py"
+$TaskRunner = Join-Path $BlenderRoot "dimensio_task.py"
 $RigFixture = Join-Path $Here "create_rig_fixture.py"
 $HumanoidFixture = Join-Path $Here "create_humanoid_fixture.py"
 $BoneMap = Join-Path $Here "fixtures\simple_bone_map.json"
 $HumanoidRetargetProfile = Join-Path $Here "fixtures\humanoid_retarget_profile.json"
 $Work = Join-Path ([System.IO.Path]::GetTempPath()) (
-    "forge3d-blender-smoke-" + [guid]::NewGuid().ToString("N")
+    "dimensio-blender-smoke-" + [guid]::NewGuid().ToString("N")
 )
 $Succeeded = $false
 
@@ -45,14 +45,14 @@ function Invoke-Task {
         --python $TaskRunner -- @TaskArguments 2>&1
     if ($LASTEXITCODE -ne 0) {
         $Output | Write-Host
-        throw "Forge3D Blender task failed with exit code $LASTEXITCODE"
+        throw "Dimensio Blender task failed with exit code $LASTEXITCODE"
     }
     $Result = $Output | Where-Object {
-        "$_".StartsWith("FORGE3D_RESULT=")
+        "$_".StartsWith("DIMENSIO_RESULT=")
     } | Select-Object -Last 1
     if (-not $Result) {
         $Output | Write-Host
-        throw "Task emitted no FORGE3D_RESULT line"
+        throw "Task emitted no DIMENSIO_RESULT line"
     }
 }
 
@@ -121,7 +121,7 @@ try {
 
     $Preview = Join-Path $Work "preview.png"
     Invoke-Task @(
-        "turntable", "--input", $Collision, "--objects", "Forge3D_Crate",
+        "turntable", "--input", $Collision, "--objects", "Dimensio_Crate",
         "--output", $Preview, "--resolution", "64",
         "--report", (Join-Path $Work "08_preview.json")
     )
@@ -151,7 +151,7 @@ try {
             Select-Object -Unique
     )
     $CaseShell = $CaseGeneration.metrics.objects |
-        Where-Object { $_.custom_properties.forge3d_role -like "primary_shell*" } |
+        Where-Object { $_.custom_properties.dimensio_role -like "primary_shell*" } |
         Select-Object -First 1
     if (
         $CaseGeneration.metrics.objects.Count -ne 5 -or
@@ -259,18 +259,18 @@ try {
     $AutoRigged = Join-Path $Work "rigify_humanoid.blend"
     Invoke-Task @(
         "rig-humanoid", "--input", $HumanoidMesh,
-        "--rig-name", "Forge3D_Rig", "--output", $AutoRigged,
+        "--rig-name", "Dimensio_Rig", "--output", $AutoRigged,
         "--report", (Join-Path $Work "16_rigify.json")
     )
     Invoke-Task @(
         "rig-validate", "--input", $AutoRigged,
-        "--objects", "Forge3D_Rig",
+        "--objects", "Dimensio_Rig",
         "--report", (Join-Path $Work "17_rigify_validation.json")
     )
     $RigifyGlb = Join-Path $Work "rigify_humanoid.glb"
     Invoke-Task @(
         "export-glb", "--input", $AutoRigged,
-        "--armature", "Forge3D_Rig", "--deform-bones-only",
+        "--armature", "Dimensio_Rig", "--deform-bones-only",
         "--output", $RigifyGlb,
         "--report", (Join-Path $Work "18_rigify_export.json")
     )
@@ -278,7 +278,7 @@ try {
         Join-Path $Work "18_rigify_export.json"
     ) | ConvertFrom-Json
     if (
-        $RigifyExport.metrics.export_armature -ne "Forge3D_Rig" -or
+        $RigifyExport.metrics.export_armature -ne "Dimensio_Rig" -or
         $RigifyExport.metrics.objects_considered -ne 2 -or
         -not $RigifyExport.metrics.export_options.export_def_bones
     ) {
@@ -298,7 +298,7 @@ try {
     }
 
     $Succeeded = $true
-    Write-Host "Forge3D Blender smoke tests passed."
+    Write-Host "Dimensio Blender smoke tests passed."
     if ($KeepArtifacts) {
         Write-Host "Artifacts: $Work"
     }

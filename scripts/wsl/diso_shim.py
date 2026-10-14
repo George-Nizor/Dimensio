@@ -24,9 +24,9 @@ class DiffDMC(torch.nn.Module):
         normalize: bool = False,
     ):
         if deform is not None:
-            raise ValueError("The Forge3D inference shim does not support deformation.")
+            raise ValueError("The Dimensio inference shim does not support deformation.")
         if return_quads:
-            raise ValueError("The Forge3D inference shim outputs triangles only.")
+            raise ValueError("The Dimensio inference shim outputs triangles only.")
 
         field = sdf.detach().float().cpu().numpy()
         finite = field[np.isfinite(field)]

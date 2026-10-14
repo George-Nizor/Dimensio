@@ -10,7 +10,7 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
-from .errors import Forge3DError, ToolNotFoundError
+from .errors import DimensioError, ToolNotFoundError
 from .paths import toolkit_root
 from .process import CommandResult, CommandRunner
 
@@ -108,7 +108,7 @@ class Blender:
 
     @property
     def dispatcher(self) -> Path:
-        return self.root / "blender" / "forge3d_task.py"
+        return self.root / "blender" / "dimensio_task.py"
 
     def version(self) -> str:
         result = self.runner.run([str(self.executable), "--version"], check=False)
@@ -123,10 +123,10 @@ class Blender:
         timeout: float | None = 1_800,
     ) -> CommandResult:
         if name not in SUPPORTED_TASKS:
-            raise Forge3DError(f"Unsupported Blender task: {name}")
+            raise DimensioError(f"Unsupported Blender task: {name}")
         if not self.dispatcher.is_file():
             raise ToolNotFoundError(
-                f"Forge3D Blender task dispatcher is missing: {self.dispatcher}"
+                f"Dimensio Blender task dispatcher is missing: {self.dispatcher}"
             )
 
         request = {"task": name, "args": _json_safe(args)}
@@ -159,13 +159,13 @@ class Blender:
             if not blend.is_file():
                 choices = sorted(resolved.glob("*.blend"))
                 if not choices:
-                    raise Forge3DError(f"No .blend file found in {resolved}")
+                    raise DimensioError(f"No .blend file found in {resolved}")
                 blend = choices[-1]
             resolved = blend
         if not resolved.is_file():
-            raise Forge3DError(f"Asset does not exist: {resolved}")
+            raise DimensioError(f"Asset does not exist: {resolved}")
         if resolved.suffix.casefold() != ".blend":
-            raise Forge3DError(
+            raise DimensioError(
                 "Open expects a .blend file or a run folder. Process imported "
                 "meshes first so the canonical source.blend exists."
             )
@@ -177,7 +177,7 @@ class Blender:
                 stderr=subprocess.DEVNULL,
             )
         except OSError as exc:
-            raise Forge3DError(f"Could not launch Blender: {exc}") from exc
+            raise DimensioError(f"Could not launch Blender: {exc}") from exc
 
 
 def _request_directory(args: dict[str, Any]) -> Path:

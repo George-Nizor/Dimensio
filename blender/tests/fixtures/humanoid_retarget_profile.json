@@ -1,5 +1,5 @@
 {
-  "schema": "forge3d.humanoid-retarget-profile.v1",
+  "schema": "dimensio.humanoid-retarget-profile.v1",
   "source_armature": "SourceRig",
   "target_armature": "TargetRig",
   "source_action": "SourceWave",

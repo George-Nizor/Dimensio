@@ -343,12 +343,12 @@ def build_asset() -> tuple[list[bpy.types.Object], dict[str, bpy.types.Material]
         obj = rounded_box(collection, name, location, dimensions, mats["graphite_soft"], bevel_width=bevel_width, rotation=(0, 0, rotation_z), segments=2)
         obj.hide_render = True
         obj.display_type = "WIRE"
-        obj["forge3d_role"] = "convex_collision_helper"
+        obj["dimensio_role"] = "convex_collision_helper"
         add(obj)
 
     for obj in objects:
-        obj["forge3d_asset"] = ASSET_NAME
-        obj["forge3d_units"] = "meters"
+        obj["dimensio_asset"] = ASSET_NAME
+        obj["dimensio_units"] = "meters"
     return objects, mats
 
 

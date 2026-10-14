@@ -1,13 +1,13 @@
 """Capability report: what is installed, what works, and what each route needs.
 
-`forge3d capabilities --json` is the single place that answers "can this machine
+`dimensio capabilities --json` is the single place that answers "can this machine
 make a splat / a Blender asset / an export / a Godot review, and if not, why and
 what should the person do". Every dependency is a small `probe_*` function that
 takes an `Env` (runner, PATH lookup, globbing, environment variables), so tests
 swap in fakes. Nothing here writes to disk or changes any configuration.
 
 The routes need "an agent": the one chosen in the desktop (`--agent`, or
-FORGE3D_AGENT), Claude Code by default. It is reported as the `agent` item.
+DIMENSIO_AGENT), Claude Code by default. It is reported as the `agent` item.
 
 Schema: docs/capabilities.md. Vocabulary: states are ready | missing |
 signed_out | degraded | optional_missing; route states are ready | degraded |
@@ -30,8 +30,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Callable, Mapping, Sequence
 
-from . import __version__
-from .errors import Forge3DError, ToolNotFoundError
+from . import __version__, environment
+from .errors import DimensioError, ToolNotFoundError
 from .models import MODELS
 from .process import CommandResult, CommandRunner, WSL
 
@@ -129,11 +129,15 @@ class Env:
         value = self.environ.get(name)
         return value or None
 
+    def setting(self, name: str) -> str | None:
+        """DIMENSIO_<name>, else Forge3D's FORGE3D_<name> (see environment.py)."""
+        return environment.setting(name, self.environ)
+
     def run(self, command: Sequence[str], *, timeout: float = _PROBE_TIMEOUT) -> CommandResult | None:
         """Run a command; None when it cannot start or times out."""
         try:
             return self.runner.run(list(command), timeout=timeout, check=False)
-        except Forge3DError:
+        except DimensioError:
             return None
         except OSError:
             return None
@@ -197,7 +201,7 @@ def _mtime(path: str) -> float:
 
 
 def find_codex(env: Env) -> str | None:
-    configured = env.get("FORGE3D_CODEX_EXE")
+    configured = env.setting("CODEX_EXE")
     if configured and env.is_file(configured):
         return configured
     for name in ("codex.exe", "codex"):
@@ -250,7 +254,7 @@ def probe_codex(env: Env) -> dict[str, Any]:
 
 def find_claude(env: Env) -> str | None:
     """DIMENSIO_CLAUDE_EXE, the native installer's copy, PATH, then npm's claude.cmd."""
-    configured = env.get("DIMENSIO_CLAUDE_EXE")
+    configured = env.setting("CLAUDE_EXE")
     if configured and env.is_file(configured):
         return configured
     if env.platform == "windows":
@@ -347,14 +351,14 @@ def find_git_bash(env: Env) -> str | None:
 
 def probe_git_bash(env: Env) -> dict[str, Any]:
     """Claude Code's Bash tool needs Git Bash on Windows. Without it Claude Code
-    runs commands in PowerShell, which Forge3D allows too, so this never blocks."""
+    runs commands in PowerShell, which Dimensio allows too, so this never blocks."""
     found = find_git_bash(env)
     label = "Git Bash for Claude Code"
     if found:
         return _item("git_bash", label, "ready", path=found, optional=True)
     return _item(
         "git_bash", label, "optional_missing", optional=True,
-        reason="Git for Windows is not installed, so Claude Code runs commands in PowerShell. Forge3D works with either.",
+        reason="Git for Windows is not installed, so Claude Code runs commands in PowerShell. Dimensio works with either.",
         fix="Install Git for Windows (https://git-scm.com/download/win) if you want Claude Code to use Bash.",
     )
 
@@ -482,7 +486,7 @@ def probe_blender_mcp(env: Env) -> dict[str, Any]:
     return _item(
         "blender_mcp", "Blender MCP add-on", "optional_missing", gates=gates, optional=True,
         reason="The Blender MCP add-on is not installed. Only the supervised live-inspection step uses it.",
-        fix="Run scripts/setup.ps1 from a Forge3D checkout. Automated runs do not need it.",
+        fix="Run scripts/setup.ps1 from a Dimensio checkout. Automated runs do not need it.",
     )
 
 
@@ -540,11 +544,12 @@ def probe_godot(env: Env) -> dict[str, Any]:
 _SPLAT = ("splat",)
 
 
-def _models_root_expr(env: Env) -> str:
-    configured = env.get("FORGE3D_WSL_MODELS_DIR")
+def _models_root_line(env: Env) -> str:
+    """Sets $root to the WSL models folder: the configured one, else ours, else Forge3D's."""
+    configured = env.setting("WSL_MODELS_DIR")
     if configured and configured.startswith("/"):
-        return shlex.quote(configured.rstrip("/"))
-    return '"$HOME/.local/share/forge3d/models"'
+        return f"root={shlex.quote(configured.rstrip('/'))}"
+    return environment.MODELS_ROOT_SHELL
 
 
 def wsl_probe_script(env: Env) -> str:
@@ -552,11 +557,11 @@ def wsl_probe_script(env: Env) -> str:
     model = MODELS["triposplat"]
     return "\n".join(
         [
-            f"root={_models_root_expr(env)}",
+            _models_root_line(env),
             f'd="$root/{model.directory_name}"',
             'echo "distro=${WSL_DISTRO_NAME:-}"',
             'echo "venv=$([ -x "$d/.venv/bin/python" ] && echo 1 || echo 0)"',
-            'echo "marker=$([ -f "$d/.forge3d-install-complete" ] && echo 1 || echo 0)"',
+            f'echo "marker=$([ -f "$d/{environment.INSTALL_MARKER}" ] || [ -f "$d/{environment.LEGACY_INSTALL_MARKER}" ] && echo 1 || echo 0)"',
             'echo "rev=$(git -C "$d" rev-parse HEAD 2>/dev/null)"',
             'echo "weights_files=$(find "$d/ckpts" -type f -size +100M 2>/dev/null | wc -l)"',
             'echo "weights_bytes=$(du -sb "$d/ckpts" 2>/dev/null | cut -f1)"',
@@ -586,18 +591,18 @@ def run_in_linux(env: Env, script: str) -> tuple[str, CommandResult | None, str,
     `unsupported` or `failed`.
     """
     if env.platform == "windows":
-        exe = env.get("FORGE3D_WSL_EXECUTABLE") or env.which("wsl.exe") or env.which("wsl")
+        exe = env.setting("WSL_EXECUTABLE") or env.which("wsl.exe") or env.which("wsl")
         if not exe:
             return "no_wsl", None, "", "wsl.exe was not found"
         try:
             wsl = WSL(
-                distro=env.get("FORGE3D_WSL_DISTRO"), runner=env.runner, executable_path=exe
+                distro=env.setting("WSL_DISTRO"), runner=env.runner, executable_path=exe
             )
         except ToolNotFoundError as exc:
             return "no_distro", None, "", str(exc)
         try:
             return "ok", wsl.shell(script, timeout=_WSL_TIMEOUT, check=False), wsl.distro, ""
-        except Forge3DError as exc:
+        except DimensioError as exc:
             return "failed", None, wsl.distro, str(exc)
     if env.platform == "wsl":
         result = env.run(["bash", "-lc", script], timeout=_WSL_TIMEOUT)
@@ -634,7 +639,7 @@ def probe_splat_stack(env: Env) -> list[dict[str, Any]]:
     if kind == "unsupported":
         return blocked_by_wsl(
             f"The splat route runs in WSL2 on Windows; this machine reports platform \"{env.platform}\".",
-            "Run Forge3D on Windows with WSL2 and an NVIDIA GPU.",
+            "Run Dimensio on Windows with WSL2 and an NVIDIA GPU.",
         )
     if kind == "failed" or result is None or result.returncode != 0:
         detail = problem or (result.stderr.strip().splitlines()[-1] if result and result.stderr.strip() else "")
@@ -715,7 +720,7 @@ def probe_splat_stack(env: Env) -> list[dict[str, Any]]:
         "revision": values.get("rev") or None,
         "free_disk_gb": _kb_to_gb(values.get("free_kb")),
     }
-    install_fix = "Run `forge3d models install triposplat` (several GB of downloads; the Setup panel will do this for you in a later release)."
+    install_fix = "Run `dimensio models install triposplat` (several GB of downloads; the Setup panel will do this for you in a later release)."
     if not installed:
         items.append(
             _item(
@@ -728,7 +733,7 @@ def probe_splat_stack(env: Env) -> list[dict[str, Any]]:
             _item(
                 "triposplat", "TripoSplat install", "degraded", gates=_SPLAT, detail=install_detail,
                 reason="TripoSplat is partly installed (the install did not finish).",
-                fix="Run `forge3d models install triposplat` again; it resumes.",
+                fix="Run `dimensio models install triposplat` again; it resumes.",
             )
         )
     else:
@@ -747,7 +752,7 @@ def probe_splat_stack(env: Env) -> list[dict[str, Any]]:
             _item(
                 "triposplat_weights", "TripoSplat model weights", "missing", gates=_SPLAT, detail=weights_detail,
                 reason="No model weights were found under TripoSplat/ckpts in WSL.",
-                fix="Run `forge3d models install triposplat`; it downloads the weights.",
+                fix="Run `dimensio models install triposplat`; it downloads the weights.",
             )
         )
     return items
@@ -810,7 +815,7 @@ def compute_routes(capabilities: Mapping[str, Mapping[str, Any]]) -> dict[str, d
 
 def collect(env: Env | None = None, agent: str | None = None) -> dict[str, Any]:
     env = env or Env()
-    agent = agent or env.get("FORGE3D_AGENT") or DEFAULT_AGENT
+    agent = agent or env.setting("AGENT") or DEFAULT_AGENT
     if agent not in AGENTS:
         agent = DEFAULT_AGENT
     items: list[dict[str, Any]] = []
@@ -830,7 +835,7 @@ def collect(env: Env | None = None, agent: str | None = None) -> dict[str, Any]:
     capabilities = {item["id"]: item for item in items}
     return {
         "schema": SCHEMA_VERSION,
-        "forge3d_version": __version__,
+        "dimensio_version": __version__,
         "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "agent": {"id": agent, "name": AGENTS[agent]},
         "platform": {
@@ -841,7 +846,7 @@ def collect(env: Env | None = None, agent: str | None = None) -> dict[str, Any]:
         "capabilities": capabilities,
         "routes": compute_routes(capabilities),
         "versions": {
-            "forge3d": __version__,
+            "dimensio": __version__,
             "agent": capabilities["agent"]["version"],
             "blender": capabilities["blender"]["version"],
             "godot": capabilities["godot"]["version"],
@@ -854,7 +859,7 @@ def collect(env: Env | None = None, agent: str | None = None) -> dict[str, Any]:
 
 
 def render_text(report: Mapping[str, Any]) -> str:
-    lines = [f"Forge3D {report['forge3d_version']} on {report['platform']['system']}, agent {report['agent']['name']}"]
+    lines = [f"Dimensio {report['dimensio_version']} on {report['platform']['system']}, agent {report['agent']['name']}"]
     for item in report["capabilities"].values():
         version = f" {item['version']}" if item["version"] else ""
         lines.append(f"[{item['state']:16}] {item['label']}{version}")

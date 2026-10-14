@@ -113,21 +113,21 @@ def main() -> None:
     missing = sorted(required.difference(splat.data.attributes.keys()))
     if missing:
         raise RuntimeError(f"Imported splat is missing attributes: {missing}")
-    asset_name = re.sub(r"[^A-Za-z0-9]+", "_", source.stem).strip("_") or "Forge3D"
+    asset_name = re.sub(r"[^A-Za-z0-9]+", "_", source.stem).strip("_") or "Dimensio"
     splat.name = f"{asset_name}_GaussianSplat"
     splat.data.name = f"{asset_name}_GaussianSplat_Data"
     splat.rotation_mode = "XYZ"
     splat.rotation_euler = (math.pi, 0.0, 0.0)
-    splat["forge3d_source"] = str(source)
-    splat["forge3d_representation"] = "gaussian_splat_not_polygon_mesh"
-    splat["forge3d_splat_count"] = len(splat.data.vertices)
-    scene["forge3d_representation"] = "Gaussian splat rendered by KIRI Engine"
-    scene["forge3d_source_ply"] = str(source)
+    splat["dimensio_source"] = str(source)
+    splat["dimensio_representation"] = "gaussian_splat_not_polygon_mesh"
+    splat["dimensio_splat_count"] = len(splat.data.vertices)
+    scene["dimensio_representation"] = "Gaussian splat rendered by KIRI Engine"
+    scene["dimensio_source_ply"] = str(source)
     bpy.ops.wm.save_as_mainfile(filepath=str(blend_path), check_existing=False, compress=True, relative_remap=False)
     if not blend_path.is_file() or blend_path.stat().st_size == 0:
         raise RuntimeError("Blender produced no Blend package")
     report = {
-        "schema": "forge3d.gaussian_blend.v1",
+        "schema": "dimensio.gaussian_blend.v1",
         "status": "completed",
         "source": str(source),
         "output": str(blend_path),
@@ -141,7 +141,7 @@ def main() -> None:
         "completed_at": datetime.now(timezone.utc).isoformat(),
     }
     report_path.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
-    print("FORGE3D_GAUSSIAN_BLEND=" + json.dumps(report))
+    print("DIMENSIO_GAUSSIAN_BLEND=" + json.dumps(report))
 
 
 if __name__ == "__main__":

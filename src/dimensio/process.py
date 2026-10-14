@@ -8,6 +8,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Mapping, Sequence
 
+from .environment import setting
 from .errors import CommandError, ToolNotFoundError
 from .paths import manual_windows_to_wsl
 
@@ -85,7 +86,7 @@ class WSL:
         self.runner = runner or CommandRunner()
         self.executable = (
             executable_path
-            or os.environ.get("FORGE3D_WSL_EXECUTABLE")
+            or setting("WSL_EXECUTABLE")
             or executable("wsl.exe")
             or executable("wsl")
         )
@@ -96,7 +97,7 @@ class WSL:
             )
         self.distro = (
             distro
-            or os.environ.get("FORGE3D_WSL_DISTRO")
+            or setting("WSL_DISTRO")
             or self.detect_default_distro()
         )
 

@@ -127,7 +127,7 @@ def main() -> None:
     if not destination.is_file() or destination.stat().st_size == 0:
         raise RuntimeError("Exporter produced no primary output")
     report = {
-        "schema": "forge3d.export.v1",
+        "schema": "dimensio.export.v1",
         "status": "completed",
         "source": str(source),
         "output": str(destination),
@@ -138,7 +138,7 @@ def main() -> None:
         "completed_at": datetime.now(timezone.utc).isoformat(),
     }
     report_path.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
-    print("FORGE3D_EXPORT=" + json.dumps(report))
+    print("DIMENSIO_EXPORT=" + json.dumps(report))
 
 
 if __name__ == "__main__":

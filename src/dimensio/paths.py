@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-import os
 import re
 from pathlib import Path
 
-from .errors import Forge3DError
+from .environment import setting
+from .errors import DimensioError
 
 _SAFE_NAME = re.compile(r"[^a-z0-9]+")
 _WINDOWS_DRIVE = re.compile(r"^([A-Za-z]):[\\/](.*)$")
@@ -14,22 +14,22 @@ _WSL_UNC = re.compile(
 
 
 def toolkit_root() -> Path:
-    configured = os.environ.get("FORGE3D_TOOLKIT_ROOT")
+    configured = setting("TOOLKIT_ROOT")
     if configured:
         return Path(configured).expanduser().resolve()
     return Path(__file__).resolve().parents[2]
 
 
 def plugin_root() -> Path:
-    configured = os.environ.get("FORGE3D_PLUGIN_ROOT")
+    configured = setting("PLUGIN_ROOT")
     if configured:
         return Path(configured).expanduser().resolve()
-    candidate = toolkit_root() / "plugins" / "forge3d"
+    candidate = toolkit_root() / "plugins" / "dimensio"
     return candidate.resolve() if candidate.is_dir() else toolkit_root()
 
 
 def workspace_root(start: Path | None = None) -> Path:
-    configured = os.environ.get("FORGE3D_ROOT")
+    configured = setting("ROOT")
     if configured:
         return Path(configured).expanduser().resolve()
 
@@ -41,12 +41,12 @@ def workspace_root(start: Path | None = None) -> Path:
 
 
 def output_root(root: Path | None = None) -> Path:
-    configured = os.environ.get("FORGE3D_OUTPUT")
+    configured = setting("OUTPUT")
     if configured:
         return Path(configured).expanduser().resolve()
     if root is not None:
         return root.resolve() / "output"
-    return Path.home() / "Documents" / "Forge3D" / "runs"
+    return Path.home() / "Documents" / "Dimensio" / "runs"
 
 
 def slugify(value: str, fallback: str = "asset") -> str:
@@ -63,7 +63,7 @@ def manual_windows_to_wsl(path: Path | str, distro: str | None = None) -> str:
     if unc:
         unc_distro, tail = unc.groups()
         if distro and unc_distro.casefold() != distro.casefold():
-            raise Forge3DError(
+            raise DimensioError(
                 f"Path belongs to WSL distribution {unc_distro!r}, not {distro!r}"
             )
         return "/" + tail.replace("\\", "/").lstrip("/")
@@ -74,7 +74,7 @@ def manual_windows_to_wsl(path: Path | str, distro: str | None = None) -> str:
         return f"/mnt/{drive.lower()}/{tail.replace(chr(92), '/')}"
 
     if raw.startswith("\\\\"):
-        raise Forge3DError(
+        raise DimensioError(
             "Network paths cannot be mapped safely into WSL; copy the file into "
             "the workspace first"
         )

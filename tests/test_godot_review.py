@@ -62,7 +62,7 @@ def write_animated_skinned_gltf(path: Path) -> None:
     binary = positions + joints + weights + times + translations
     encoded = base64.b64encode(binary).decode("ascii")
     document = {
-        "asset": {"version": "2.0", "generator": "Forge3D review test"},
+        "asset": {"version": "2.0", "generator": "Dimensio review test"},
         "scene": 0,
         "scenes": [{"nodes": [0, 1]}],
         "nodes": [

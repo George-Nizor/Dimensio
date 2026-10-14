@@ -1,11 +1,11 @@
-"""Forge3D's Blender 5 task runner.
+"""Dimensio's Blender 5 task runner.
 
 Run with:
 
-    blender --background --python blender/forge3d_task.py -- <task> [options]
+    blender --background --python blender/dimensio_task.py -- <task> [options]
 
 The module deliberately depends only on Blender's Python distribution and the
-standard library.  Each task emits one machine-readable ``FORGE3D_RESULT`` line
+standard library.  Each task emits one machine-readable ``DIMENSIO_RESULT`` line
 and can also write the same report to ``--report``.
 """
 
@@ -29,8 +29,16 @@ from mathutils import Matrix, Vector
 
 
 TOOL_VERSION = "0.3.0"
-REPORT_PREFIX = "FORGE3D_RESULT="
-GENERATED_BY_KEY = "forge3d_generated_by"
+REPORT_PREFIX = "DIMENSIO_RESULT="
+GENERATED_BY_KEY = "dimensio_generated_by"
+# Forge3D, Dimensio's earlier name, marked what it made with forge3d_* properties, FORGE3D_RETARGET_
+# constraints and the forge3d profile schema. Files and profiles it made are read as Dimensio's own;
+# nothing in them is renamed.
+LEGACY_PROPERTY_PREFIX = "forge3d_"
+RETARGET_PREFIX = "DIMENSIO_RETARGET_"
+RETARGET_PREFIXES = (RETARGET_PREFIX, "FORGE3D_RETARGET_")
+HUMANOID_PROFILE_SCHEMA = "dimensio.humanoid-retarget-profile.v1"
+HUMANOID_PROFILE_SCHEMAS = (HUMANOID_PROFILE_SCHEMA, "forge3d.humanoid-retarget-profile.v1")
 EPSILON = 1.0e-8
 SUPPORTED_INPUT_SUFFIXES = {
     ".blend",
@@ -47,6 +55,16 @@ SUPPORTED_INPUT_SUFFIXES = {
 
 class TaskError(RuntimeError):
     """An expected task failure with a user-actionable message."""
+
+
+def tool_property(item: Any, name: str) -> Any:
+    """The dimensio_<name> custom property, else the forge3d_<name> one Forge3D wrote."""
+    value = item.get(f"dimensio_{name}")
+    return item.get(LEGACY_PROPERTY_PREFIX + name) if value is None else value
+
+
+def tool_owned(item: Any) -> bool:
+    return bool(tool_property(item, "generated_by"))
 
 
 def utc_now() -> str:
@@ -76,7 +94,7 @@ def json_safe(value: Any) -> Any:
 
 def new_report(task: str, argv: Sequence[str]) -> dict[str, Any]:
     return {
-        "schema": "forge3d.blender.report.v1",
+        "schema": "dimensio.blender.report.v1",
         "tool_version": TOOL_VERSION,
         "blender_version": bpy.app.version_string,
         "task": task,
@@ -298,8 +316,8 @@ def save_blend(
         except RuntimeError as exc:
             warn(report, "Some resources could not be packed", detail=str(exc))
     scene = bpy.context.scene
-    scene[GENERATED_BY_KEY] = f"Forge3D {TOOL_VERSION}"
-    scene["forge3d_saved_at"] = utc_now()
+    scene[GENERATED_BY_KEY] = f"Dimensio {TOOL_VERSION}"
+    scene["dimensio_saved_at"] = utc_now()
     bpy.ops.wm.save_as_mainfile(
         filepath=str(output_path),
         check_existing=False,
@@ -706,7 +724,7 @@ def validate_mesh_object(
             object_name=obj.name,
         )
 
-    is_collision = bool(obj.get("forge3d_collision")) or obj.name.endswith(
+    is_collision = bool(tool_property(obj, "collision")) or obj.name.endswith(
         (
             "-col",
             "-colonly",
@@ -1422,7 +1440,7 @@ def create_pbr_material(
     if existing:
         bpy.data.materials.remove(existing, do_unlink=True)
     material = bpy.data.materials.new(args.material_name)
-    material[GENERATED_BY_KEY] = f"Forge3D {TOOL_VERSION}"
+    material[GENERATED_BY_KEY] = f"Dimensio {TOOL_VERSION}"
     material.use_nodes = True
     material.diffuse_color = parse_color(args.base_color)
     tree = material.node_tree
@@ -1554,19 +1572,18 @@ def ensure_tool_collection(
     if collection is None:
         collection = bpy.data.collections.new(name)
         bpy.context.scene.collection.children.link(collection)
-        collection[GENERATED_BY_KEY] = f"Forge3D {TOOL_VERSION}"
+        collection[GENERATED_BY_KEY] = f"Dimensio {TOOL_VERSION}"
         return collection
-    owner = collection.get(GENERATED_BY_KEY)
-    if owner is None:
+    if not tool_owned(collection):
         raise TaskError(
-            f"Collection {name!r} already exists and is not owned by Forge3D"
+            f"Collection {name!r} already exists and is not owned by Dimensio"
         )
     if replace_existing:
         objects = list(collection.objects)
-        unowned = [obj.name for obj in objects if not obj.get(GENERATED_BY_KEY)]
+        unowned = [obj.name for obj in objects if not tool_owned(obj)]
         if unowned:
             raise TaskError(
-                f"Refusing to clear {name!r}; it contains non-Forge3D objects: "
+                f"Refusing to clear {name!r}; it contains non-Dimensio objects: "
                 + ", ".join(unowned)
             )
         for obj in objects:
@@ -1604,7 +1621,7 @@ def task_lods(args: argparse.Namespace, report: dict[str, Any]) -> None:
     sources = [
         obj
         for obj in target_objects(args, types={"MESH"})
-        if not obj.get("forge3d_lod_level")
+        if not tool_property(obj, "lod_level")
         and not obj.name.rsplit(".", 1)[0].endswith(tuple(f"_LOD{i}" for i in range(9)))
     ]
     if not sources:
@@ -1630,12 +1647,12 @@ def task_lods(args: argparse.Namespace, report: dict[str, Any]) -> None:
             duplicate.name = name
             duplicate.data.name = f"{name}_Mesh"
             collection.objects.link(duplicate)
-            duplicate[GENERATED_BY_KEY] = f"Forge3D {TOOL_VERSION}"
-            duplicate["forge3d_lod_level"] = level
-            duplicate["forge3d_lod_ratio"] = ratio
-            duplicate["forge3d_source_only"] = True
+            duplicate[GENERATED_BY_KEY] = f"Dimensio {TOOL_VERSION}"
+            duplicate["dimensio_lod_level"] = level
+            duplicate["dimensio_lod_ratio"] = ratio
+            duplicate["dimensio_source_only"] = True
             duplicate.hide_render = True
-            decimate = duplicate.modifiers.new("Forge3D Decimate", "DECIMATE")
+            decimate = duplicate.modifiers.new("Dimensio Decimate", "DECIMATE")
             decimate.decimate_type = "COLLAPSE"
             decimate.ratio = ratio
             decimate.use_collapse_triangulate = args.triangulate
@@ -1755,7 +1772,7 @@ def collision_mesh_copy(
     duplicate.name = name
     duplicate.data.name = f"{name}_Mesh"
     if ratio < 1:
-        decimate = duplicate.modifiers.new("Forge3D Collision Decimate", "DECIMATE")
+        decimate = duplicate.modifiers.new("Dimensio Collision Decimate", "DECIMATE")
         decimate.ratio = ratio
     return duplicate
 
@@ -1765,7 +1782,7 @@ def task_collision(args: argparse.Namespace, report: dict[str, Any]) -> None:
     sources = [
         obj
         for obj in target_objects(args, types={"MESH"})
-        if not obj.get("forge3d_collision")
+        if not tool_property(obj, "collision")
         and not obj.name.endswith(
             (
                 "-col",
@@ -1776,7 +1793,7 @@ def task_collision(args: argparse.Namespace, report: dict[str, Any]) -> None:
                 "_collision",
             )
         )
-        and (args.include_lods or not obj.get("forge3d_lod_level"))
+        and (args.include_lods or not tool_property(obj, "lod_level"))
     ]
     if not sources:
         raise TaskError("No source meshes matched the collision target")
@@ -1812,12 +1829,12 @@ def task_collision(args: argparse.Namespace, report: dict[str, Any]) -> None:
         collision.data.update(calc_edges=True, calc_edges_loose=True)
         collision.display_type = "WIRE"
         collision.hide_render = True
-        collision[GENERATED_BY_KEY] = f"Forge3D {TOOL_VERSION}"
-        collision["forge3d_collision"] = True
-        collision["forge3d_collision_mode"] = args.mode
+        collision[GENERATED_BY_KEY] = f"Dimensio {TOOL_VERSION}"
+        collision["dimensio_collision"] = True
+        collision["dimensio_collision_mode"] = args.mode
         if args.mode == "mesh" and args.ratio < 1:
             activate_only(collision)
-            bpy.ops.object.modifier_apply(modifier="Forge3D Collision Decimate")
+            bpy.ops.object.modifier_apply(modifier="Dimensio Collision Decimate")
         metrics[source.name] = {
             "collision": collision.name,
             "mode": args.mode,
@@ -1836,11 +1853,11 @@ def task_collision(args: argparse.Namespace, report: dict[str, Any]) -> None:
 
 def remove_tool_collection_objects(collection: bpy.types.Collection) -> None:
     for obj in list(collection.objects):
-        if obj.get(GENERATED_BY_KEY):
+        if tool_owned(obj):
             bpy.data.objects.remove(obj, do_unlink=True)
         else:
             raise TaskError(
-                f"Review collection contains a non-Forge3D object: {obj.name}"
+                f"Review collection contains a non-Dimensio object: {obj.name}"
             )
 
 
@@ -1850,11 +1867,11 @@ def create_review_camera(
     radius: float,
     lens: float,
 ) -> bpy.types.Object:
-    camera_data = bpy.data.cameras.new("Forge3D_ReviewCamera")
+    camera_data = bpy.data.cameras.new("Dimensio_ReviewCamera")
     camera_data.lens = lens
     camera_data.sensor_width = 36.0
-    camera = bpy.data.objects.new("Forge3D_ReviewCamera", camera_data)
-    camera[GENERATED_BY_KEY] = f"Forge3D {TOOL_VERSION}"
+    camera = bpy.data.objects.new("Dimensio_ReviewCamera", camera_data)
+    camera[GENERATED_BY_KEY] = f"Dimensio {TOOL_VERSION}"
     collection.objects.link(camera)
     distance = max(radius * 3.0, 0.5)
     camera.location = center + Vector((distance, -distance, distance * 0.65))
@@ -1879,7 +1896,7 @@ def create_area_light(
     data.size = size
     data.color = color
     obj = bpy.data.objects.new(name, data)
-    obj[GENERATED_BY_KEY] = f"Forge3D {TOOL_VERSION}"
+    obj[GENERATED_BY_KEY] = f"Dimensio {TOOL_VERSION}"
     collection.objects.link(obj)
     obj.location = center + offset
     look_at(obj, center)
@@ -1896,7 +1913,7 @@ def look_at(obj: bpy.types.Object, target: Vector) -> None:
 def set_review_world(scene: bpy.types.Scene, strength: float) -> None:
     world = scene.world
     if world is None:
-        world = bpy.data.worlds.new("Forge3D_ReviewWorld")
+        world = bpy.data.worlds.new("Dimensio_ReviewWorld")
         scene.world = world
     world.use_nodes = True
     background = world.node_tree.nodes.get("Background")
@@ -1980,7 +1997,7 @@ def task_turntable(args: argparse.Namespace, report: dict[str, Any]) -> None:
     light_scale = max(radius, 0.5)
     create_area_light(
         collection,
-        "Forge3D_KeyLight",
+        "Dimensio_KeyLight",
         center,
         Vector((2.5, -3.0, 3.0)) * light_scale,
         energy=700 * light_scale * light_scale,
@@ -1989,7 +2006,7 @@ def task_turntable(args: argparse.Namespace, report: dict[str, Any]) -> None:
     )
     create_area_light(
         collection,
-        "Forge3D_FillLight",
+        "Dimensio_FillLight",
         center,
         Vector((-3.0, -1.0, 1.5)) * light_scale,
         energy=350 * light_scale * light_scale,
@@ -1998,7 +2015,7 @@ def task_turntable(args: argparse.Namespace, report: dict[str, Any]) -> None:
     )
     create_area_light(
         collection,
-        "Forge3D_RimLight",
+        "Dimensio_RimLight",
         center,
         Vector((0.5, 3.0, 2.5)) * light_scale,
         energy=500 * light_scale * light_scale,
@@ -2116,7 +2133,7 @@ def bmesh_object(
         bm.free()
     mesh.update(calc_edges=True)
     obj = bpy.data.objects.new(name, mesh)
-    obj[GENERATED_BY_KEY] = f"Forge3D {TOOL_VERSION}"
+    obj[GENERATED_BY_KEY] = f"Dimensio {TOOL_VERSION}"
     collection.objects.link(obj)
     return obj
 
@@ -2128,7 +2145,7 @@ def add_bevel_modifier(
 ) -> None:
     if width <= 0:
         return
-    bevel = obj.modifiers.new("Forge3D Bevel", "BEVEL")
+    bevel = obj.modifiers.new("Dimensio Bevel", "BEVEL")
     bevel.width = width
     bevel.segments = segments
     bevel.limit_method = "ANGLE"
@@ -2212,13 +2229,13 @@ def procedural_pbr_material(
     roughness: float,
 ) -> bpy.types.Material:
     material = bpy.data.materials.get(name)
-    if material is not None and not material.get(GENERATED_BY_KEY):
+    if material is not None and not tool_owned(material):
         raise TaskError(
-            f"Material {name!r} already exists and is not owned by Forge3D"
+            f"Material {name!r} already exists and is not owned by Dimensio"
         )
     if material is None:
         material = bpy.data.materials.new(name)
-    material[GENERATED_BY_KEY] = f"Forge3D {TOOL_VERSION}"
+    material[GENERATED_BY_KEY] = f"Dimensio {TOOL_VERSION}"
     material.use_nodes = True
     material.diffuse_color = color
     tree = material.node_tree
@@ -2242,19 +2259,19 @@ def finish_hard_surface_component(
     bevel_segments: int,
     role: str,
 ) -> None:
-    obj["forge3d_role"] = role
-    obj["forge3d_units"] = "meters"
+    obj["dimensio_role"] = role
+    obj["dimensio_units"] = "meters"
     obj.data.materials.append(material)
     for polygon in obj.data.polygons:
         polygon.material_index = 0
         polygon.use_smooth = True
     add_bevel_modifier(obj, bevel, bevel_segments)
-    bevel_modifier = obj.modifiers.get("Forge3D Bevel")
+    bevel_modifier = obj.modifiers.get("Dimensio Bevel")
     if bevel_modifier is not None:
         bevel_modifier.harden_normals = True
         if hasattr(bevel_modifier, "miter_outer"):
             bevel_modifier.miter_outer = "MITER_ARC"
-    weighted = obj.modifiers.new("Forge3D Weighted Normals", "WEIGHTED_NORMAL")
+    weighted = obj.modifiers.new("Dimensio Weighted Normals", "WEIGHTED_NORMAL")
     weighted.keep_sharp = True
     weighted.weight = 50
 
@@ -2280,7 +2297,7 @@ def procedural_equipment_case(
             "equipment-case is a horizontal pod; width must exceed shell "
             "height by at least 35%"
         )
-    name = str(params.get("name", "Forge3D_MedicalPod")).strip()
+    name = str(params.get("name", "Dimensio_MedicalPod")).strip()
     if not name:
         raise TaskError("Parameter 'name' must not be empty")
 
@@ -2651,7 +2668,7 @@ def procedural_equipment_case(
 
     objects = [shell, protectors, accents, hardware, indicator]
     for obj in objects:
-        obj["forge3d_dimensions"] = json.dumps(
+        obj["dimensio_dimensions"] = json.dumps(
             {
                 "width": width,
                 "depth": depth,
@@ -2670,7 +2687,7 @@ def procedural_box(
     width = positive_param(params, "width", 1.0)
     depth = positive_param(params, "depth", 1.0)
     height = positive_param(params, "height", 1.0)
-    name = str(params.get("name", "Forge3D_Box"))
+    name = str(params.get("name", "Dimensio_Box"))
     obj = bmesh_object(
         name,
         collection,
@@ -2711,7 +2728,7 @@ def procedural_crate(
         minimum=0.005,
         maximum=min(width, depth) * 0.2,
     )
-    name = str(params.get("name", "Forge3D_Crate"))
+    name = str(params.get("name", "Dimensio_Crate"))
 
     def build(bm: bmesh.types.BMesh) -> None:
         add_box_to_bmesh(
@@ -2751,7 +2768,7 @@ def procedural_stairs(
     width = positive_param(params, "width", 1.5)
     run = positive_param(params, "run", 2.4)
     rise = positive_param(params, "rise", 1.6)
-    name = str(params.get("name", "Forge3D_Stairs"))
+    name = str(params.get("name", "Dimensio_Stairs"))
     tread = run / steps
     riser = rise / steps
 
@@ -2809,7 +2826,7 @@ def procedural_room(
         minimum=0.0,
         maximum=height,
     )
-    name = str(params.get("name", "Forge3D_Room"))
+    name = str(params.get("name", "Dimensio_Room"))
 
     def build(bm: bmesh.types.BMesh) -> None:
         add_box_to_bmesh(
@@ -2886,7 +2903,7 @@ def procedural_fence(
         minimum=0.01,
         maximum=height * 0.25,
     )
-    name = str(params.get("name", "Forge3D_Fence"))
+    name = str(params.get("name", "Dimensio_Fence"))
 
     def build(bm: bmesh.types.BMesh) -> None:
         for index in range(posts):
@@ -2942,7 +2959,7 @@ def procedural_terrain(
         minimum=0.0,
         maximum=max(width, depth),
     )
-    name = str(params.get("name", "Forge3D_Terrain"))
+    name = str(params.get("name", "Dimensio_Terrain"))
     generator = random.Random(seed)
 
     def build(bm: bmesh.types.BMesh) -> None:
@@ -2983,7 +3000,7 @@ def procedural_pipe(
     params: dict[str, Any],
     collection: bpy.types.Collection,
 ) -> list[bpy.types.Object]:
-    name = str(params.get("name", "Forge3D_Pipe"))
+    name = str(params.get("name", "Dimensio_Pipe"))
     radius = positive_param(params, "radius", 0.1)
     bevel_resolution = integer_param(
         params, "bevel_resolution", 4, minimum=0, maximum=12
@@ -3018,7 +3035,7 @@ def procedural_pipe(
         bezier.handle_left_type = "AUTO"
         bezier.handle_right_type = "AUTO"
     obj = bpy.data.objects.new(name, curve)
-    obj[GENERATED_BY_KEY] = f"Forge3D {TOOL_VERSION}"
+    obj[GENERATED_BY_KEY] = f"Dimensio {TOOL_VERSION}"
     collection.objects.link(obj)
     return [obj]
 
@@ -3076,9 +3093,9 @@ def task_procedural(args: argparse.Namespace, report: dict[str, Any]) -> None:
             )
         objects = builder(params, collection)
     for obj in objects:
-        obj["forge3d_recipe"] = args.recipe
-        obj["forge3d_seed"] = args.seed
-        obj["forge3d_parameters"] = json.dumps(params, sort_keys=True)
+        obj["dimensio_recipe"] = args.recipe
+        obj["dimensio_seed"] = args.seed
+        obj["dimensio_parameters"] = json.dumps(params, sort_keys=True)
     bounds = object_world_bounds(objects)
     report["metrics"].update(
         {
@@ -3137,7 +3154,7 @@ def object_has_ancestor(
 def armature_export_objects(armature: bpy.types.Object) -> list[bpy.types.Object]:
     result = []
     for obj in bpy.context.scene.objects:
-        if obj.get("forge3d_source_only"):
+        if tool_property(obj, "source_only"):
             continue
         if (
             obj == armature
@@ -3189,10 +3206,10 @@ def task_export_glb(args: argparse.Namespace, report: dict[str, Any]) -> None:
     else:
         scene_objects = list(bpy.context.scene.objects)
         excluded_source_lods = [
-            obj for obj in scene_objects if obj.get("forge3d_source_only")
+            obj for obj in scene_objects if tool_property(obj, "source_only")
         ]
         objects = [
-            obj for obj in scene_objects if not obj.get("forge3d_source_only")
+            obj for obj in scene_objects if not tool_property(obj, "source_only")
         ]
         if excluded_source_lods:
             deselect_all()
@@ -3470,13 +3487,13 @@ def mark_rigify_helpers(
         raise TaskError(f"Rig helper collection already exists: {helper_collection_name}")
     collection = bpy.data.collections.new(helper_collection_name)
     bpy.context.scene.collection.children.link(collection)
-    collection[GENERATED_BY_KEY] = f"Forge3D {TOOL_VERSION}"
-    collection["forge3d_source_only"] = True
+    collection[GENERATED_BY_KEY] = f"Dimensio {TOOL_VERSION}"
+    collection["dimensio_source_only"] = True
     collection.hide_render = True
     collection.hide_viewport = True
     link_object_only_to(metarig, collection)
-    metarig[GENERATED_BY_KEY] = f"Forge3D {TOOL_VERSION}"
-    metarig["forge3d_source_only"] = True
+    metarig[GENERATED_BY_KEY] = f"Dimensio {TOOL_VERSION}"
+    metarig["dimensio_source_only"] = True
     metarig.hide_render = True
     metarig.hide_set(True)
 
@@ -3485,14 +3502,14 @@ def mark_rigify_helpers(
         if candidate in collections_before_generation:
             continue
         helper_objects = list(candidate.all_objects)
-        candidate[GENERATED_BY_KEY] = f"Forge3D {TOOL_VERSION}"
-        candidate["forge3d_source_only"] = True
+        candidate[GENERATED_BY_KEY] = f"Dimensio {TOOL_VERSION}"
+        candidate["dimensio_source_only"] = True
         candidate.hide_render = True
         candidate.hide_viewport = True
         helper_names.append(candidate.name)
         for obj in helper_objects:
-            obj[GENERATED_BY_KEY] = f"Forge3D {TOOL_VERSION}"
-            obj["forge3d_source_only"] = True
+            obj[GENERATED_BY_KEY] = f"Dimensio {TOOL_VERSION}"
+            obj["dimensio_source_only"] = True
             obj.hide_render = True
             obj.hide_viewport = True
     return sorted(set(helper_names), key=str.casefold)
@@ -3506,7 +3523,7 @@ def task_rig_humanoid(args: argparse.Namespace, report: dict[str, Any]) -> None:
     meshes = [
         obj
         for obj in target_objects(args, types={"MESH"})
-        if not obj.get("forge3d_source_only")
+        if not tool_property(obj, "source_only")
     ]
     if not meshes:
         raise TaskError("No mesh objects matched the humanoid rig target")
@@ -3541,9 +3558,9 @@ def task_rig_humanoid(args: argparse.Namespace, report: dict[str, Any]) -> None:
     rig = generated_rigify_armature(metarig)
     rig.name = args.rig_name
     rig.data.name = f"{args.rig_name}_Armature"
-    rig[GENERATED_BY_KEY] = f"Forge3D {TOOL_VERSION}"
-    rig["forge3d_rig_backend"] = "rigify"
-    rig["forge3d_fit_assumption"] = "upright neutral T/A pose"
+    rig[GENERATED_BY_KEY] = f"Dimensio {TOOL_VERSION}"
+    rig["dimensio_rig_backend"] = "rigify"
+    rig["dimensio_fit_assumption"] = "upright neutral T/A pose"
     rig.show_in_front = True
     binding_metrics = bind_meshes_with_automatic_weights(rig, meshes)
     helper_names = mark_rigify_helpers(
@@ -3775,7 +3792,7 @@ def remove_retarget_constraints(armature: bpy.types.Object) -> int:
     removed = 0
     for pose_bone in armature.pose.bones:
         for constraint in list(pose_bone.constraints):
-            if constraint.name.startswith("FORGE3D_RETARGET_"):
+            if constraint.name.startswith(RETARGET_PREFIXES):
                 pose_bone.constraints.remove(constraint)
                 removed += 1
     return removed
@@ -3795,7 +3812,7 @@ def add_retarget_constraints(
     for source_bone_name, target_bone_name in mapping.items():
         target_pose_bone = target.pose.bones[target_bone_name]
         constraint = target_pose_bone.constraints.new("COPY_ROTATION")
-        constraint.name = f"FORGE3D_RETARGET_ROT_{source_bone_name}"
+        constraint.name = f"{RETARGET_PREFIX}ROT_{source_bone_name}"
         constraint.target = source
         constraint.subtarget = source_bone_name
         constraint.target_space = "LOCAL"
@@ -3809,7 +3826,7 @@ def add_retarget_constraints(
                 "--copy-root-location requires --root-source and --root-target"
             )
         constraint = target.pose.bones[root_target].constraints.new("COPY_LOCATION")
-        constraint.name = f"FORGE3D_RETARGET_LOC_{root_source}"
+        constraint.name = f"{RETARGET_PREFIX}LOC_{root_source}"
         constraint.target = source
         constraint.subtarget = root_source
         constraint.target_space = "POSE"
@@ -3844,7 +3861,7 @@ def bake_retarget(
             only_selected=True,
             visual_keying=True,
             # Never let Blender clear every constraint on the selected bones.
-            # Artist constraints may coexist with the temporary Forge3D ones;
+            # Artist constraints may coexist with the temporary Dimensio ones;
             # those are removed by name after baking when requested.
             clear_constraints=False,
             clear_parents=False,
@@ -3870,10 +3887,8 @@ def bake_retarget(
 def load_humanoid_profile(args: argparse.Namespace) -> dict[str, Any]:
     path = path_from_user(args.profile, kind="humanoid profile", must_exist=True)
     profile = load_json_object(path.read_text(encoding="utf-8"), kind="humanoid profile")
-    if profile.get("schema") != "forge3d.humanoid-retarget-profile.v1":
-        raise TaskError(
-            "Humanoid profile schema must be forge3d.humanoid-retarget-profile.v1"
-        )
+    if profile.get("schema") not in HUMANOID_PROFILE_SCHEMAS:
+        raise TaskError(f"Humanoid profile schema must be {HUMANOID_PROFILE_SCHEMA}")
     for key in ("source_armature", "target_armature"):
         if not isinstance(profile.get(key), str) or not profile[key].strip():
             raise TaskError(f"Humanoid profile requires a non-empty {key}")
@@ -4040,18 +4055,18 @@ def render_humanoid_review(
     old_percentage = scene.render.resolution_percentage
     old_transparent = scene.render.film_transparent
     hidden = {obj: obj.hide_render for obj in scene.objects}
-    collection = bpy.data.collections.new(f"Forge3D_{prefix}_Review")
+    collection = bpy.data.collections.new(f"Dimensio_{prefix}_Review")
     scene.collection.children.link(collection)
-    camera_data = bpy.data.cameras.new(f"Forge3D_{prefix}_ReviewCamera")
+    camera_data = bpy.data.cameras.new(f"Dimensio_{prefix}_ReviewCamera")
     camera_data.type = "ORTHO"
     camera_data.ortho_scale = max(size.x, size.y, size.z) * 1.28
     camera = bpy.data.objects.new(camera_data.name, camera_data)
-    camera[GENERATED_BY_KEY] = f"Forge3D {TOOL_VERSION}"
+    camera[GENERATED_BY_KEY] = f"Dimensio {TOOL_VERSION}"
     collection.objects.link(camera)
     light_scale = max(radius, 0.5)
     key = create_area_light(
         collection,
-        f"Forge3D_{prefix}_Key",
+        f"Dimensio_{prefix}_Key",
         center,
         Vector((-2.0, -2.5, 3.0)) * light_scale,
         energy=850.0,
@@ -4060,7 +4075,7 @@ def render_humanoid_review(
     )
     fill = create_area_light(
         collection,
-        f"Forge3D_{prefix}_Fill",
+        f"Dimensio_{prefix}_Fill",
         center,
         Vector((2.5, -1.0, 1.5)) * light_scale,
         energy=450.0,
@@ -4543,11 +4558,11 @@ def task_retarget(args: argparse.Namespace, report: dict[str, Any]) -> None:
         1
         for pose_bone in target.pose.bones
         for constraint in pose_bone.constraints
-        if constraint.name.startswith("FORGE3D_RETARGET_")
+        if constraint.name.startswith(RETARGET_PREFIXES)
     )
     if existing and not args.replace_existing:
         raise TaskError(
-            f"Target already has {existing} Forge3D retarget constraints; "
+            f"Target already has {existing} Dimensio retarget constraints; "
             "pass --replace-existing to rebuild them"
         )
     removed = remove_retarget_constraints(target) if existing else 0
@@ -4598,7 +4613,7 @@ def task_retarget(args: argparse.Namespace, report: dict[str, Any]) -> None:
                 1
                 for pose_bone in target.pose.bones
                 for constraint in pose_bone.constraints
-                if constraint.name.startswith("FORGE3D_RETARGET_")
+                if constraint.name.startswith(RETARGET_PREFIXES)
             ),
             "baked": args.bake,
             "frame_range": [frame_start, frame_end],
@@ -4703,9 +4718,9 @@ def add_validation_flags(parser: argparse.ArgumentParser) -> None:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        prog="forge3d_task.py",
+        prog="dimensio_task.py",
         description=(
-            "Composable Forge3D tasks for Blender 5. Invoke through Blender after `--`."
+            "Composable Dimensio tasks for Blender 5. Invoke through Blender after `--`."
         ),
     )
     parser.add_argument("--version", action="version", version=TOOL_VERSION)
@@ -4844,7 +4859,7 @@ def build_parser() -> argparse.ArgumentParser:
         help="Build and assign a Principled PBR material",
     )
     add_mutation_flags(material_parser)
-    material_parser.add_argument("--material-name", default="Forge3D_Material")
+    material_parser.add_argument("--material-name", default="Dimensio_Material")
     material_parser.add_argument("--base-color", default="0.5,0.5,0.5,1")
     material_parser.add_argument("--metallic", type=float, default=0.0)
     material_parser.add_argument("--roughness", type=float, default=0.5)
@@ -4867,7 +4882,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     add_mutation_flags(lod_parser)
     lod_parser.add_argument("--ratios", default="0.5,0.2")
-    lod_parser.add_argument("--lod-collection", default="Forge3D_LODs")
+    lod_parser.add_argument("--lod-collection", default="Dimensio_LODs")
     lod_parser.add_argument("--triangulate", action="store_true")
     lod_parser.add_argument("--replace-existing", action="store_true")
     lod_parser.set_defaults(handler=task_lods)
@@ -4890,7 +4905,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     collision_parser.add_argument(
         "--collision-collection",
-        default="Forge3D_Collision",
+        default="Dimensio_Collision",
     )
     collision_parser.add_argument("--replace-existing", action="store_true")
     collision_parser.set_defaults(handler=task_collision)
@@ -4918,7 +4933,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     turntable_parser.add_argument(
         "--review-collection",
-        default="Forge3D_Review",
+        default="Dimensio_Review",
     )
     turntable_parser.add_argument("--save-blend")
     turntable_parser.add_argument("--pack-resources", action="store_true")
@@ -4979,7 +4994,7 @@ def build_parser() -> argparse.ArgumentParser:
     procedural_parser.add_argument("--seed", type=int, default=0)
     procedural_parser.add_argument(
         "--asset-collection",
-        default="Forge3D_Asset",
+        default="Dimensio_Asset",
     )
     procedural_parser.add_argument(
         "--keep-scene",
@@ -4998,10 +5013,10 @@ def build_parser() -> argparse.ArgumentParser:
         ),
     )
     add_mutation_flags(rig_humanoid_parser)
-    rig_humanoid_parser.add_argument("--rig-name", default="Forge3D_Rig")
+    rig_humanoid_parser.add_argument("--rig-name", default="Dimensio_Rig")
     rig_humanoid_parser.add_argument(
         "--helper-collection",
-        default="Forge3D_RigHelpers",
+        default="Dimensio_RigHelpers",
     )
     rig_humanoid_parser.set_defaults(handler=task_rig_humanoid)
 

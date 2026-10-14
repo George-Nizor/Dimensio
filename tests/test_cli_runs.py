@@ -10,11 +10,11 @@ from io import StringIO
 from pathlib import Path
 from unittest.mock import patch
 
-from forge3d.cli import main
-from forge3d.models import ModelRunResult, run_tripo_cloud
-from forge3d.paths import slugify
-from forge3d.runs import Run, file_hash
-from forge3d.workflows import (
+from dimensio.cli import main
+from dimensio.models import ModelRunResult, run_tripo_cloud
+from dimensio.paths import slugify
+from dimensio.runs import Run, file_hash
+from dimensio.workflows import (
     humanoid_retarget_animation,
     prepare_animation_request,
     make_asset,
@@ -211,14 +211,14 @@ class RunTests(unittest.TestCase):
                 ["rig-humanoid", "rig-validate", "export-glb", "turntable"],
             )
             rig_args = blender.calls[0][1]
-            self.assertEqual(rig_args["rig_name"], "Forge3D_Rig")
+            self.assertEqual(rig_args["rig_name"], "Dimensio_Rig")
             validation_args = blender.calls[1][1]
-            self.assertEqual(validation_args["objects"], "Forge3D_Rig")
+            self.assertEqual(validation_args["objects"], "Dimensio_Rig")
             export_args = blender.calls[2][1]
-            self.assertEqual(export_args["armature"], "Forge3D_Rig")
+            self.assertEqual(export_args["armature"], "Dimensio_Rig")
             self.assertTrue(export_args["deform_bones_only"])
             preview_args = blender.calls[3][1]
-            self.assertEqual(preview_args["armature"], "Forge3D_Rig")
+            self.assertEqual(preview_args["armature"], "Dimensio_Rig")
 
     def test_retarget_exports_and_previews_only_the_target_action(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -270,7 +270,7 @@ class RunTests(unittest.TestCase):
             profile.write_text(
                 json.dumps(
                     {
-                        "schema": "forge3d.humanoid-retarget-profile.v1",
+                        "schema": "dimensio.humanoid-retarget-profile.v1",
                         "source_armature": "HumanRig",
                         "target_armature": "AstronautRig",
                         "source_to_target": {"DEF-head": "head"},
@@ -452,7 +452,7 @@ class CLITests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             error = StringIO()
-            with patch.dict(os.environ, {"FORGE3D_ROOT": str(root)}, clear=False):
+            with patch.dict(os.environ, {"DIMENSIO_ROOT": str(root)}, clear=False):
                 with redirect_stderr(error):
                     status = main(["make", "a medieval lantern"])
             self.assertEqual(status, 2)
