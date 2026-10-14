@@ -518,7 +518,7 @@ function openSetup(open = true) {
 function renderModelOptions() {
   const current = runSettings.model || elements.model.value;
   elements.model.innerHTML = '<option value="auto">Codex default</option>' + (state.models || [])
-    .map((model) => `<option value="${escapeHtml(model.id || model.model)}">${escapeHtml(model.displayName || model.id || model.model)}</option>`).join("");
+    .map((model) => `<option value="${escapeHtml(model.id || model.model)}">${escapeHtml(model.label || model.displayName || model.id || model.model)}</option>`).join("");
   if ([...elements.model.options].some((option) => option.value === current)) elements.model.value = current;
 }
 

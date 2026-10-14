@@ -29,7 +29,7 @@ const path = require("node:path");
 const readline = require("node:readline");
 const { execFile, spawn } = require("node:child_process");
 const { BUNDLE_VERSION } = require("../runtime.cjs");
-const { killTree, running } = require("./process-tree.cjs");
+const { killTree, killTreeSync, running } = require("./process-tree.cjs");
 const { SIGNED_OUT, interpretLine, toolItem } = require("./stream-json.cjs");
 
 const CLAUDE_MODELS = Object.freeze([
@@ -484,7 +484,16 @@ class ClaudeDriver extends EventEmitter {
     this.child = null;
   }
 
+  closeNow() {
+    if (!running(this.child)) return;
+    this.closing = true;
+    killTreeSync(this.child, { platform: this.platform });
+    this.child = null;
+  }
+
+  // After a run: a process that finished exits by itself once stdin closes; one that did not is stopped.
   endSession() {
+    if (running(this.child) && !this.finished) this.close().catch(() => {});
     this.session = null;
   }
 

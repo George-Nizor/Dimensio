@@ -26,7 +26,13 @@ test("preload exposes narrow named operations without raw ipcRenderer", () => {
 });
 
 test("desktop runs are local-only and expose no cloud provider controls", () => {
-  assert.equal(main.includes("allowNetwork: false"), true);
+  const codex = fs.readFileSync(path.join(__dirname, "..", "src", "lib", "agents", "codex.cjs"), "utf8");
+  assert.equal(codex.includes("allowNetwork: false"), true);
+  // Claude Code gets no web tools: --tools names only the shell, the file tools and Skill.
+  const { buildClaudeArgs } = require("../src/lib/agents/claude.cjs");
+  const args = buildClaudeArgs({ model: "opus", effort: "medium", mcpConfigFile: "m", pluginDir: "p", runDir: "/r", sessionId: "s", platform: "win32" });
+  assert.doesNotMatch(args[args.indexOf("--tools") + 1], /Web/);
+  assert.doesNotMatch(args[args.indexOf("--allowedTools") + 1], /Web/);
   assert.doesNotMatch(renderer, /tripo-cloud|cloud-approved|cloud execution/i);
 });
 

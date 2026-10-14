@@ -1,6 +1,6 @@
 "use strict";
 
-const { execFile } = require("node:child_process");
+const { execFile, spawnSync } = require("node:child_process");
 
 function running(child) {
   return Boolean(child && child.pid && child.exitCode === null && child.signalCode === null);
@@ -40,4 +40,18 @@ function killTree(child, { platform = process.platform, execFileImpl = execFile,
   });
 }
 
-module.exports = { killTree, running };
+// The same, without waiting, for when the app is quitting and nothing after this line will run.
+function killTreeSync(child, { platform = process.platform, spawnSyncImpl = spawnSync } = {}) {
+  if (!running(child)) return false;
+  if (platform === "win32") {
+    const result = spawnSyncImpl("taskkill", ["/PID", String(child.pid), "/T", "/F"], { windowsHide: true, timeout: 5000 });
+    if (result.status !== 0) { try { child.kill(); } catch { /* already gone */ } }
+    return true;
+  }
+  try { process.kill(-child.pid, "SIGTERM"); } catch {
+    try { child.kill("SIGTERM"); } catch { /* already gone */ }
+  }
+  return true;
+}
+
+module.exports = { killTree, killTreeSync, running };

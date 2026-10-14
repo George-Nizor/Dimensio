@@ -30,6 +30,10 @@ contextBridge.exposeInMainWorld("forge3d", Object.freeze({
   refreshTools: invoke("forge3d:refresh-tools"),
   setTheme: invoke("forge3d:set-theme"),
   capabilities: invoke("forge3d:capabilities"),
+  getAgentSettings: invoke("forge3d:agent-settings"),
+  setAgent: invoke("forge3d:set-agent"),
+  agentStatus: invoke("forge3d:agent-status"),
+  models: invoke("forge3d:models"),
   project: Object.freeze({
     create: invoke("forge3d:project-new"),
     open: invoke("forge3d:project-open"),
