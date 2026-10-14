@@ -1,0 +1,302 @@
+{
+ "note": "Recorded 2026-10-15 from Claude Code 2.1.299 in WSL (claude-haiku-5-5, --effort low), with the flags in claude.cjs. Paths are replaced by placeholders; init lists are trimmed. \"await\" marks where the session read the next stdin message.",
+ "scenario": "A command outside the allowlist is denied (dontAsk); the session is then killed during the next tool call. The real process exited 143 with no result event.",
+ "steps": [
+  {
+   "await": "user"
+  },
+  {
+   "emit": {
+    "type": "system",
+    "subtype": "init",
+    "cwd": "<run>",
+    "session_id": "687a3f4b-bfd4-42e9-a3ae-a1d30caa56b7",
+    "tools": [
+     "Bash",
+     "Edit",
+     "Glob",
+     "Grep",
+     "Read",
+     "Skill",
+     "Write"
+    ],
+    "mcp_servers": [
+     {
+      "name": "blender",
+      "status": "failed",
+      "source": "dynamic"
+     }
+    ],
+    "model": "claude-haiku-5-5",
+    "permissionMode": "dontAsk",
+    "slash_commands": [
+     "forge3d:forge3d",
+     "compact",
+     "context",
+     "model"
+    ],
+    "terminal_slash_commands": [],
+    "apiKeySource": "none",
+    "claude_code_version": "2.1.299",
+    "output_style": "default",
+    "agents": [
+     "Explore",
+     "general-purpose",
+     "Plan"
+    ],
+    "skills": [
+     "forge3d:forge3d"
+    ],
+    "plugins": [
+     {
+      "name": "forge3d",
+      "path": "<plugin>",
+      "source": "forge3d@inline",
+      "version": "0.3.0"
+     },
+     {
+      "name": "cc-plugin-agents-md",
+      "path": "builtin",
+      "source": "cc-plugin-agents-md@builtin"
+     },
+     {
+      "name": "cc-plugin-telemetry",
+      "path": "builtin",
+      "source": "cc-plugin-telemetry@builtin"
+     },
+     {
+      "name": "cc-plugin-plugin-authoring",
+      "path": "builtin",
+      "source": "cc-plugin-plugin-authoring@builtin"
+     }
+    ],
+    "capabilities": [
+     "interrupt_receipt_v1",
+     "interrupt_cancel_queued_v1",
+     "interrupt_send_now_v1",
+     "msg_lifecycle_v1",
+     "request_marker_lists_v1",
+     "sdk_mcp_tools_list_changed",
+     "sdk_mcp_manifests",
+     "mcp_read_resource_v1",
+     "mcp_tool_ui_meta_v1",
+     "ui_surface_v1"
+    ],
+    "analytics_disabled": false,
+    "product_feedback_disabled": false,
+    "uuid": "3e53f697-dd8a-41d4-a507-e910dee0e55a",
+    "fast_mode_state": "off",
+    "fast_mode_disabled_reason": "sdk_opt_in_required",
+    "per_turn_effort_active": true,
+    "view_mode": "default"
+   }
+  },
+  {
+   "emit": {
+    "type": "user",
+    "message": {
+     "role": "user",
+     "content": "Use the Bash tool to run `touch probe.txt`. Whatever happens, then use the Bash tool to run `forge3d capabilities`, then summarise in one line."
+    },
+    "session_id": "687a3f4b-bfd4-42e9-a3ae-a1d30caa56b7",
+    "parent_tool_use_id": null,
+    "uuid": "fd235576-abf9-47f9-a20e-bf934518cc11",
+    "timestamp": "2026-10-14T13:19:13.623Z",
+    "isReplay": true
+   }
+  },
+  {
+   "emit": {
+    "type": "assistant",
+    "message": {
+     "model": "claude-haiku-5-5",
+     "id": "msg_011Cg2CLvCx6WYrExeasPgyb",
+     "type": "message",
+     "role": "assistant",
+     "content": [
+      {
+       "type": "tool_use",
+       "id": "toolu_012sY3vDiRTfkmYn7tMNJyYJ",
+       "name": "Bash",
+       "input": {
+        "command": "touch probe.txt",
+        "description": "Create empty probe.txt file"
+       },
+       "caller": {
+        "type": "direct"
+       }
+      }
+     ],
+     "container": null,
+     "stop_reason": null,
+     "stop_sequence": null,
+     "stop_details": null,
+     "usage": {
+      "input_tokens": 2,
+      "cache_creation_input_tokens": 175,
+      "cache_read_input_tokens": 12031,
+      "cache_creation": {
+       "ephemeral_5m_input_tokens": 0,
+       "ephemeral_1h_input_tokens": 175
+      },
+      "output_tokens": 16,
+      "service_tier": "standard",
+      "inference_geo": "global"
+     },
+     "input_transformations": [],
+     "diagnostics": null,
+     "context_management": null
+    },
+    "parent_tool_use_id": null,
+    "session_id": "687a3f4b-bfd4-42e9-a3ae-a1d30caa56b7",
+    "uuid": "f5fbfc64-1079-442e-b721-c4867f3508b1",
+    "timestamp": "2026-10-14T13:19:14.638Z",
+    "request_id": "req_011Cg2CLuw6Ni6LdKVSEZFqU",
+    "wire_tool_inputs": {
+     "toolu_012sY3vDiRTfkmYn7tMNJyYJ": {
+      "command": "touch probe.txt",
+      "description": "Create empty probe.txt file"
+     }
+    }
+   }
+  },
+  {
+   "emit": {
+    "type": "system",
+    "subtype": "permission_denied",
+    "tool_name": "Bash",
+    "tool_use_id": "toolu_012sY3vDiRTfkmYn7tMNJyYJ",
+    "decision_reason_type": "mode",
+    "message": "Permission to use Bash has been denied because Claude Code is running in don't ask mode. IMPORTANT: You *may* attempt to accomplish this action using other tools that might naturally be used to accomplish this goal, e.g. using head instead of cat. But you *should not* attempt to work around this denial in malicious ways, e.g. do not use your ability to run tests to execute non-test actions. You should only try to work around this restriction in reasonable ways that do not attempt to bypass the intent behind this denial. If you believe this capability is essential to complete the user's request, STOP and explain to the user what you were trying to do and why you need this permission. Let the user decide how to proceed.",
+    "uuid": "7ce6b16f-f6a3-4024-ad63-5a5bc294daed",
+    "session_id": "687a3f4b-bfd4-42e9-a3ae-a1d30caa56b7"
+   }
+  },
+  {
+   "emit": {
+    "type": "user",
+    "message": {
+     "role": "user",
+     "content": [
+      {
+       "type": "tool_result",
+       "content": "Permission to use Bash has been denied because Claude Code is running in don't ask mode. IMPORTANT: You *may* attempt to accomplish this action using other tools that might naturally be used to accomplish this goal, e.g. using head instead of cat. But you *should not* attempt to work around this denial in malicious ways, e.g. do not use your ability to run tests to execute non-test actions. You should only try to work around this restriction in reasonable ways that do not attempt to bypass the intent behind this denial. If you believe this capability is essential to complete the user's request, STOP and explain to the user what you were trying to do and why you need this permission. Let the user decide how to proceed.",
+       "is_error": true,
+       "tool_use_id": "toolu_012sY3vDiRTfkmYn7tMNJyYJ"
+      }
+     ]
+    },
+    "parent_tool_use_id": null,
+    "session_id": "687a3f4b-bfd4-42e9-a3ae-a1d30caa56b7",
+    "uuid": "b4aaf1fc-df6c-4071-a5c2-e01cdbaff1b1",
+    "timestamp": "2026-10-14T13:19:14.656Z",
+    "tool_use_result": "Error: Permission to use Bash has been denied because Claude Code is running in don't ask mode. IMPORTANT: You *may* attempt to accomplish this action using other tools that might naturally be used to accomplish this goal, e.g. using head instead of cat. But you *should not* attempt to work around this denial in malicious ways, e.g. do not use your ability to run tests to execute non-test actions. You should only try to work around this restriction in reasonable ways that do not attempt to bypass the intent behind this denial. If you believe this capability is essential to complete the user's request, STOP and explain to the user what you were trying to do and why you need this permission. Let the user decide how to proceed.",
+    "tool_result_meta": [
+     {
+      "id": "toolu_012sY3vDiRTfkmYn7tMNJyYJ",
+      "non_execution_kind": "permission-rule",
+      "permission_decision": {
+       "decision": "reject",
+       "source": "config",
+       "reason_type": "mode"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "emit": {
+    "type": "assistant",
+    "message": {
+     "model": "claude-haiku-5-5",
+     "id": "msg_011Cg2CLvCx6WYrExeasPgyb",
+     "type": "message",
+     "role": "assistant",
+     "content": [
+      {
+       "type": "tool_use",
+       "id": "toolu_019EcRjF4taJnMEBQ4o2uxxH",
+       "name": "Bash",
+       "input": {
+        "command": "forge3d capabilities",
+        "description": "List forge3d capabilities"
+       },
+       "caller": {
+        "type": "direct"
+       }
+      }
+     ],
+     "container": null,
+     "stop_reason": null,
+     "stop_sequence": null,
+     "stop_details": null,
+     "usage": {
+      "input_tokens": 2,
+      "cache_creation_input_tokens": 175,
+      "cache_read_input_tokens": 12031,
+      "cache_creation": {
+       "ephemeral_5m_input_tokens": 0,
+       "ephemeral_1h_input_tokens": 175
+      },
+      "output_tokens": 16,
+      "service_tier": "standard",
+      "inference_geo": "global"
+     },
+     "input_transformations": [],
+     "diagnostics": null,
+     "context_management": null
+    },
+    "parent_tool_use_id": null,
+    "session_id": "687a3f4b-bfd4-42e9-a3ae-a1d30caa56b7",
+    "uuid": "6d92c724-6d98-4e61-9fb2-c1176ebaae07",
+    "timestamp": "2026-10-14T13:19:14.832Z",
+    "request_id": "req_011Cg2CLuw6Ni6LdKVSEZFqU",
+    "wire_tool_inputs": {
+     "toolu_019EcRjF4taJnMEBQ4o2uxxH": {
+      "command": "forge3d capabilities",
+      "description": "List forge3d capabilities"
+     }
+    }
+   }
+  },
+  {
+   "emit": {
+    "type": "rate_limit_event",
+    "rate_limit_info": {
+     "status": "allowed_warning",
+     "resetsAt": 1792432800,
+     "rateLimitType": "seven_day",
+     "utilization": 0.5,
+     "overageStatus": "rejected",
+     "overageDisabledReason": "org_level_disabled",
+     "isUsingOverage": false,
+     "unifiedWindows": {
+      "five_hour": {
+       "utilization": 0.09,
+       "resetsAt": 1791994800
+      },
+      "seven_day": {
+       "utilization": 0.5,
+       "resetsAt": 1792432800
+      }
+     },
+     "overageEnabled": false
+    },
+    "uuid": "665cd72d-bb68-4e67-a178-4f5cf39c181c",
+    "session_id": "687a3f4b-bfd4-42e9-a3ae-a1d30caa56b7"
+   }
+  },
+  {
+   "emit": {
+    "type": "system",
+    "subtype": "task_summary",
+    "detail": "Listing forge3d capabilities",
+    "uuid": "7c6bba29-c621-43ce-8dce-157003145014",
+    "session_id": "687a3f4b-bfd4-42e9-a3ae-a1d30caa56b7"
+   }
+  },
+  {
+   "hang": true
+  }
+ ]
+}
