@@ -337,3 +337,22 @@ test("a process that dies without a result fails the run with its stderr, and a 
   const stdin = logLines(log).filter((line) => line.stdin).map((line) => line.stdin.message.content);
   assert.equal(stdin.at(-1), "The whole brief. Continue.");
 });
+
+test("a new run can start while the last run's process is still exiting", async () => {
+  const { root, run, log } = workspace();
+  const scenario = scenarioFile(root, { steps: [
+    { await: "user" },
+    { emit: { type: "result", subtype: "success", is_error: false, result: "ok", session_id: "s", uuid: "r" } },
+    { await: "eof" }, { exit: 0 },
+  ] });
+  const driver = fakeDriver({ root, log, scenario });
+  await driver.startSession({ cwd: run, skillDir: root });
+  const first = waitFor(driver, "done");
+  driver.send("one");
+  await first;
+  const second = await driver.startSession({ cwd: run, skillDir: root }); // before the first process has exited
+  assert.match(second.sessionId, /^[0-9a-f-]{36}$/);
+  const done = waitFor(driver, "done");
+  driver.send("two");
+  assert.equal((await done).status, "completed");
+});

@@ -1175,6 +1175,7 @@ function setupCard(forced) {
   const tone = readiness.phase === "blocked" ? "blocked" : readiness.phase === "ready" ? "ready" : readiness.phase === "checking" ? "checking" : "warn";
   const checking = capsChecking;
   const reportError = readiness.phase === "error";
+  const agentGroup = agentChoiceGroup(); // the agent's own row moves here from Required
   return `<div class="viewport-empty state-wrap"><section class="state-card setup-card ${tone}" aria-label="Setup" aria-busy="${checking}">
     <header class="state-head">
       ${tone === "ready" || tone === "checking" ? `<span class="empty-icon small">${brandIcon(64)}</span>` : ""}
@@ -1188,7 +1189,7 @@ function setupCard(forced) {
       <button class="btn ${tone === "blocked" || reportError ? "primary" : ""}" data-recheck ${checking ? "disabled" : ""}>${checking ? "Checking…" : "Check again"}</button>
       ${forced || state.runs.length ? '<button class="btn ghost" data-close-setup>Close</button>' : ""}
     </div>
-    ${readiness.checked || agentStatuses ? `<div class="setup-groups">${agentChoiceGroup()}${readiness.checked ? `${setupGroup("Required", readiness.required)}${setupGroup("Optional", readiness.optional)}` : ""}</div>` : ""}
+    ${readiness.checked || agentStatuses ? `<div class="setup-groups">${agentGroup}${readiness.checked ? `${setupGroup("Required", agentGroup ? readiness.required.filter((row) => row.id !== "agent") : readiness.required)}${setupGroup("Optional", readiness.optional)}` : ""}</div>` : ""}
   </section></div>`;
 }
 

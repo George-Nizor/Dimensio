@@ -379,7 +379,13 @@ class ClaudeDriver extends EventEmitter {
   }
 
   async startSession({ cwd, env = this.env, mcp = {}, skillDir, model, effort, resume = null } = {}) {
-    if (running(this.child)) throw new Error("Claude Code is already running a session");
+    if (running(this.child)) {
+      if (!this.finished) throw new Error("Claude Code is already running a session");
+      // The last run's process is still exiting after its result. Let it, and make sure it does.
+      const previous = this.child;
+      this.child = null;
+      setTimeout(() => { if (running(previous)) this.killTreeImpl(previous, { platform: this.platform }); }, 10_000).unref?.();
+    }
     const found = this.find();
     if (!found) throw new Error(`Claude Code was not found. ${fixMissing(this.platform)}`);
     const configDir = path.join(this.stateRoot, "config");
@@ -503,7 +509,7 @@ class ClaudeDriver extends EventEmitter {
         this.sawInit = true;
         this.emit("step", { method: "claude/init", text: `Claude Code ${event.version || ""} started with ${event.model || "its default model"}.`.replace(/\s+/g, " ") });
         for (const server of event.mcpServers) {
-          if (server?.status && server.status !== "connected") {
+          if (server?.status === "failed" || server?.status === "needs-auth") {
             this._report({ method: "claude/mcp", message: `The ${server.name} MCP server did not start (${server.status}). Steps that need it cannot run.` });
           }
         }
