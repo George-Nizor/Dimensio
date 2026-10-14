@@ -401,14 +401,13 @@ function openMenu(box, items, { align = "right", label = "", onClose = null } = 
   return menu;
 }
 
-function askDialog({ eyebrow = "Workshop", title, body = "", detail = "", input = null, confirmLabel = "Continue", danger = false }) {
+function askDialog({ title, body = "", detail = "", input = null, confirmLabel = "Continue", danger = false }) {
   return new Promise((resolve) => {
     const scrim = document.createElement("div");
     scrim.className = "scrim";
     scrim.innerHTML = `
       <section class="modal" role="dialog" aria-modal="true">
         <div class="modal-head">
-          <small>${escapeHtml(eyebrow)}</small>
           <h2>${escapeHtml(title)}</h2>
           ${body ? `<p>${escapeHtml(body)}</p>` : ""}
         </div>
@@ -1505,7 +1504,7 @@ async function projectCommand(command, payload = {}) {
     else if (command === "save-as") result = await project.saveAs();
     else if (command === "close") result = await project.close();
     else if (command === "rename") {
-      const name = await askDialog({ eyebrow: "Project", title: "Rename project", body: "The project file gets the new name, and so does its folder when the folder has the project's name.", input: { value: state.project?.name || "" }, confirmLabel: "Rename" });
+      const name = await askDialog({ title: "Rename project", body: "The project file gets the new name, and so does its folder when the folder has the project's name.", input: { value: state.project?.name || "" }, confirmLabel: "Rename" });
       if (name === null || !name.trim() || name.trim() === state.project?.name) return;
       result = await project.changeName({ name });
       toast(`Renamed to ${result.project?.name || name.trim()}`, "success");
@@ -1599,12 +1598,11 @@ function renderApproval() {
       : approval.method.includes("fileChange") ? "Approve file changes" : "Approve command";
   const detail = network ? `${network.protocol || "network"} access${network.port ? ` on port ${network.port}` : ""}`
     : request.message || params.command || params.reason || JSON.stringify(params, null, 2);
-  const explanation = isMcp ? "A local Workshop tool is ready to perform this action." : params.reason || "The Workshop needs your decision before it continues.";
+  const explanation = isMcp ? "A local Workshop tool is ready to perform this action." : params.reason || `${agentName()} needs your decision before it continues.`;
   elements.approvalLayer.innerHTML = `
     <div class="scrim">
       <section class="modal" role="dialog" aria-modal="true">
         <div class="modal-head">
-          <small>${escapeHtml(agentName())} approval</small>
           <h2>${escapeHtml(title)}</h2>
           <p>${escapeHtml(explanation)}</p>
         </div>
@@ -1785,7 +1783,6 @@ async function decideApproval(decision) {
 
 async function repairPlugin() {
   const agreed = await askDialog({
-    eyebrow: `${agentName()} plugin`,
     title: `Repair the Dimensio plugin for ${agentName()}?`,
     body: "The plugin is reinstalled from this application bundle. The current plugin directory is preserved as a timestamped backup.",
     confirmLabel: "Repair plugin",
@@ -1808,7 +1805,6 @@ async function runAction(action) {
     if (action === "continue") {
       const ownSession = (run.agent?.session_id ? run.agent.id : run.codex?.thread_id ? "codex" : null) === state.agent?.id;
       const text = await askDialog({
-        eyebrow: "Resume run",
         title: "Continue this run",
         body: ownSession
           ? `${agentName()} continues in this run's session, with the files already on disk.`
@@ -1826,13 +1822,13 @@ async function runAction(action) {
       await refreshState(true);
       toast("Run duplicated", "success");
     } else if (action === "archive") {
-      const agreed = await askDialog({ eyebrow: "Archive", title: "Archive this run?", body: "It stays browsable and recoverable inside the archive.", confirmLabel: "Archive" });
+      const agreed = await askDialog({ title: "Archive this run?", body: "It stays browsable and recoverable inside the archive.", confirmLabel: "Archive" });
       if (!agreed) return;
       await api.archive({ runId: run.run_id });
       await refreshState(true);
       toast("Run archived", "success");
     } else if (action === "trash") {
-      const agreed = await askDialog({ eyebrow: "Delete", title: "Move this run to the Recycle Bin?", body: `The whole run directory for “${run.prompt || run.name}” is moved to the Windows Recycle Bin.`, confirmLabel: "Move to trash", danger: true });
+      const agreed = await askDialog({ title: "Move this run to the Recycle Bin?", body: `The whole run directory for “${run.prompt || run.name}” is moved to the Windows Recycle Bin.`, confirmLabel: "Move to trash", danger: true });
       if (!agreed) return;
       await api.trash({ runId: run.run_id });
       await refreshState(true);
