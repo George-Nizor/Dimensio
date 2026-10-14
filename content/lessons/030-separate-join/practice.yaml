@@ -1,0 +1,35 @@
+# Practice for lesson 30. The item marked main is the lesson's exercise.
+
+- id: lamp-and-rocks
+  main: true
+  title: A lampshade and some rocks
+  kind: drill
+  minutes: 10
+  text: "Open the exercise. In the lamp, select the shade with L and separate it with P > Selection. In Object Mode, click the new object and press F2 to name it Shade. Then join the five rocks into one with Ctrl+J, clicking Rock 1 last."
+  steps: [Select one part, Separate it, Separate by part or material, Split without a new object, Join objects]
+  starter: separate-lamp
+  timer: { minutes: 10 }
+  reference: { diagram: example }
+  measure:
+    - { metric: meshes, equals: 3, label: "Three mesh objects" }
+
+- id: lamp-in-pieces
+  title: The lamp in pieces and back
+  kind: drill
+  minutes: 5
+  text: "Open the exercise again. In Edit Mode, separate the lamp with P > By Loose Parts. Then join the three pieces back into one with Ctrl+J, clicking the base last."
+  starter: separate-lamp
+  timer: { minutes: 5 }
+  check:
+    - By Loose Parts made three objects.
+    - After joining, the Outliner lists the lamp as one object again.
+
+- id: lift-the-lid
+  title: Lift a lid with Y
+  kind: drill
+  minutes: 3
+  text: "In a new file, select the cube and press Tab. Press 3, click the top face, press Y, then G, Z and 0.3 to lift it."
+  timer: { minutes: 3 }
+  check:
+    - The top lifts off and leaves the cube open.
+    - The Outliner still shows one object.

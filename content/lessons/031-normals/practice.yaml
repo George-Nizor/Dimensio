@@ -1,0 +1,24 @@
+# Practice for lesson 31. The item marked main is the lesson's exercise.
+
+- id: turn-them-outwards
+  main: true
+  title: Turn the faces outwards
+  kind: fix
+  minutes: 10
+  text: "Open the exercise and turn on Face Orientation: the crate has two red faces and the barrel shows red all over. Fix both with Shift+N. Then turn on Backface Culling in the viewport and in the Wood material, and check that no face disappears."
+  steps: [Show which side is which, Turn them all outwards, Flip one face, Cull back faces in the viewport, Cull in the material too]
+  starter: flipped-faces
+  timer: { minutes: 10 }
+  reference: { diagram: orientation }
+  measure:
+    - { metric: flippedFaces, max: 0, label: "No faces pointing inwards" }
+
+- id: flip-one-on-purpose
+  title: Flip one face on purpose
+  kind: warm-up
+  minutes: 3
+  text: "In a new file, select the cube and press Tab, then 3. Click the top face and choose Alt+N > Flip. Look at it with Face Orientation on, then with Backface Culling on. Fix it with A and Shift+N."
+  timer: { minutes: 3 }
+  check:
+    - The flipped face showed red.
+    - With Backface Culling on, it vanished until you fixed it.

@@ -1,0 +1,29 @@
+# Practice for lesson 34. The item marked main is the lesson's exercise.
+
+- id: fix-the-crate
+  main: true
+  title: Fix the broken crate
+  kind: fix
+  minutes: 15
+  text: "Open the exercise: the lesson 27 crate with four faults planted in it. Work through the steps in order. Merge doubled vertices, delete the loose ones, turn faces outwards, then find the hole and fill it. Save, and add the file here for Dimensio to measure."
+  steps: [Merge doubled vertices, Delete loose parts, Turn faces outwards, Find the holes, Measure it]
+  starter: broken-crate
+  timer: { minutes: 15 }
+  reference: { diagram: example }
+  measure:
+    - { metric: doubles, max: 0, label: "No doubled vertices" }
+    - { metric: looseVerts, max: 0, label: "No loose vertices" }
+    - { metric: nonManifoldEdges, max: 0, label: "No holes" }
+    - { metric: flippedFaces, max: 0, label: "No faces pointing inwards" }
+    - { metric: ngons, max: 0, label: "No n-gons" }
+
+- id: check-the-stool
+  title: Check the stool
+  kind: fix
+  minutes: 10
+  text: "Open the exercise: a stool with faults in it. Check it in the same order as the crate. The flat 8-sided top and bottom of its seat can stay as they are."
+  starter: fix-ngons
+  timer: { minutes: 10 }
+  check:
+    - Merge by Distance removed 8 vertices.
+    - Non Manifold found the hole under one leg, and F filled it.

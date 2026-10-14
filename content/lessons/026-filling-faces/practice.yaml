@@ -1,0 +1,36 @@
+# Practice for lesson 26. The item marked main is the lesson's exercise.
+
+- id: fill-the-holes
+  main: true
+  title: Fill the holes
+  kind: fix
+  minutes: 10
+  text: "Open the exercise. Close the hole in the box's top with F, then split the new face into two with J. Close the tank's top with Grid Fill. Join the two halves of the pipe with Bridge Edge Loops. When you finish, no hole remains and no face has more than four corners."
+  steps: [Fill a hole with F, Split it with J, Grid fill a round hole, Bridge two openings]
+  starter: holes-to-fill
+  timer: { minutes: 10 }
+  reference: { diagram: example }
+  measure:
+    - { metric: nonManifoldEdges, max: 0, label: "No holes left" }
+    - { metric: ngons, max: 0, label: "No n-gons" }
+
+- id: three-ways-to-close
+  title: Three ways to close a cylinder
+  kind: drill
+  minutes: 5
+  text: "In a new file, add a cylinder with Add > Mesh > Cylinder and set Cap Fill Type to Nothing in the Adjust Last Operation panel. Close the top with Grid Fill and the bottom with F. Then undo the bottom and close it with Alt+F."
+  timer: { minutes: 5 }
+  check:
+    - The top is a grid of four-sided faces.
+    - F made one face across the bottom, and Alt+F made triangles.
+
+- id: bridge-a-gap
+  title: Bridge a gap
+  kind: drill
+  minutes: 5
+  text: "Open the exercise again. Select both open rims of the pipe and choose Edge > Bridge Edge Loops. In the Adjust Last Operation panel, set Number of Cuts to 3, then try Interpolation set to Blend Path with a Smoothness of 1."
+  starter: holes-to-fill
+  timer: { minutes: 5 }
+  check:
+    - The bridge has three rings of edges across it.
+    - Blend Path changed the shape of the middle of the pipe.

@@ -1,0 +1,42 @@
+# Practice for lesson 36. The item marked main is the lesson's exercise.
+
+- id: copy-the-barrel
+  main: true
+  title: Copy the barrel
+  kind: copy
+  minutes: 30
+  text: "Copy the reference barrel: a 12-sided cylinder 1.2 m tall with a bulge, two bands and a sunken lid, under 300 triangles. Shade it with Shade Auto Smooth, export barrel.glb with Apply Modifiers on, and place it beside your crates in Godot. Save the Blender file as barrel.blend."
+  steps: [Add the cylinder, Cut four rings, Bulge the middle, Raise the bands, Sink the lid, Shade and export]
+  timer: { minutes: 30 }
+  reference: { model: kenney-pirate-barrel }
+  measure:
+    - { metric: tris, max: 300, label: "Under 300 triangles" }
+    - { metric: ngons, max: 2, label: "Only the lid and base are n-gons" }
+    - { metric: nonManifoldEdges, max: 0, label: "No holes" }
+    - { metric: doubles, max: 0, label: "No doubled vertices" }
+    - { metric: flippedFaces, max: 0, label: "No faces pointing inwards" }
+    - { metric: scaleApplied, equals: true, label: "Scale applied" }
+    - { metric: modifier, equals: NODES, label: "Shaded with a Smooth by Angle modifier" }
+    - { metric: outline, min: 0.8, label: "Same outline as the example barrel" }
+
+- id: eight-sided-barrel
+  title: An eight-sided barrel
+  kind: drill
+  minutes: 20
+  text: "Build the barrel again with Vertices set to 8, as Kenney's has, and the same steps. Compare its triangle count with your 12-sided barrel in the Statistics overlay."
+  timer: { minutes: 20 }
+  reference: { model: kenney-pirate-barrel }
+  check:
+    - The 8-sided barrel has fewer triangles than the 12-sided one.
+    - Its bands and lid match the 12-sided barrel's.
+
+- id: barrel-from-memory
+  title: The barrel from memory
+  kind: retest
+  minutes: 30
+  text: "A few days after this lesson, build the barrel again without the steps open. Then add it in Models to see it beside your first one."
+  timer: { minutes: 30 }
+  reference: { model: kenney-pirate-barrel }
+  check:
+    - You built it without looking at the steps.
+    - It has under 300 triangles and only two n-gons.

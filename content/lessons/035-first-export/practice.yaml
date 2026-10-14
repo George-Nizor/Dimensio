@@ -1,0 +1,27 @@
+# Practice for lesson 35. The item marked main is the lesson's exercise.
+
+- id: crates-in-godot
+  main: true
+  title: Three crates in Godot
+  kind: project
+  minutes: 20
+  text: "Prepare your crate from lesson 27, export it as crate.glb and import it into a new Godot 4 project. Place three crates side by side in a 3D scene and save the scene as crates.tscn. Then add crate.blend here so Dimensio can measure it."
+  steps: [Check the crate, Cull back faces, Export it, Open it in Godot, Place three crates, Check the size]
+  timer: { minutes: 20 }
+  reference: { diagram: example }
+  measure:
+    - { metric: scaleApplied, equals: true, label: "Scale applied" }
+    - { metric: flippedFaces, max: 0, label: "No faces pointing inwards" }
+    - { metric: meshes, equals: 1, label: "One mesh object" }
+    - { metric: height, min: 0.45, label: "At least 0.45 m tall" }
+    - { metric: height, max: 0.55, label: "At most 0.55 m tall" }
+
+- id: change-and-reimport
+  title: Change the crate and reimport
+  kind: drill
+  minutes: 5
+  text: "Change the crate in Blender, for example with a wider chamfer. Save, export crate.glb over the old file, then switch to Godot."
+  timer: { minutes: 5 }
+  check:
+    - Godot updated the crate without you dragging it in again.
+    - All three crates show the change.

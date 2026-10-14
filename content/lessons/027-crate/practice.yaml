@@ -1,0 +1,41 @@
+# Practice for lesson 27. The item marked main is the lesson's exercise.
+
+- id: copy-the-crate
+  main: true
+  title: Copy the crate
+  kind: copy
+  minutes: 30
+  text: "Copy the reference crate, starting from the default cube: 0.5 m on each side, a 1 cm chamfer, and a frame, a diagonal brace and sunken panels on all six sides. Keep it one object with one material, under 300 triangles. Save it as crate.blend, because lesson 35 exports it to Godot."
+  steps: [Size the cube, Chamfer every edge, Split each side, Inset each triangle, Sink the panels, Give it a material]
+  timer: { minutes: 30 }
+  reference: { model: kenney-platformer-crate }
+  measure:
+    - { metric: tris, max: 300, label: "Under 300 triangles" }
+    - { metric: ngons, max: 0, label: "No n-gons" }
+    - { metric: nonManifoldEdges, max: 0, label: "No holes" }
+    - { metric: doubles, max: 0, label: "No doubled vertices" }
+    - { metric: flippedFaces, max: 0, label: "No faces pointing inwards" }
+    - { metric: scaleApplied, equals: true, label: "Scale applied" }
+    - { metric: meshes, equals: 1, label: "One mesh object" }
+    - { metric: outline, min: 0.8, label: "Same outline as the example crate" }
+
+- id: big-crate
+  title: A crate twice the size
+  kind: drill
+  minutes: 20
+  text: "Build the crate again at 1 m across. Scale the default cube by 0.5 and move it up 0.5 m. Use a 2 cm chamfer, a 0.08 m inset and panels 0.05 m deep."
+  timer: { minutes: 20 }
+  check:
+    - The crate measures 1 m on each side in the Sidebar.
+    - The frame, brace and panels keep the same proportions as your first crate.
+
+- id: crate-from-memory
+  title: The crate from memory
+  kind: retest
+  minutes: 30
+  text: "A few days after this lesson, build the crate again without the steps open. Then add it in Models to see it beside your first one."
+  timer: { minutes: 30 }
+  reference: { model: kenney-platformer-crate }
+  check:
+    - You built it without looking at the steps.
+    - It has under 300 triangles.

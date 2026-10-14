@@ -1,0 +1,98 @@
+# Resources added for lessons 26 to 36 (filling faces to the barrel). Same format as catalogue.yaml.
+# Each YouTube id was checked on 2026-10-15: oEmbed answered with the same title and channel, the
+# watch page reported it playable in embeds, and the description or chapter list was read for what
+# it covers. Minutes is the watch page's lengthSeconds, rounded. Where a video does not name its
+# Blender version, blender is the release that was current on its upload date.
+
+# 26. Filling faces
+
+- id: cg-essentials-grid-fill
+  title: Filling Holes in Meshes with Grid Fill
+  teacher: The CG Essentials
+  url: https://www.youtube.com/watch?v=vApGpkd05x4
+  kind: video
+  minutes: 6
+  youtube: vApGpkd05x4
+  blender: "3.4"
+  cost: free
+  checked: 2026-10-15
+
+# 28. The knife tool
+
+- id: ryan-king-knife-tool
+  title: How to Use the Knife Tool in Blender
+  teacher: Ryan King Art
+  url: https://www.youtube.com/watch?v=76dR_-8rObo
+  kind: video
+  minutes: 8
+  youtube: 76dR_-8rObo
+  blender: "4.3"
+  cost: free
+  checked: 2026-10-15
+
+# 30. Separate and join
+
+- id: ryan-king-join-separate
+  title: How to Join and Separate Objects in Blender
+  teacher: Ryan King Art
+  url: https://www.youtube.com/watch?v=1t-F-r_cd6g
+  kind: video
+  minutes: 11
+  youtube: 1t-F-r_cd6g
+  blender: "3.3"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-modeling-meshes-editing-mesh-separate
+  title: Separate
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/modeling/meshes/editing/mesh/separate.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+# 33. Quads, triangles and n-gons
+
+- id: grant-abbitt-quads-ngons
+  title: "Do You Have to Model in Quads? Tris, Quads and Ngons Explained"
+  teacher: Grant Abbitt
+  url: https://www.youtube.com/watch?v=O9yXCsRcMqk
+  kind: video
+  minutes: 9
+  youtube: O9yXCsRcMqk
+  blender: "2.79"
+  cost: free
+  checked: 2026-10-15
+
+# 34. Checking your model
+
+- id: jbdtube-non-manifold
+  title: "Find and Fix Non-Manifold Edges, Holes and Overlapping Faces"
+  teacher: jbdtube
+  url: https://www.youtube.com/watch?v=usrk-Dy9nMg
+  kind: video
+  minutes: 10
+  youtube: usrk-Dy9nMg
+  blender: "3.6"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-modeling-meshes-editing-mesh-cleanup
+  title: Clean Up
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/modeling/meshes/editing/mesh/cleanup.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+# 35. Exporting to Godot
+
+- id: tomgrave-blender-godot
+  title: Blender to Godot Workflow for Game Assets
+  teacher: TomGrave3D
+  url: https://www.youtube.com/watch?v=XzjAz7mkZ3E
+  kind: video
+  minutes: 6
+  youtube: XzjAz7mkZ3E
+  cost: free
+  checked: 2026-10-15

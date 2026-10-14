@@ -1,0 +1,24 @@
+# Practice for lesson 32. The item marked main is the lesson's exercise.
+
+- id: shade-two-ways
+  main: true
+  title: One barrel shaded two ways
+  kind: drill
+  minutes: 10
+  text: "Open the exercise: two flat-shaded barrels. Give Barrel A Object > Shade Auto Smooth with Angle set to 40 degrees. Make Barrel B look the same without a modifier. In Edit Mode, select all and use Edge > Set Sharpness by Angle at 40 degrees, then choose Shade Smooth in Object Mode."
+  steps: [Flat or smooth, Smooth by angle, Mark sharp edges, Shade smooth with sharp edges kept, Check what Godot gets]
+  starter: shading-barrel
+  timer: { minutes: 10 }
+  reference: { diagram: example }
+  measure:
+    - { metric: modifier, equals: NODES, label: "A Smooth by Angle modifier on a barrel" }
+
+- id: shade-your-crate
+  title: Shade your crate three ways
+  kind: drill
+  minutes: 5
+  text: "Open crate.blend from lesson 27. Try Object > Shade Smooth, then Shade Auto Smooth, then Shade Flat. Save it shaded flat."
+  timer: { minutes: 5 }
+  check:
+    - Shade Smooth made the crate's sides look dented.
+    - Shade Auto Smooth and Shade Flat both kept the corners crisp.

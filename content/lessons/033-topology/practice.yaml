@@ -1,0 +1,33 @@
+# Practice for lesson 33. The item marked main is the lesson's exercise.
+
+- id: rebuild-the-shade
+  main: true
+  title: Rebuild the lampshade
+  kind: fix
+  minutes: 10
+  text: "Open the exercise: a table lamp. Find its n-gons with Faces by Sides. The two on the flat base can stay. Select the eight bent ones on the shade with Faces by Sides, Number of Vertices 6 and Type Equal To. Turn them into quads with Ctrl+T, then Alt+J."
+  steps: [Tell the three apart, Count the triangles, Find the n-gons, Keep the flat ones, Turn them into quads]
+  starter: ngon-lamp
+  timer: { minutes: 10 }
+  reference: { diagram: find }
+  measure:
+    - { metric: ngons, max: 2, label: "Only the base's two caps are n-gons" }
+
+- id: split-a-cap
+  title: Split a cap with J
+  kind: drill
+  minutes: 5
+  text: "In a new file, add a cylinder with 8 vertices and press Tab. Split its top into three quads with two J cuts. For each cut, select two vertices three edges apart round the rim and press J."
+  timer: { minutes: 5 }
+  check:
+    - The top is three four-sided faces.
+    - Triangles in the Statistics overlay did not change.
+
+- id: count-your-crate
+  title: Count your crate's faces
+  kind: warm-up
+  minutes: 3
+  text: "Open crate.blend from lesson 27 with Statistics on. Note its triangles in Object Mode. In Edit Mode, use Faces by Sides to count its triangles (Number of Vertices 3) and its quads (4)."
+  timer: { minutes: 3 }
+  check:
+    - The triangles in Object Mode match two for each quad plus one for each triangle.

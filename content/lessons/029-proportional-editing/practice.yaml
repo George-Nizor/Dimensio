@@ -1,0 +1,32 @@
+# Practice for lesson 29. The item marked main is the lesson's exercise.
+
+- id: hill-and-pond
+  main: true
+  title: A hill and a pond
+  kind: drill
+  minutes: 10
+  text: "Open the exercise: a flat patch of ground 20 m across. With proportional editing on, raise a hill about 3 m high near one corner with the Smooth falloff. Dig a pond about 1 m deep near the opposite corner with Sphere. Make a rough patch between them with Random, then turn proportional editing off."
+  steps: [Turn it on, Set the reach, Choose a falloff, Keep it to one part]
+  starter: grid-ground
+  timer: { minutes: 10 }
+  reference: { diagram: example }
+
+- id: try-the-falloffs
+  title: Every falloff once
+  kind: warm-up
+  minutes: 5
+  text: "In a new file, add Add > Mesh > Grid and press Tab. Select a vertex near the middle and move it 1 m up with proportional editing on. Undo, choose another falloff with Shift+O, and move it again until you've tried each one."
+  timer: { minutes: 5 }
+  check:
+    - You tried every falloff in the pie menu.
+    - Constant lifted a flat-topped block.
+
+- id: bulge-a-barrel
+  title: Bulge a barrel
+  kind: drill
+  minutes: 5
+  text: "In a new file, add a cylinder with 12 vertices and press Tab. Add 5 loop cuts with Ctrl+R. Hold Alt and click the middle ring, turn on proportional editing and press S. Roll the wheel until the rings above and below grow a little too."
+  timer: { minutes: 5 }
+  check:
+    - The middle is widest, and the sides narrow smoothly towards each end.
+    - The top and bottom rings did not move.

@@ -1,0 +1,35 @@
+# Practice for lesson 28. The item marked main is the lesson's exercise.
+
+- id: cut-the-wall
+  main: true
+  title: A doorway and a crack
+  kind: drill
+  minutes: 10
+  text: "Open the exercise: a wall in the front view. Cut a doorway outline about 1 m wide and 2 m tall, up from the bottom edge. Press C so it goes through to the back, and A to keep the lines upright and level. Then cut a zigzag crack from the top edge down to a side edge."
+  steps: [Start a cut, Close a shape, Measure and line up, Cut through]
+  starter: knife-wall
+  timer: { minutes: 10 }
+  reference: { diagram: example }
+  measure:
+    - { metric: doubles, max: 0, label: "No doubled vertices" }
+    - { metric: looseEdges, max: 0, label: "No loose edges" }
+    - { metric: nonManifoldEdges, max: 0, label: "No holes" }
+
+- id: knife-project-circle
+  title: Cut a circle with Knife Project
+  kind: drill
+  minutes: 5
+  text: "In a new file, add a plane and scale it by 3. Add a circle with Add > Mesh > Circle and move it 1 m up. Press Numpad 7. Select the plane and press Tab, hold Ctrl and click the circle in the Outliner, then choose Mesh > Knife Project."
+  timer: { minutes: 5 }
+  check:
+    - A ring of new edges sits in the plane under the circle.
+
+- id: bisect-sphere
+  title: Cut a sphere in half
+  kind: drill
+  minutes: 5
+  text: "In a new file, add a UV sphere and press Tab, then A. Press Numpad 1, choose Mesh > Bisect and drag a level line across the middle. In the Adjust Last Operation panel, tick Clear Outer and Fill."
+  timer: { minutes: 5 }
+  check:
+    - Half the sphere is gone.
+    - A flat face closes the cut.
