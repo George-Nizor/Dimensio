@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- 'wasm-unsafe-eval' and connect-src data: exist only so the bundled Spark splat
+         renderer can compile its inlined WebAssembly. Neither grant allows remote code:
+         scripts still come from 'self' and plain 'unsafe-eval' stays denied. -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: forge3d-artifact:; media-src 'self' blob: forge3d-artifact:; connect-src 'self' data: forge3d-artifact:; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'none'" />
+    <title>Forge3D</title>
+    <link rel="stylesheet" href="/src/shared/app-tabs.css" />
+  </head>
+  <body class="has-app-tabs">
+    <nav class="app-tabs" aria-label="Places">
+      <a href="./index.html#/">Home</a>
+      <a href="./index.html#/course">Course</a>
+      <a href="./index.html#/practice">Practice</a>
+      <a href="./index.html#/library">Library</a>
+      <a href="./index.html#/models">Models</a>
+      <a href="./workshop.html" aria-current="page">Workshop</a>
+      <span class="app-tabs-end"><a href="./index.html#/settings">Settings</a><a href="./index.html#/credits">Credits</a></span>
+    </nav>
+    <div id="app"></div>
+    <script type="module" src="/src/renderer/main.js"></script>
+  </body>
+</html>

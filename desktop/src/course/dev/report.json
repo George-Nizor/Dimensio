@@ -1,0 +1,186 @@
+{
+  "format": 1,
+  "blender": "5.2.2",
+  "file": "C:/Users/you/Documents/Dimensio/Course/stool.blend",
+  "units": {
+    "system": "METRIC",
+    "scaleLength": 1.0,
+    "lengthUnit": "METERS"
+  },
+  "objects": [
+    {
+      "name": "Seat",
+      "type": "MESH",
+      "verts": 8,
+      "edges": 12,
+      "faces": 6,
+      "tris": 12,
+      "quads": 6,
+      "ngons": 0,
+      "nonManifoldEdges": 0,
+      "looseVerts": 0,
+      "looseEdges": 0,
+      "doubles": 0,
+      "flippedFaces": 0,
+      "scaleApplied": false,
+      "rotationApplied": true,
+      "dimensions": [
+        0.44,
+        0.44,
+        0.06
+      ],
+      "modifiers": [],
+      "materials": 1,
+      "uvLayers": 0,
+      "shading": "flat"
+    },
+    {
+      "name": "Leg front left",
+      "type": "MESH",
+      "verts": 8,
+      "edges": 12,
+      "faces": 6,
+      "tris": 12,
+      "quads": 6,
+      "ngons": 0,
+      "nonManifoldEdges": 0,
+      "looseVerts": 0,
+      "looseEdges": 0,
+      "doubles": 0,
+      "flippedFaces": 0,
+      "scaleApplied": true,
+      "rotationApplied": true,
+      "dimensions": [
+        0.04,
+        0.04,
+        0.41
+      ],
+      "modifiers": [],
+      "materials": 1,
+      "uvLayers": 0,
+      "shading": "flat"
+    },
+    {
+      "name": "Leg front right",
+      "type": "MESH",
+      "verts": 8,
+      "edges": 12,
+      "faces": 6,
+      "tris": 12,
+      "quads": 6,
+      "ngons": 0,
+      "nonManifoldEdges": 0,
+      "looseVerts": 0,
+      "looseEdges": 0,
+      "doubles": 0,
+      "flippedFaces": 0,
+      "scaleApplied": true,
+      "rotationApplied": true,
+      "dimensions": [
+        0.04,
+        0.04,
+        0.41
+      ],
+      "modifiers": [],
+      "materials": 1,
+      "uvLayers": 0,
+      "shading": "flat"
+    },
+    {
+      "name": "Leg back left",
+      "type": "MESH",
+      "verts": 8,
+      "edges": 12,
+      "faces": 6,
+      "tris": 12,
+      "quads": 6,
+      "ngons": 0,
+      "nonManifoldEdges": 0,
+      "looseVerts": 0,
+      "looseEdges": 0,
+      "doubles": 0,
+      "flippedFaces": 0,
+      "scaleApplied": true,
+      "rotationApplied": true,
+      "dimensions": [
+        0.04,
+        0.04,
+        0.41
+      ],
+      "modifiers": [],
+      "materials": 1,
+      "uvLayers": 0,
+      "shading": "flat"
+    },
+    {
+      "name": "Leg back right",
+      "type": "MESH",
+      "verts": 8,
+      "edges": 12,
+      "faces": 6,
+      "tris": 12,
+      "quads": 6,
+      "ngons": 0,
+      "nonManifoldEdges": 0,
+      "looseVerts": 0,
+      "looseEdges": 0,
+      "doubles": 0,
+      "flippedFaces": 0,
+      "scaleApplied": true,
+      "rotationApplied": true,
+      "dimensions": [
+        0.04,
+        0.04,
+        0.41
+      ],
+      "modifiers": [],
+      "materials": 1,
+      "uvLayers": 0,
+      "shading": "flat"
+    }
+  ],
+  "totals": {
+    "objects": 5,
+    "meshes": 5,
+    "verts": 40,
+    "edges": 60,
+    "faces": 30,
+    "tris": 60,
+    "quads": 30,
+    "ngons": 0,
+    "nonManifoldEdges": 0,
+    "looseVerts": 0,
+    "looseEdges": 0,
+    "doubles": 0,
+    "flippedFaces": 0,
+    "base": {
+      "verts": 40,
+      "edges": 60,
+      "faces": 30,
+      "tris": 60,
+      "quads": 30,
+      "ngons": 0,
+      "nonManifoldEdges": 0,
+      "looseVerts": 0,
+      "looseEdges": 0,
+      "doubles": 0,
+      "flippedFaces": 0
+    }
+  },
+  "renders": {
+    "persp": "persp.png",
+    "front": "front.png",
+    "right": "right.png",
+    "top": "top.png"
+  },
+  "silhouette": {
+    "front": {
+      "match": 0.85,
+      "overlay": "front-overlay.png"
+    },
+    "right": {
+      "match": 0.34,
+      "overlay": "right-overlay.png"
+    }
+  }
+}

@@ -11,7 +11,7 @@ sources:
 
 # Viewport navigation
 
-To model something you need to see it from every side. In this lesson you'll learn to orbit, pan and zoom the 3D Viewport with the mouse, jump to the front, side and top views with the numpad, and bring a lost object back into view.
+To model something you need to see it from every side. In this lesson you'll learn to orbit, pan and zoom the 3D Viewport with the mouse. You'll also jump to the front, side and top views with the numpad, and bring a lost object back into view.
 
 ![One shape seen four ways: from the front, from the right, from the top, and from Blender's opening view.](example)
 
@@ -25,7 +25,7 @@ To model something you need to see it from every side. In this lesson you'll lea
 
    ![Left, arrows sliding the cube sideways with Shift and the middle mouse button. Right, the cube drawn small and large with the wheel between them.](pan-zoom)
 
-3. **Jump to a view.** Press `Numpad 1` for the front view, `Numpad 3` for the right and `Numpad 7` for the top. Hold `Ctrl` with the same key for the opposite side: the back, the left or the bottom.
+3. **Jump to a view.** Press `Numpad 1` for the front view, `Numpad 3` for the right and `Numpad 7` for the top. Add `Ctrl` for the opposite side: the back, the left or the bottom.
 
    ![The numpad with 1, 3 and 7 picked out, beside a shape seen from the front, the right and the top.](views)
 
@@ -45,7 +45,7 @@ To model something you need to see it from every side. In this lesson you'll lea
 
 ![Left, an arrow orbiting around empty space far from the cube, so the cube swings out of view. Right, the cube framed with Numpad . and the arrow orbiting around it.](mistake)
 
-When you lose track of a model, orbiting and zooming in search of it usually makes things worse, because the view keeps turning around a point that isn't on the model. Stop and press `Home`, or select the model and press `Numpad .`, then orbit.
+When you lose track of a model, orbiting and zooming in search of it usually makes things worse. The view keeps turning around a point that isn't on the model. Stop and press `Home`, or select the model and press `Numpad .`, then orbit.
 
 ## Checking your work
 
@@ -53,7 +53,7 @@ Go back over the exercise file and check:
 
 1. You found all six letters, one on each prop.
 2. Read from Prop 1 to Prop 6, the letters spell a word.
-3. You found each letter with a numpad key or the gizmo, rather than by orbiting.
+3. You found each letter with the numpad views or the gizmo, rather than by orbiting.
 4. `Home` brings every prop back into view at once.
 
 If you have no numpad or middle mouse button, lesson 4 shows how to do all of this on a laptop.

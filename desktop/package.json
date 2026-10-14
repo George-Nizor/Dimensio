@@ -8,22 +8,40 @@
   "description": "Local spatial creation and review application",
   "main": "src/main.cjs",
   "scripts": {
-    "dev": "vite --host 127.0.0.1",
+    "dev": "node scripts/build-content.mjs && vite --host 127.0.0.1",
     "start": "electron .",
-    "build": "vite build",
-    "test": "node --test test/*.test.cjs",
+    "content": "node scripts/build-content.mjs",
+    "lint:copy": "node scripts/build-content.mjs --check && node scripts/lint-copy.mjs",
+    "typecheck": "tsc -p tsconfig.json",
+    "build": "node scripts/build-content.mjs && tsc -p tsconfig.json && vite build",
+    "preview": "vite preview --host 127.0.0.1",
+    "test": "node --test test/*.test.cjs && vitest run",
+    "e2e": "node scripts/e2e.mjs",
     "shots": "node test-tools/screenshots/harness.cjs",
     "pack": "npm run build && electron-builder --dir",
     "dist": "npm run build && electron-builder"
   },
   "dependencies": {
     "@sparkjsdev/spark": "2.1.0",
+    "dexie": "4.4.6",
+    "dexie-react-hooks": "4.4.0",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
     "three": "0.185.1"
   },
   "devDependencies": {
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@vitejs/plugin-react": "6.1.2",
     "electron": "43.4.1",
     "electron-builder": "26.15.3",
-    "vite": "8.2.2"
+    "fake-indexeddb": "6.2.5",
+    "marked": "18.1.1",
+    "playwright": "1.63.0",
+    "typescript": "5.9.3",
+    "vite": "8.2.2",
+    "vitest": "5.0.4",
+    "yaml": "2.9.1"
   },
   "build": {
     "appId": "com.instrumenta.forge3d",

@@ -15,7 +15,7 @@ sources:
 
 # The interface
 
-Blender's window is divided into areas, and each area holds an editor, such as the 3D Viewport or the Outliner. In this lesson you'll learn what each part of the window is for, how to change and rearrange areas, and how to find any command by its name.
+Blender divides its window into areas, and each area holds an editor, such as the 3D Viewport or the Outliner. In this lesson you'll learn what each part of the window is for, how to change and rearrange areas, and how to find any command by its name.
 
 ![The Layout workspace with each part labelled: the Topbar, the 3D Viewport, the Outliner, the Properties editor, the Timeline and the Status Bar.](example)
 
@@ -29,11 +29,11 @@ Blender's window is divided into areas, and each area holds an editor, such as t
 
    ![An area's header with the Editor Type button at its left end picked out, and its list of editors open below it.](editor-type)
 
-3. **Resize, split and join.** Drag the border between two areas to resize them. Put the mouse in an area's corner until it turns into a cross, then drag inwards to split the area, or drag into the next area to join them.
+3. **Resize, split and join.** Drag the border between two areas to resize them. Put the mouse in an area's corner until it turns into a cross. Drag inwards to split the area, or drag into the next area to join them.
 
    ![Two areas side by side: an arrow dragging the border between them, and an arrow dragging out from a corner to split one.](split-join)
 
-4. **Show the Toolbar and Sidebar.** With the mouse over the 3D Viewport, press `T` to show or hide the Toolbar on the left and `N` to show or hide the Sidebar on the right.
+4. **Show the Toolbar and Sidebar.** With the mouse over the 3D Viewport, press `T` to show or hide the Toolbar on the left. Press `N` for the Sidebar on the right.
 
    ![The 3D Viewport with the Toolbar on its left edge and the Sidebar on its right edge picked out, beside the keys T and N.](toolbar-sidebar)
 
@@ -49,7 +49,7 @@ Blender's window is divided into areas, and each area holds an editor, such as t
 
 ![Left, the mouse over the Outliner when Ctrl+J is pressed, and nothing happens. Right, the mouse over the 3D Viewport, where Ctrl+J joins the objects.](mistake)
 
-Many shortcuts only work in the editor under the mouse. `Ctrl+J` joins objects in the 3D Viewport but does nothing over the Outliner, even with the objects selected there. Move the mouse over the editor you mean before you press a key.
+Many shortcuts only work in the editor under the mouse. `Ctrl+J` joins objects in the 3D Viewport. Over the Outliner it does nothing, even with the objects selected there. Move the mouse over the editor you mean before you press a key.
 
 ## Checking your work
 

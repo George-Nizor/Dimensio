@@ -1,0 +1,20 @@
+{
+  "objects": { "from": "totals", "kind": "size", "one": "object", "many": "objects" },
+  "meshes": { "from": "totals", "kind": "size", "one": "mesh", "many": "meshes" },
+  "verts": { "from": "sum", "kind": "size", "one": "vertex", "many": "vertices" },
+  "edges": { "from": "sum", "kind": "size", "one": "edge", "many": "edges" },
+  "faces": { "from": "sum", "kind": "size", "one": "face", "many": "faces" },
+  "tris": { "from": "sum", "kind": "size", "one": "triangle", "many": "triangles" },
+  "quads": { "from": "sum", "kind": "size", "one": "quad", "many": "quads" },
+  "ngons": { "from": "sum", "kind": "problem" },
+  "nonManifoldEdges": { "from": "sum", "kind": "problem" },
+  "looseVerts": { "from": "sum", "kind": "problem" },
+  "looseEdges": { "from": "sum", "kind": "problem" },
+  "doubles": { "from": "sum", "kind": "problem" },
+  "flippedFaces": { "from": "sum", "kind": "problem" },
+  "materials": { "from": "fewest", "kind": "size", "one": "material", "many": "materials" },
+  "uvLayers": { "from": "fewest", "kind": "size", "one": "UV map", "many": "UV maps" },
+  "scaleApplied": { "from": "every", "kind": "flag" },
+  "rotationApplied": { "from": "every", "kind": "flag" },
+  "shading": { "from": "every", "kind": "text", "values": ["flat", "smooth"] }
+}

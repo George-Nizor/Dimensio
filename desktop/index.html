@@ -3,14 +3,16 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- 'wasm-unsafe-eval' and connect-src data: exist only so the bundled Spark splat
-         renderer can compile its inlined WebAssembly. Neither grant allows remote code:
-         scripts still come from 'self' and plain 'unsafe-eval' stays denied. -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: forge3d-artifact:; media-src 'self' blob: forge3d-artifact:; connect-src 'self' data: forge3d-artifact:; worker-src 'self' blob:; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'none'" />
-    <title>Forge3D</title>
+    <meta name="color-scheme" content="light dark" />
+    <meta name="description" content="A Blender course with a practice library: lessons with teachers' videos and steps, exercises you do in Blender, and a record of the models you make." />
+    <!-- The course app. Its policy is the Workshop's without the splat renderer's WebAssembly and
+         artifact grants, plus one frame origin: YouTube's privacy-enhanced player for lesson
+         videos. Under `vite dev` only, vite.config.mjs loosens it for the dev server's own scripts. -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' blob:; media-src 'self' blob:; connect-src 'self'; object-src 'none'; frame-src https://www.youtube-nocookie.com; base-uri 'none'; form-action 'none'" />
+    <title>Dimensio</title>
   </head>
   <body>
-    <div id="app"></div>
-    <script type="module" src="/src/renderer/main.js"></script>
+    <div id="root"></div>
+    <script type="module" src="/src/course/main.tsx"></script>
   </body>
 </html>

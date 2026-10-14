@@ -7,7 +7,9 @@ const test = require("node:test");
 
 const main = fs.readFileSync(path.join(__dirname, "..", "src", "main.cjs"), "utf8");
 const preload = fs.readFileSync(path.join(__dirname, "..", "src", "preload.cjs"), "utf8");
-const html = fs.readFileSync(path.join(__dirname, "..", "index.html"), "utf8");
+// workshop.html is the Workshop (Forge3D's renderer); index.html is the course app.
+const html = fs.readFileSync(path.join(__dirname, "..", "workshop.html"), "utf8");
+const courseHtml = fs.readFileSync(path.join(__dirname, "..", "index.html"), "utf8");
 const renderer = fs.readFileSync(path.join(__dirname, "..", "src", "renderer", "main.js"), "utf8");
 
 test("Electron renderer is isolated and permissions default to deny", () => {
@@ -16,7 +18,8 @@ test("Electron renderer is isolated and permissions default to deny", () => {
   assert.match(main, /nodeIntegration:\s*false/);
   assert.match(main, /corsEnabled:\s*true/);
   assert.match(main, /setPermissionRequestHandler\([^\n]+callback\(false\)/);
-  assert.match(main, /setWindowOpenHandler\(\(\) => \(\{ action: "deny" \}\)\)/);
+  // No window is ever opened; an https link is handed to the system browser and the request denied.
+  assert.match(main, /setWindowOpenHandler\(\(\{ url \}\) => \{ openHttps\(shell, url\); return \{ action: "deny" \}; \}\)/);
 });
 
 test("preload exposes narrow named operations without raw ipcRenderer", () => {
@@ -41,6 +44,22 @@ test("CSP rejects remote scripts and allows only the contained artifact scheme",
   assert.match(html, /object-src 'none'/);
   assert.match(html, /forge3d-artifact:/);
   assert.doesNotMatch(html, /https:/);
+});
+
+test("the course app's policy allows YouTube's privacy-enhanced player and nothing else remote", () => {
+  const policy = courseHtml.match(/http-equiv="Content-Security-Policy" content="([^"]+)"/)[1];
+  assert.match(policy, /script-src 'self';/);
+  assert.match(policy, /object-src 'none'/);
+  assert.match(policy, /frame-src https:\/\/www\.youtube-nocookie\.com;/);
+  assert.equal(policy.match(/https?:/g).length, 1);
+  assert.doesNotMatch(policy, /'unsafe-eval'|'wasm-unsafe-eval'|forge3d-artifact|data:/);
+});
+
+test("pages are served from the app scheme, not from files, and lesson videos are told the app id", () => {
+  assert.match(main, /APP_PRIVILEGES/);
+  assert.match(main, /registerAppProtocol\(\{ protocol, net, session: session\.defaultSession,/);
+  assert.match(main, /loadURL\(`\$\{APP_ORIGIN\}\/index\.html`\)/);
+  assert.doesNotMatch(main, /loadFile\(/);
 });
 
 test("the WebAssembly grant stays narrow enough for the bundled splat renderer only", () => {

@@ -21,7 +21,7 @@ Every lesson in this course happens in Blender, so the first job is to install i
 
 1. **Download 5.2 LTS.** Get Blender 5.2 LTS from blender.org/download, or from Steam. LTS means long-term support: Blender fixes serious bugs in that version for two years, so what you learn here stays right.
 
-2. **Install it.** The Windows installer adds Blender to the Start menu and opens `.blend` files with it. The zip version needs no administrator rights but does neither. Steam installs Blender from its Store tab and keeps it updated for you.
+2. **Install it.** The Windows installer adds Blender to the Start menu and opens .blend files with it. The zip version needs no administrator rights but does neither. Steam installs Blender from its Store tab and keeps it updated for you.
 
 3. **Choose your settings.** The first time Blender opens, the splash screen asks for a few settings. Keep the Blender keymap and Mouse Select on Left, set Spacebar Action to Play, then click Save New Preferences.
 
@@ -31,7 +31,7 @@ Every lesson in this course happens in Blender, so the first job is to install i
 
    ![The splash screen with the version number in the top right corner of its picture picked out.](version)
 
-5. **Point Dimensio at Blender.** Open Settings in Dimensio. If it says Blender wasn't found, choose `blender.exe` in the folder Blender installed to. Dimensio uses it to open exercises and to measure your models.
+5. **Point Dimensio at Blender.** Open Settings in Dimensio. If it says Blender wasn't found, choose blender.exe in the folder Blender installed to. Dimensio uses it to open exercises and to measure your models.
 
 ## Common mistake
 
