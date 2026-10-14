@@ -18,13 +18,23 @@ const {
   projectFromArgv,
   readProject,
   recoverableScratch,
+  retireScratch,
   runsRoot,
+  SAVED_MARKER,
   sameSettings,
   sanitizeView,
   scratchFolder,
   windowTitle,
   writeProject,
+  writeProjectView,
 } = require("../src/lib/project-store.cjs");
+
+const main = fs.readFileSync(path.join(__dirname, "..", "src", "main.cjs"), "utf8");
+const body = (name) => {
+  const start = main.indexOf(`function ${name}(`);
+  assert.ok(start >= 0, `main.cjs has ${name}`);
+  return main.slice(start, main.indexOf("\n}\n", start));
+};
 
 function temporaryDirectory(t) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "forge3d-project-"));
@@ -183,4 +193,45 @@ test("a .forge3d path on the command line is the project to open", (t) => {
   fs.writeFileSync(file, "{}");
   assert.equal(projectFromArgv([".", "--inspect", file]), file);
   assert.equal(projectFromArgv(["relative.forge3d", path.join(root, "missing.forge3d")]), null);
+});
+
+/* ── project fixes ─────────────────────────────────────────────── */
+
+test("fix 1: the selection is written to a saved project as it changes, without its unsaved settings", (t) => {
+  const root = temporaryDirectory(t);
+  const file = path.join(root, "Bottle", "Bottle.forge3d");
+  fs.mkdirSync(path.dirname(file));
+  const saved = writeProject(file, newManifest({ settings: { quality: "draft" } }));
+  const runId = "0d8a7c2e-3f4b-4c5d-8e9f-0a1b2c3d4e5f";
+  const next = writeProjectView(file, saved, { selected_run_id: runId, selected_artifact: "out/a.glb" });
+  const disk = readProject(file);
+  assert.deepEqual(disk.view, { selected_run_id: runId, selected_artifact: "out/a.glb" });
+  assert.deepEqual(disk.settings, { quality: "draft" }, "the saved settings, not whatever is unsaved");
+  assert.equal(next.project_id, saved.project_id);
+  // main.cjs writes it from the project-view handler for saved projects.
+  assert.match(main, /handle\("forge3d:project-view"[^]*?writeProjectView\(project\.file, project\.manifest, project\.view\)/);
+});
+
+test("fix 2: saving an untitled project stops the agent before moving its folder", () => {
+  const save = body("saveProjectAs");
+  const release = save.indexOf("await releaseProjectFolder()");
+  assert.ok(release > 0, "the agent is stopped");
+  assert.ok(release < save.indexOf("materializeProject("), "before the folder moves");
+  assert.match(body("releaseProjectFolder"), /agents\.closeAll\(\)/);
+  assert.match(save, /retireScratch\(source\.folder, layout\.file\)/);
+});
+
+test("fix 2: a scratch folder that could not be removed after saving is never offered as unsaved work", async (t) => {
+  const state = temporaryDirectory(t);
+  const scratch = createScratch(state);
+  await addRun(scratch);
+  // Simulate the Windows case: the copy is in place but the scratch folder stays (a file in it was in use).
+  fs.writeFileSync(path.join(scratch, SAVED_MARKER), JSON.stringify({ saved_to: "D:\\Art\\Bottle\\Bottle.forge3d" }));
+  assert.deepEqual(recoverableScratch(state), []);
+  assert.equal(fs.existsSync(scratch), false, "and it is cleared once it can be");
+
+  const removable = createScratch(state);
+  await addRun(removable);
+  assert.equal(retireScratch(removable, "D:\\x.forge3d"), true);
+  assert.equal(fs.existsSync(removable), false);
 });

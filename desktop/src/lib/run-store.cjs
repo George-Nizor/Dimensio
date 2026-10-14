@@ -340,4 +340,4 @@ function agentSession(manifest) {
   return { id: null, sessionId: null };
 }
 
-module.exports = { READABLE_SCHEMAS, RunStore, agentSession, atomicWriteJson, validateManifest };
+module.exports = { READABLE_SCHEMAS, RunStore, agentSession, atomicWriteJson, renameWithRetry, validateManifest };

@@ -49,6 +49,7 @@ const {
   projectName,
   readProject,
   recoverableScratch,
+  retireScratch,
   runsRoot,
   sameSettings,
   samePath,
@@ -57,6 +58,7 @@ const {
   scratchFolder,
   windowTitle,
   writeProject,
+  writeProjectView,
 } = require("./lib/project-store.cjs");
 
 protocol.registerSchemesAsPrivileged([
@@ -279,6 +281,7 @@ async function saveProjectAs() {
   const layout = layoutForSavePath(result.filePath);
   const source = project;
   flushRunEvents();
+  if (source.untitled) await releaseProjectFolder();
   const manifest = materializeProject(layout, {
     sourceFolder: source.folder,
     move: source.untitled,
@@ -289,11 +292,17 @@ async function saveProjectAs() {
       app_version: BUNDLE_VERSION,
     },
   });
-  if (source.untitled) {
-    try { fs.rmSync(source.folder, { recursive: true, force: true }); } catch {}
-  }
+  if (source.untitled) retireScratch(source.folder, layout.file);
   openSession({ file: layout.file, folder: layout.folder, manifest });
   return true;
+}
+
+// Stops every agent process before the project's folder is moved or renamed. Codex's App Server works in the
+// runs folder, and on Windows a folder a process is using cannot be moved (EBUSY), which used to leave a copy
+// behind under "Unsaved work". The next run starts the agent again in the new place.
+async function releaseProjectFolder() {
+  if (agents) await agents.closeAll();
+  currentSkill = null;
 }
 
 async function newProject(payload = {}) {
@@ -877,7 +886,8 @@ function registerIpc() {
     else await shell.openPath(project.folder);
     return { path: project.file || project.folder };
   });
-  // Run settings belong to the project and make it unsaved; the selection is remembered without asking.
+  // Run settings belong to the project and make it unsaved. The selection is written to a saved project's file as
+  // it changes, without asking and without making the project unsaved.
   handle("forge3d:project-settings", (payload = {}) => {
     if (!project) return null;
     project.settings = sanitizeSettings(payload);
@@ -887,6 +897,13 @@ function registerIpc() {
   handle("forge3d:project-view", (payload = {}) => {
     if (!project) return null;
     project.view = sanitizeView(payload);
+    if (!project.untitled) {
+      try {
+        project.manifest = writeProjectView(project.file, project.manifest, project.view);
+      } catch (error) {
+        send("forge3d:error", `Forge3D could not keep the selection in the project file: ${error.message}`);
+      }
+    }
     return null;
   });
   handle("forge3d:recent-remove", (payload = {}) => {

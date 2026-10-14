@@ -14,7 +14,7 @@
 const crypto = require("node:crypto");
 const fs = require("node:fs");
 const path = require("node:path");
-const { atomicWriteJson } = require("./run-store.cjs");
+const { atomicWriteJson, renameWithRetry } = require("./run-store.cjs");
 const { resolveContained } = require("./path-policy.cjs");
 
 const PROJECT_FORMAT = "forge3d-project";
@@ -26,6 +26,9 @@ const LEGACY_PROJECT_NAME = "Earlier runs";
 const RECENT_LIMIT = 10;
 const SETTING_KEYS = ["workflow", "quality", "target", "tool", "model", "effort"];
 const RUN_ID = /^[0-9a-f-]{36}$/i;
+// Left in an untitled project's scratch folder that was saved but could not be removed (a file in it was still
+// open). Such a folder is a stale copy, never "Unsaved work".
+const SAVED_MARKER = ".forge3d-saved.json";
 
 function timestamp() {
   return new Date().toISOString();
@@ -122,6 +125,12 @@ function writeProject(file, manifest) {
   return next;
 }
 
+// Keeps the selection on disk as it changes. It writes the manifest as last saved with only the view replaced, so
+// unsaved run settings stay unsaved and the project never looks changed because of it.
+function writeProjectView(file, manifest, view) {
+  return writeProject(file, { ...manifest, view: sanitizeView(view) });
+}
+
 function runsRoot(folder) {
   return resolveContained(folder, RUNS_DIRECTORY);
 }
@@ -165,7 +174,7 @@ function layoutForSavePath(chosen) {
 function moveDirectory(source, target) {
   fs.mkdirSync(path.dirname(target), { recursive: true });
   try {
-    fs.renameSync(source, target);
+    renameWithRetry(source, target); // Windows: a brief lock (an indexer, a virus scan) usually clears in a moment
     return;
   } catch (error) {
     if (!["EXDEV", "EPERM", "EACCES", "EBUSY", "ENOTEMPTY", "EEXIST"].includes(error.code)) throw error;
@@ -201,7 +210,17 @@ function createScratch(stateRoot) {
   return folder;
 }
 
-// Untitled projects left behind by a crash. Empty ones are removed; ones holding runs are offered back.
+// After an untitled project was saved: removes its scratch folder, or, when something in it is still in use and
+// it cannot be removed yet, marks it as saved so it is cleared later and never offered as unsaved work.
+function retireScratch(folder, savedTo) {
+  try { fs.rmSync(folder, { recursive: true, force: true }); } catch { /* marked below */ }
+  if (!fs.existsSync(folder)) return true;
+  try { fs.writeFileSync(path.join(folder, SAVED_MARKER), `${JSON.stringify({ saved_to: savedTo, at: timestamp() })}\n`, "utf8"); } catch { /* best effort */ }
+  return false;
+}
+
+// Untitled projects left behind by a crash. Empty ones are removed; ones holding runs are offered back. Folders
+// already saved elsewhere (retireScratch) are removed again and never offered.
 function recoverableScratch(stateRoot, { exclude = null } = {}) {
   const root = scratchRoot(stateRoot);
   if (!fs.existsSync(root)) return [];
@@ -210,7 +229,7 @@ function recoverableScratch(stateRoot, { exclude = null } = {}) {
     if (!entry.isDirectory()) continue;
     const folder = path.join(root, entry.name);
     if (exclude && samePath(folder, exclude)) continue;
-    if (!hasRuns(folder)) {
+    if (fs.existsSync(path.join(folder, SAVED_MARKER)) || !hasRuns(folder)) {
       try { fs.rmSync(folder, { recursive: true, force: true }); } catch { /* in use; try again next start */ }
       continue;
     }
@@ -343,6 +362,7 @@ module.exports = {
   PROJECT_SCHEMA,
   RUNS_DIRECTORY,
   RecentProjects,
+  SAVED_MARKER,
   UNTITLED_NAME,
   adoptLegacyLibrary,
   createScratch,
@@ -354,6 +374,7 @@ module.exports = {
   projectName,
   readProject,
   recoverableScratch,
+  retireScratch,
   runsRoot,
   sameSettings,
   samePath,
@@ -362,4 +383,5 @@ module.exports = {
   scratchFolder,
   windowTitle,
   writeProject,
+  writeProjectView,
 };

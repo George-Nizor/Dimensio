@@ -18,10 +18,12 @@ version, `runs_directory: "runs"`, the run settings, and the selected run and ar
   `%LOCALAPPDATA%\Instrumenta\Forge3D\untitled`. It counts as unsaved once it holds a run.
 - **Save / Save as.** The native Save dialog's choice `X\Name.forge3d` becomes `X\Name\Name.forge3d`,
   unless it already is an empty folder of that name. A non-empty folder is refused. An untitled
-  project's `runs/` is moved (copied, then removed, across drives). A saved project's Save as copies
-  it and gets a new project id.
+  project's `runs/` is moved (copied, then removed, across drives). The agent is stopped first: on
+  Windows a folder a process is working in cannot be moved. A scratch folder that still cannot be
+  removed is marked as saved (`.forge3d-saved.json`), cleared at a later start, and never offered as
+  unsaved work. A saved project's Save as copies it and gets a new project id.
 - **Unsaved changes.** An untitled project with runs, or changed run settings in a saved one. The
-  selection is saved with the project but never makes it unsaved. New, Open, Close and closing the
+  selection is written to a saved project's file as it changes, and never makes it unsaved. New, Open, Close and closing the
   window ask Save / Don't save / Cancel through a native message box. Don't save on an untitled
   project moves its folder to the Recycle Bin.
 - **Busy.** New, Open, Save as and Close are refused while a job is running, because the agent's
