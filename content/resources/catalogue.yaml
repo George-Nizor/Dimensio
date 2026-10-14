@@ -1,0 +1,3464 @@
+# Teachers' videos and pages for the Blender 5.2 course, grouped by topic. Only add one you have
+# opened and that teaches the lesson. cost is free or paid. youtube is the video id when the lesson
+# can play it in place. blender is the version a resource was made with, when older than 5.0.
+# Checks: docs/course/sources/videos.md and written.md. The Blender manual is CC BY-SA 4.0,
+# credited to the Blender Documentation Team.
+
+# 1. Installing Blender and the interface
+
+- id: grant-abbitt-interface
+  title: "Blender 5 Complete Beginners Guide, Part 1: The Interface"
+  teacher: Grant Abbitt
+  url: https://www.youtube.com/watch?v=kVcY7K-JA1Y
+  kind: video
+  minutes: 13
+  youtube: kVcY7K-JA1Y
+  cost: free
+  checked: 2026-10-15
+
+- id: cgcookie-editors-windows
+  title: Editors and Windows in Blender
+  teacher: CG Cookie
+  url: https://www.youtube.com/watch?v=eVRiJYhE0Wk
+  kind: video
+  minutes: 20
+  youtube: eVRiJYhE0Wk
+  blender: "4.5"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-guru-donut-part-1
+  title: Blender Donut Tutorial Part 1
+  teacher: Blender Guru
+  url: https://www.youtube.com/watch?v=-tbSCMbJA6o
+  kind: video
+  minutes: 28
+  youtube: -tbSCMbJA6o
+  cost: free
+  checked: 2026-10-15
+
+- id: cgcookie-introduction
+  title: Introduction to Blender and CG Cookie
+  teacher: CG Cookie
+  url: https://www.youtube.com/watch?v=qZIOA7mFaRg
+  kind: video
+  minutes: 12
+  youtube: qZIOA7mFaRg
+  blender: "4.5"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-interface-overview
+  title: Interface Overview
+  teacher: Blender Foundation
+  url: https://www.youtube.com/watch?v=8XyIYRW_2xk
+  kind: video
+  minutes: 11
+  youtube: 8XyIYRW_2xk
+  blender: "2.80"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-whats-new-5-2
+  title: "What's New in Blender 5.2 LTS"
+  teacher: Blender Foundation
+  url: https://www.youtube.com/watch?v=g4OXlrxqIx0
+  kind: video
+  minutes: 37
+  youtube: g4OXlrxqIx0
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-getting-started-installing
+  title: Installing Blender
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/getting_started/installing/index.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-getting-started-installing-windows
+  title: Installing on Windows
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/getting_started/installing/windows.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-getting-started-installing-steam
+  title: Installing from Steam
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/getting_started/installing/steam.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-interface-window-system-introduction
+  title: "Window System: Introduction"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/interface/window_system/introduction.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-interface-window-system-workspaces
+  title: Workspaces
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/interface/window_system/workspaces.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-interface-window-system-areas
+  title: Areas
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/interface/window_system/areas.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-download
+  title: Download Blender
+  teacher: Blender Foundation
+  url: https://www.blender.org/download/
+  kind: web page
+  cost: free
+  checked: 2026-10-15
+
+# 2. Viewport navigation, including laptops
+
+- id: cgcookie-navigation
+  title: Intro to 3D Navigation in Blender
+  teacher: CG Cookie
+  url: https://www.youtube.com/watch?v=i8wO5PEDO1c
+  kind: video
+  minutes: 9
+  youtube: i8wO5PEDO1c
+  blender: "4.5"
+  cost: free
+  checked: 2026-10-15
+
+- id: ryan-king-without-numpad
+  title: How to Use Blender Without a Numpad (7 Methods)
+  teacher: Ryan King Art
+  url: https://www.youtube.com/watch?v=6tYuNEDjgnQ
+  kind: video
+  minutes: 8
+  youtube: 6tYuNEDjgnQ
+  blender: "3.1"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-viewport-navigation
+  title: Viewport Navigation
+  teacher: Blender Foundation
+  url: https://www.youtube.com/watch?v=ILqOWe3zAbk
+  kind: video
+  minutes: 4
+  youtube: ILqOWe3zAbk
+  blender: "2.80"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-editors-3dview-navigate-navigation
+  title: "3D Viewport: Navigation"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/editors/3dview/navigate/navigation.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-editors-3dview-navigate-views
+  title: "3D Viewport: Contextual Views"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/editors/3dview/navigate/views.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-editors-3dview-navigate-projections
+  title: Perspective/Orthographic
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/editors/3dview/navigate/projections.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-editors-preferences-input
+  title: "Preferences: Input (Emulate 3 Button Mouse, Emulate Numpad)"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/editors/preferences/input.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+# 3. Selecting, transforming, pivots, snapping and orientations
+
+- id: cgcookie-transforming
+  title: Transforming Objects in Blender
+  teacher: CG Cookie
+  url: https://www.youtube.com/watch?v=lYr25_YeuL8
+  kind: video
+  minutes: 15
+  youtube: lYr25_YeuL8
+  blender: "4.5"
+  cost: free
+  checked: 2026-10-15
+
+- id: cgcookie-pivots-snapping
+  title: "Pivots, Snapping, and Proportional Editing in Blender"
+  teacher: CG Cookie
+  url: https://www.youtube.com/watch?v=PfBO0Gfla_Y
+  kind: video
+  minutes: 13
+  youtube: PfBO0Gfla_Y
+  blender: "4.5"
+  cost: free
+  checked: 2026-10-15
+
+- id: cgcookie-orientations
+  title: Orientations and Parenting in Blender
+  teacher: CG Cookie
+  url: https://www.youtube.com/watch?v=vlR6qAbIlR0
+  kind: video
+  minutes: 13
+  youtube: vlR6qAbIlR0
+  blender: "4.5"
+  cost: free
+  checked: 2026-10-15
+
+- id: grant-abbitt-selecting
+  title: "Why You're Selecting Wrong in Blender"
+  teacher: Grant Abbitt
+  url: https://www.youtube.com/watch?v=aCltLvsGxNw
+  kind: video
+  minutes: 8
+  youtube: aCltLvsGxNw
+  blender: "4.5"
+  cost: free
+  checked: 2026-10-15
+
+- id: cgcookie-3d-cursor
+  title: "Adding, Deleting, and the 3D Cursor in Blender"
+  teacher: CG Cookie
+  url: https://www.youtube.com/watch?v=ACdtFVSbDZo
+  kind: video
+  minutes: 10
+  youtube: ACdtFVSbDZo
+  blender: "4.5"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-select-transform
+  title: "Select & Transform"
+  teacher: Blender Foundation
+  url: https://www.youtube.com/watch?v=hTL6AKR8YDs
+  kind: video
+  minutes: 11
+  youtube: hTL6AKR8YDs
+  blender: "2.80"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-scene-layout-object-selecting
+  title: Selecting objects
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/scene_layout/object/selecting.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-scene-layout-object-editing-transform-introduction
+  title: "Transform: Introduction"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/scene_layout/object/editing/transform/introduction.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-scene-layout-object-editing-transform-control-numeric-input
+  title: "Transform Control: Numeric Input"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/scene_layout/object/editing/transform/control/numeric_input.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-scene-layout-object-editing-transform-control-axis-locking
+  title: "Transform Control: Axis Locking"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/scene_layout/object/editing/transform/control/axis_locking.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-editors-3dview-controls-pivot-point
+  title: Transform Pivot Point
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/editors/3dview/controls/pivot_point/index.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-editors-3dview-controls-snapping
+  title: Snapping
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/editors/3dview/controls/snapping.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-editors-3dview-controls-orientation
+  title: Transform Orientation
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/editors/3dview/controls/orientation.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-editors-3dview-3d-cursor
+  title: 3D Cursor
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/editors/3dview/3d_cursor.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+# 4. Objects, collections and the Outliner; saving and files
+
+- id: cgcookie-collections
+  title: Visibility and Collections in Blender
+  teacher: CG Cookie
+  url: https://www.youtube.com/watch?v=fPXT6-6Z7pU
+  kind: video
+  minutes: 13
+  youtube: fPXT6-6Z7pU
+  blender: "4.5"
+  cost: free
+  checked: 2026-10-15
+
+- id: cgcookie-blender-files
+  title: Working with Blender Files
+  teacher: CG Cookie
+  url: https://www.youtube.com/watch?v=5dRvcq0rLzU
+  kind: video
+  minutes: 8
+  youtube: 5dRvcq0rLzU
+  blender: "4.5"
+  cost: free
+  checked: 2026-10-15
+
+- id: cgcookie-object-data
+  title: Object Data and Duplication in Blender
+  teacher: CG Cookie
+  url: https://www.youtube.com/watch?v=HFstA5lM4BM
+  kind: video
+  minutes: 8
+  youtube: HFstA5lM4BM
+  blender: "4.5"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-collections
+  title: Collections
+  teacher: Blender Foundation
+  url: https://www.youtube.com/watch?v=u_yIGGhubZs
+  kind: video
+  minutes: 7
+  youtube: u_yIGGhubZs
+  blender: "2.80"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-scene-layout-object-introduction
+  title: "Objects: Introduction"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/scene_layout/object/introduction.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-scene-layout-object-origin
+  title: Object Origin
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/scene_layout/object/origin.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-scene-layout-collections-collections
+  title: Collections
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/scene_layout/collections/collections.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-editors-outliner-introduction
+  title: "Outliner: Introduction"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/editors/outliner/introduction.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-editors-outliner-usage
+  title: "Outliner: Usage"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/editors/outliner/usage.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-files-blend-open-save
+  title: "Opening & Saving"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/files/blend/open_save.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-files-blend-packed-data
+  title: Packed Data
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/files/blend/packed_data.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+# 5. Edit Mode basics
+
+- id: cgcookie-mesh-components
+  title: Mesh Components and Object Origins in Blender
+  teacher: CG Cookie
+  url: https://www.youtube.com/watch?v=eJH0hxlhd5M
+  kind: video
+  minutes: 11
+  youtube: eJH0hxlhd5M
+  blender: "4.5"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-guru-donut-part-2
+  title: Blender Basic Modelling Tutorial (Donut Part 2)
+  teacher: Blender Guru
+  url: https://www.youtube.com/watch?v=K1UyEdmSttQ
+  kind: video
+  minutes: 31
+  youtube: K1UyEdmSttQ
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-object-edit-mode
+  title: Object and Edit Mode
+  teacher: Blender Foundation
+  url: https://www.youtube.com/watch?v=34FBeC9mktE
+  kind: video
+  minutes: 3
+  youtube: 34FBeC9mktE
+  blender: "2.80"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-mesh-select-mode
+  title: Mesh Selection Mode
+  teacher: Blender Foundation
+  url: https://www.youtube.com/watch?v=yqe7kC7Fk-I
+  kind: video
+  minutes: 2
+  youtube: yqe7kC7Fk-I
+  blender: "2.80"
+  cost: free
+  checked: 2026-10-15
+
+- id: grant-abbitt-old-man
+  title: "Blender 5 Complete Beginners Guide, Part 3: The Old Man"
+  teacher: Grant Abbitt
+  url: https://www.youtube.com/watch?v=ut9_RRf1-hM
+  kind: video
+  minutes: 11
+  youtube: ut9_RRf1-hM
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-editors-3dview-modes
+  title: Object Modes
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/editors/3dview/modes.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-modeling-meshes-structure
+  title: Mesh Structure
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/modeling/meshes/structure.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-modeling-meshes-primitives
+  title: Mesh Primitives
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/modeling/meshes/primitives.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-modeling-meshes-selecting-introduction
+  title: "Mesh Selecting: Introduction"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/modeling/meshes/selecting/introduction.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-modeling-meshes-selecting-loops
+  title: Select Loops
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/modeling/meshes/selecting/loops.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+# 6. Extrude, inset, loop cut, bevel, knife, merge and dissolve
+
+- id: cgcookie-extrude-inset-knife
+  title: "Extrude, Inset, and Knife in Blender"
+  teacher: CG Cookie
+  url: https://www.youtube.com/watch?v=g5WCcHsgWf4
+  kind: video
+  minutes: 12
+  youtube: g5WCcHsgWf4
+  blender: "4.5"
+  cost: free
+  checked: 2026-10-15
+
+- id: cgcookie-bevel-loop-cut
+  title: Bevel and Loop Cut in Blender
+  teacher: CG Cookie
+  url: https://www.youtube.com/watch?v=Iyk1rBNFMDg
+  kind: video
+  minutes: 10
+  youtube: Iyk1rBNFMDg
+  blender: "4.5"
+  cost: free
+  checked: 2026-10-15
+
+- id: cgcookie-subdivide-fill-merge
+  title: "Subdivide, Fill, and Merge in Blender"
+  teacher: CG Cookie
+  url: https://www.youtube.com/watch?v=IjsugFxhB1w
+  kind: video
+  minutes: 13
+  youtube: IjsugFxhB1w
+  blender: "4.5"
+  cost: free
+  checked: 2026-10-15
+
+- id: artisans-of-vaul-delete-dissolve
+  title: Delete and Dissolve Explained
+  teacher: Artisans of Vaul
+  url: https://www.youtube.com/watch?v=p8l-PGew_rI
+  kind: video
+  minutes: 9
+  youtube: p8l-PGew_rI
+  blender: "3.3"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-extrude
+  title: Extrude
+  teacher: Blender Foundation
+  url: https://www.youtube.com/watch?v=2qD_tcPMhOs
+  kind: video
+  minutes: 5
+  youtube: 2qD_tcPMhOs
+  blender: "2.80"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-loop-cut
+  title: Loop Cut
+  teacher: Blender Foundation
+  url: https://www.youtube.com/watch?v=-pCf3DjsEBg
+  kind: video
+  minutes: 3
+  youtube: -pCf3DjsEBg
+  blender: "2.80"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-bevel-tool
+  title: Bevel Tool
+  teacher: Blender Foundation
+  url: https://www.youtube.com/watch?v=JSvGts95S7A
+  kind: video
+  minutes: 4
+  youtube: JSvGts95S7A
+  blender: "2.80"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-knife-tool
+  title: Knife Tool
+  teacher: Blender Foundation
+  url: https://www.youtube.com/watch?v=0I-4a1q0YLE
+  kind: video
+  minutes: 2
+  youtube: 0I-4a1q0YLE
+  blender: "2.80"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-modeling-meshes-tools-extrude-region
+  title: Extrude Region
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/modeling/meshes/tools/extrude_region.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-modeling-meshes-editing-face-extrude-faces
+  title: Extrude Faces
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/modeling/meshes/editing/face/extrude_faces.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-modeling-meshes-editing-face-inset-faces
+  title: Inset Faces
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/modeling/meshes/editing/face/inset_faces.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-modeling-meshes-tools-loop
+  title: Loop Cut
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/modeling/meshes/tools/loop.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-modeling-meshes-editing-edge-bevel
+  title: Bevel
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/modeling/meshes/editing/edge/bevel.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-modeling-meshes-editing-mesh-knife-topology-tool
+  title: Knife Topology Tool
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/modeling/meshes/editing/mesh/knife_topology_tool.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-modeling-meshes-editing-mesh-merge
+  title: Merge
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/modeling/meshes/editing/mesh/merge.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-modeling-meshes-editing-mesh-delete
+  title: "Deleting & Dissolving"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/modeling/meshes/editing/mesh/delete.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+# 7. Proportional editing
+
+- id: ryan-king-proportional-editing
+  title: How to Use Proportional Editing in Blender
+  teacher: Ryan King Art
+  url: https://www.youtube.com/watch?v=F7VggbBaCsg
+  kind: video
+  minutes: 7
+  youtube: F7VggbBaCsg
+  blender: "4.2"
+  cost: free
+  checked: 2026-10-15
+
+- id: royal-skies-proportional-editing
+  title: "Blender: Proportional Editing"
+  teacher: Royal Skies
+  url: https://www.youtube.com/watch?v=nQD79TtFxDg
+  kind: video
+  minutes: 1
+  youtube: nQD79TtFxDg
+  blender: "4.4"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-editors-3dview-controls-proportional-editing
+  title: Proportional Editing
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/editors/3dview/controls/proportional_editing.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+# Also for this topic, listed above: cgcookie-pivots-snapping.
+
+# 8. Modifiers: mirror, subdivision surface, solidify, array, bevel, boolean, weld, decimate, curve and simple deform
+
+- id: cgcookie-modifiers
+  title: Modifiers in Blender
+  teacher: CG Cookie
+  url: https://www.youtube.com/watch?v=JiQuGealRrs
+  kind: video
+  minutes: 11
+  youtube: JiQuGealRrs
+  blender: "4.5"
+  cost: free
+  checked: 2026-10-15
+
+- id: ryan-king-mirror-modifier
+  title: Mirror Modifier for Complete Beginners
+  teacher: Ryan King Art
+  url: https://www.youtube.com/watch?v=_YEyik7UQZ8
+  kind: video
+  minutes: 21
+  youtube: _YEyik7UQZ8
+  blender: "4.5"
+  cost: free
+  checked: 2026-10-15
+
+- id: grant-abbitt-array-curve
+  title: "Demystifying Blender's Array & Curve Modifiers"
+  teacher: Grant Abbitt
+  url: https://www.youtube.com/watch?v=DDpedZobA5Q
+  kind: video
+  minutes: 10
+  youtube: DDpedZobA5Q
+  blender: "4.4"
+  cost: free
+  checked: 2026-10-15
+
+- id: ryan-king-boolean-modifier
+  title: How to Use the Boolean Modifier in Blender
+  teacher: Ryan King Art
+  url: https://www.youtube.com/watch?v=CHqH5oz0DvQ
+  kind: video
+  minutes: 8
+  youtube: CHqH5oz0DvQ
+  blender: "4.1"
+  cost: free
+  checked: 2026-10-15
+
+- id: ryan-king-simple-deform
+  title: How to Use the Simple Deform Modifier in Blender
+  teacher: Ryan King Art
+  url: https://www.youtube.com/watch?v=NNEtGWrhcQ8
+  kind: video
+  minutes: 16
+  youtube: NNEtGWrhcQ8
+  cost: free
+  checked: 2026-10-15
+
+- id: josh-gambrell-solidify
+  title: The Ultimate Guide to the Solidify Modifier in Blender
+  teacher: Josh Gambrell (Blender Bros)
+  url: https://www.youtube.com/watch?v=rodbBWVMZno
+  kind: video
+  minutes: 18
+  youtube: rodbBWVMZno
+  blender: "4.5"
+  cost: free
+  checked: 2026-10-15
+
+- id: cg-essentials-weld-modifier
+  title: How to Use the Weld Modifier in Blender
+  teacher: The CG Essentials
+  url: https://www.youtube.com/watch?v=fIzzmh6vAyk
+  kind: video
+  minutes: 5
+  youtube: fIzzmh6vAyk
+  blender: "3.1"
+  cost: free
+  checked: 2026-10-15
+
+- id: tom-lauerman-decimate
+  title: "Using Blender's Decimate Modifier to Create Low-Poly Objects"
+  teacher: Tom Lauerman
+  url: https://www.youtube.com/watch?v=w9P0JsXifGA
+  kind: video
+  minutes: 8
+  youtube: w9P0JsXifGA
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-modeling-modifiers-introduction
+  title: "Modifiers: Introduction"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/modeling/modifiers/introduction.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-modeling-modifiers-generate-mirror
+  title: Mirror Modifier
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/modeling/modifiers/generate/mirror.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-modeling-modifiers-generate-subdivision-surface
+  title: Subdivision Surface Modifier
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/modeling/modifiers/generate/subdivision_surface.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-modeling-modifiers-generate-solidify
+  title: Solidify Modifier
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/modeling/modifiers/generate/solidify.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-modeling-modifiers-generate-array
+  title: Array Modifier
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/modeling/modifiers/generate/array.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-modeling-modifiers-generate-bevel
+  title: Bevel Modifier
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/modeling/modifiers/generate/bevel.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-modeling-modifiers-generate-booleans
+  title: Boolean Modifier
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/modeling/modifiers/generate/booleans.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-modeling-modifiers-generate-weld
+  title: Weld Modifier
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/modeling/modifiers/generate/weld.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-modeling-modifiers-generate-decimate
+  title: Decimate Modifier
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/modeling/modifiers/generate/decimate.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-modeling-modifiers-deform-curve
+  title: Curve Modifier
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/modeling/modifiers/deform/curve.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-modeling-modifiers-deform-simple-deform
+  title: Simple Deform Modifier
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/modeling/modifiers/deform/simple_deform.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+# 9. Topology and edge flow; normals and shading
+
+- id: grant-abbitt-edge-loops
+  title: "Edge Loops & Topology Flow"
+  teacher: Grant Abbitt
+  url: https://www.youtube.com/watch?v=7lN3DzD95a8
+  kind: video
+  minutes: 10
+  youtube: 7lN3DzD95a8
+  blender: "4.4"
+  cost: free
+  checked: 2026-10-15
+
+- id: cgcookie-normals-smoothing
+  title: Mesh Normals and Smoothing in Blender
+  teacher: CG Cookie
+  url: https://www.youtube.com/watch?v=2cQROA13T04
+  kind: video
+  minutes: 7
+  youtube: 2cQROA13T04
+  blender: "4.5"
+  cost: free
+  checked: 2026-10-15
+
+- id: ryan-king-auto-smooth
+  title: Auto Smooth is Back in Blender 4.2
+  teacher: Ryan King Art
+  url: https://www.youtube.com/watch?v=bl9J7GjaewM
+  kind: video
+  minutes: 4
+  youtube: bl9J7GjaewM
+  blender: "4.2"
+  cost: free
+  checked: 2026-10-15
+
+- id: josh-gambrell-topology
+  title: The Truth About Topology
+  teacher: Josh Gambrell (Blender Bros)
+  url: https://www.youtube.com/watch?v=PwmXuGeRfCE
+  kind: video
+  minutes: 13
+  youtube: PwmXuGeRfCE
+  blender: "4.2"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-modeling-meshes-editing-mesh-normals
+  title: Normals
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/modeling/meshes/editing/mesh/normals.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-scene-layout-object-editing-shading
+  title: "Object Shading: Shade Smooth, Flat, Auto Smooth"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/scene_layout/object/editing/shading.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-modeling-meshes-editing-face-shading
+  title: "Shade Smooth & Flat (faces)"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/modeling/meshes/editing/face/shading.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-modeling-meshes-editing-mesh-shading
+  title: "Mesh Shading: Smooth/Sharp Edges"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/modeling/meshes/editing/mesh/shading.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-modeling-modifiers-normals-weighted-normal
+  title: Weighted Normal Modifier
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/modeling/modifiers/normals/weighted_normal.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+# Also for this topic, listed above: blender-manual-modeling-meshes-structure.
+
+# 10. Blocking out from reference images
+
+- id: grant-abbitt-photo-to-asset
+  title: Turn Any Photo into a Game Asset
+  teacher: Grant Abbitt
+  url: https://www.youtube.com/watch?v=ZR_X2OhsteQ
+  kind: video
+  minutes: 22
+  youtube: ZR_X2OhsteQ
+  cost: free
+  checked: 2026-10-15
+
+- id: grant-abbitt-low-poly-animal
+  title: "Blender 5 for Beginners: Model Any Low Poly Animal"
+  teacher: Grant Abbitt
+  url: https://www.youtube.com/watch?v=F_JK9eaYYTQ
+  kind: video
+  minutes: 36
+  youtube: F_JK9eaYYTQ
+  cost: free
+  checked: 2026-10-15
+
+- id: ryan-king-background-images
+  title: How to Use Background Images in Blender
+  teacher: Ryan King Art
+  url: https://www.youtube.com/watch?v=lpIonmH90-k
+  kind: video
+  minutes: 12
+  youtube: lpIonmH90-k
+  blender: "3.2"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-modeling-empties
+  title: Empties (Image empties for reference)
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/modeling/empties.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-modeling-meshes-import-images-as-planes
+  title: "Mesh Plane (Add > Image > Mesh Plane)"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/modeling/meshes/import_images_as_planes.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-editors-3dview-navigate-align
+  title: Align View
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/editors/3dview/navigate/align.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+# Also for this topic, listed above: blender-guru-donut-part-2.
+
+# 11. Low-poly props, characters and environments; modular kits
+
+- id: imphenzia-fantasy-props
+  title: "Crash Course: Low Poly Fantasy Props in Blender 5"
+  teacher: Imphenzia
+  url: https://www.youtube.com/watch?v=M_cGaqzAIAc
+  kind: video
+  minutes: 20
+  youtube: M_cGaqzAIAc
+  cost: free
+  checked: 2026-10-15
+
+- id: ryan-king-low-poly-characters
+  title: Create Low Poly Characters in Blender
+  teacher: Ryan King Art
+  url: https://www.youtube.com/watch?v=BL6fyBeldHA
+  kind: video
+  minutes: 86
+  youtube: BL6fyBeldHA
+  cost: free
+  checked: 2026-10-15
+
+- id: grant-abbitt-modular-building
+  title: Essential Tips for Modular Building
+  teacher: Grant Abbitt
+  url: https://www.youtube.com/watch?v=QE4aiWp5bZk
+  kind: video
+  minutes: 4
+  youtube: QE4aiWp5bZk
+  blender: "3.5"
+  cost: free
+  checked: 2026-10-15
+
+- id: imphenzia-low-poly-character-course
+  title: Learn Low Poly Character Modeling (Full Course)
+  teacher: Imphenzia
+  url: https://www.youtube.com/watch?v=PTWV67qUX2k
+  kind: video
+  minutes: 121
+  youtube: PTWV67qUX2k
+  blender: "3.5"
+  cost: free
+  checked: 2026-10-15
+
+- id: grant-abbitt-low-poly-scenes
+  title: Essential Tips for Low Poly Scenes
+  teacher: Grant Abbitt
+  url: https://www.youtube.com/watch?v=mvE_TykzJQU
+  kind: video
+  minutes: 12
+  youtube: mvE_TykzJQU
+  blender: "4.2"
+  cost: free
+  checked: 2026-10-15
+
+- id: grant-abbitt-ps1-character
+  title: "Blender Low Poly Character: PS1 Style Modeling for Beginners"
+  teacher: Grant Abbitt
+  url: https://www.youtube.com/watch?v=uIHuqFLa_X0
+  kind: video
+  minutes: 19
+  youtube: uIHuqFLa_X0
+  blender: "4.5"
+  cost: free
+  checked: 2026-10-15
+
+- id: imphenzia-wood-crate
+  title: "Let's Model a Wood Crate in 10 Minutes"
+  teacher: Imphenzia
+  url: https://www.youtube.com/watch?v=PP-UWvKivY8
+  kind: video
+  minutes: 25
+  youtube: PP-UWvKivY8
+  blender: "4.4"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-scene-layout-object-editing-apply
+  title: Apply (transforms)
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/scene_layout/object/editing/apply.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+# Also for this topic, listed above: blender-manual-modeling-meshes-primitives, blender-manual-editors-3dview-controls-snapping.
+
+# 12. Curves and text
+
+- id: ryan-king-curves
+  title: How to Use Curves for Beginners
+  teacher: Ryan King Art
+  url: https://www.youtube.com/watch?v=gxzWCH1Q4fM
+  kind: video
+  minutes: 19
+  youtube: gxzWCH1Q4fM
+  blender: "4.4"
+  cost: free
+  checked: 2026-10-15
+
+- id: ryan-king-text
+  title: How to Use Text in Blender for Beginners
+  teacher: Ryan King Art
+  url: https://www.youtube.com/watch?v=sSpem6jHXak
+  kind: video
+  minutes: 18
+  youtube: sSpem6jHXak
+  blender: "3.6"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-modeling-curves-introduction
+  title: "Curves: Introduction"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/modeling/curves/introduction.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-modeling-curves-primitives
+  title: Curve Primitives
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/modeling/curves/primitives.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-modeling-curves-properties-geometry
+  title: "Curve Geometry (extrude, bevel)"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/modeling/curves/properties/geometry.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-modeling-texts-introduction
+  title: "Text: Introduction"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/modeling/texts/introduction.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-modeling-texts-editing
+  title: "Text: Editing"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/modeling/texts/editing.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-modeling-texts-properties
+  title: "Text: Properties"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/modeling/texts/properties.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+# 13. Sculpting basics, remesh and multires
+
+- id: grant-abbitt-sculpting
+  title: "Complete Beginner's Guide to Sculpting in Blender 4.4"
+  teacher: Grant Abbitt
+  url: https://www.youtube.com/watch?v=K7AJVx0H3Ec
+  kind: video
+  minutes: 37
+  youtube: K7AJVx0H3Ec
+  blender: "4.4"
+  cost: free
+  checked: 2026-10-15
+
+- id: grant-abbitt-multires-dyntopo-remesh
+  title: "Essential Sculpting Workflows: Multires vs Dyntopo vs Remesh"
+  teacher: Grant Abbitt
+  url: https://www.youtube.com/watch?v=Y6asaZsDHCg
+  kind: video
+  minutes: 14
+  youtube: Y6asaZsDHCg
+  blender: "3.0"
+  cost: free
+  checked: 2026-10-15
+
+- id: ryan-king-sculpt-remesh
+  title: "How to Use Blender's Sculpting Remesh Feature"
+  teacher: Ryan King Art
+  url: https://www.youtube.com/watch?v=iveM_C6cenA
+  kind: video
+  minutes: 6
+  youtube: iveM_C6cenA
+  blender: "3.5"
+  cost: free
+  checked: 2026-10-15
+
+- id: grant-abbitt-every-brush
+  title: "Master Blender Sculpting: Every Brush Explained"
+  teacher: Grant Abbitt
+  url: https://www.youtube.com/watch?v=5-mNgCpEkCI
+  kind: video
+  minutes: 44
+  youtube: 5-mNgCpEkCI
+  blender: "4.3"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-sculpt-paint-sculpting
+  title: Sculpting
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/sculpt_paint/sculpting/index.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-sculpt-paint-sculpting-introduction
+  title: "Sculpting: Introduction"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/sculpt_paint/sculpting/introduction/index.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-sculpt-paint-sculpting-tool-settings-remesh
+  title: Sculpt Remesh
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/sculpt_paint/sculpting/tool_settings/remesh.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-sculpt-paint-sculpting-tool-settings-dyntopo
+  title: Dyntopo
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/sculpt_paint/sculpting/tool_settings/dyntopo.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-modeling-meshes-retopology
+  title: "Remeshing (Voxel, Quadriflow)"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/modeling/meshes/retopology.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-modeling-modifiers-generate-multiresolution
+  title: Multiresolution Modifier
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/modeling/modifiers/generate/multiresolution.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-modeling-modifiers-generate-remesh
+  title: Remesh Modifier
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/modeling/modifiers/generate/remesh.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+# 14. Retopology and baking normals
+
+- id: ryan-king-retopology
+  title: Retopology for Beginners
+  teacher: Ryan King Art
+  url: https://www.youtube.com/watch?v=1myOZaxtHes
+  kind: video
+  minutes: 22
+  youtube: 1myOZaxtHes
+  blender: "4.1"
+  cost: free
+  checked: 2026-10-15
+
+- id: cg-boost-retopology
+  title: Retopology in Blender (Beginner Tutorial)
+  teacher: CG Boost
+  url: https://www.youtube.com/watch?v=X2GNyEUvpD4
+  kind: video
+  minutes: 14
+  youtube: X2GNyEUvpD4
+  blender: "3.0"
+  cost: free
+  checked: 2026-10-15
+
+- id: ryan-king-texture-bake
+  title: Texture Bake High Poly Details to a Low Poly Mesh
+  teacher: Ryan King Art
+  url: https://www.youtube.com/watch?v=Zxl38NpPWdo
+  kind: video
+  minutes: 14
+  youtube: Zxl38NpPWdo
+  blender: "4.1"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-modeling-meshes-tools-poly-build
+  title: Poly Build
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/modeling/meshes/tools/poly_build.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-modeling-modifiers-deform-shrinkwrap
+  title: Shrinkwrap Modifier
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/modeling/modifiers/deform/shrinkwrap.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-render-cycles-baking
+  title: Render Baking
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/render/cycles/baking.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+# Also for this topic, listed above: blender-manual-editors-3dview-controls-snapping.
+
+# 15. UV unwrapping, seams and packing
+
+- id: grant-abbitt-uv-unwrapping
+  title: "Blender 5: UV Unwrapping Just Got Way Easier"
+  teacher: Grant Abbitt
+  url: https://www.youtube.com/watch?v=DmuZTw3UZ-c
+  kind: video
+  minutes: 5
+  youtube: DmuZTw3UZ-c
+  cost: free
+  checked: 2026-10-15
+
+- id: grant-abbitt-uv-seams
+  title: "The Complete Guide to UV Unwrapping: Where and Why to Mark Seams"
+  teacher: Grant Abbitt
+  url: https://www.youtube.com/watch?v=jnzhNdWoXMg
+  kind: video
+  minutes: 8
+  youtube: jnzhNdWoXMg
+  blender: "3.3"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-guru-donut-part-6
+  title: Blender Basic UV Unwrapping Tutorial (Donut Part 6)
+  teacher: Blender Guru
+  url: https://www.youtube.com/watch?v=yxAqN8TzFbo
+  kind: video
+  minutes: 34
+  youtube: yxAqN8TzFbo
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-uv-unwrapping
+  title: UV Unwrapping
+  teacher: Blender Foundation
+  url: https://www.youtube.com/watch?v=Y7M-B6xnaEM
+  kind: video
+  minutes: 6
+  youtube: Y7M-B6xnaEM
+  blender: "2.80"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-modeling-meshes-uv-unwrapping-introduction
+  title: "Unwrapping: Introduction"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/modeling/meshes/uv/unwrapping/introduction.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-modeling-meshes-uv-unwrapping-seams
+  title: Seams
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/modeling/meshes/uv/unwrapping/seams.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-modeling-meshes-editing-uv
+  title: "UV Operators (Unwrap, Smart UV Project)"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/modeling/meshes/editing/uv.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-modeling-meshes-uv-editing
+  title: Editing UVs (Pack Islands)
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/modeling/meshes/uv/editing.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-editors-uv-introduction
+  title: "UV Editor: Introduction"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/editors/uv/introduction.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+# 16. Palette and gradient texture atlases for low poly
+
+- id: imphenzia-palette-textures
+  title: How To Speed Up Your Blender Low Poly Modeling Process
+  teacher: Imphenzia
+  url: https://www.youtube.com/watch?v=wymvSs7m1jk
+  kind: video
+  minutes: 49
+  youtube: wymvSs7m1jk
+  blender: "4.3"
+  cost: free
+  checked: 2026-10-15
+
+- id: grant-abbitt-gradient-textures
+  title: Low-Poly Game Optimized Textures
+  teacher: Grant Abbitt
+  url: https://www.youtube.com/watch?v=Komry1kruHs
+  kind: video
+  minutes: 8
+  youtube: Komry1kruHs
+  blender: "4.2"
+  cost: free
+  checked: 2026-10-15
+
+- id: grant-abbitt-texture-atlases
+  title: "Advance Unwrapping & Making Texture Atlases"
+  teacher: Grant Abbitt
+  url: https://www.youtube.com/watch?v=gZRDwbHEB34
+  kind: video
+  minutes: 20
+  youtube: gZRDwbHEB34
+  blender: "2.81"
+  cost: free
+  checked: 2026-10-15
+
+- id: imphenzia-pixpal-shader
+  title: "Imphenzia PixPal Palette: Shader Tutorial"
+  teacher: Imphenzia
+  url: https://www.youtube.com/watch?v=9ljoYSVRWy4
+  kind: video
+  minutes: 48
+  youtube: 9ljoYSVRWy4
+  blender: "4.3"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-modeling-meshes-uv-applying-image
+  title: Using UV Maps
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/modeling/meshes/uv/applying_image.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-render-shader-nodes-textures-image
+  title: Image Texture Node
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/render/shader_nodes/textures/image.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-editors-image-introduction
+  title: "Image Editor: Introduction"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/editors/image/introduction.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: imphenzia-pixpal
+  title: PixPal Palette Texture
+  teacher: Imphenzia
+  url: https://imphenzia.com/imphenzia-pixpal
+  kind: written guide and free download
+  cost: free
+  checked: 2026-10-15
+
+# Also for this topic, listed above: blender-manual-modeling-meshes-uv-editing.
+
+# 17. Texture painting
+
+- id: grant-abbitt-texture-painting
+  title: "Blender 4.3 Texture Painting: Beginner's Guide & New Brushes"
+  teacher: Grant Abbitt
+  url: https://www.youtube.com/watch?v=_-zAhCOUpog
+  kind: video
+  minutes: 12
+  youtube: _-zAhCOUpog
+  blender: "4.3"
+  cost: free
+  checked: 2026-10-15
+
+- id: grant-abbitt-texture-painting-quick-start
+  title: "Texture Painting in Blender 4 (& 5): A Quick Start"
+  teacher: Grant Abbitt
+  url: https://www.youtube.com/watch?v=E29D9rS8op8
+  kind: video
+  minutes: 5
+  youtube: E29D9rS8op8
+  blender: "4.0"
+  cost: free
+  checked: 2026-10-15
+
+- id: ryan-king-texture-painting
+  title: Texture Painting for Beginners
+  teacher: Ryan King Art
+  url: https://www.youtube.com/watch?v=6jT4K0JpGNs
+  kind: video
+  minutes: 27
+  youtube: 6jT4K0JpGNs
+  blender: "3.3"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-sculpt-paint-texture-paint-introduction
+  title: "Texture Paint: Introduction"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/sculpt_paint/texture_paint/introduction.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-sculpt-paint-texture-paint-tool-settings-texture-slots
+  title: Texture Slots
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/sculpt_paint/texture_paint/tool_settings/texture_slots.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-sculpt-paint-texture-paint-tool-settings-brush-settings
+  title: "Texture Paint: Brush Settings"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/sculpt_paint/texture_paint/tool_settings/brush_settings.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+# 18. Materials and the Shader Editor, procedural textures, vertex colours
+
+- id: blender-guru-donut-part-4
+  title: Blender Basic Materials Tutorial (Donut Part 4)
+  teacher: Blender Guru
+  url: https://www.youtube.com/watch?v=5Xlu2zwbJd0
+  kind: video
+  minutes: 34
+  youtube: 5Xlu2zwbJd0
+  cost: free
+  checked: 2026-10-15
+
+- id: ryan-king-procedural-shader-nodes
+  title: Introduction to Procedural Shader Nodes for Complete Beginners
+  teacher: Ryan King Art
+  url: https://www.youtube.com/watch?v=J5t7gzIfTt0
+  kind: video
+  minutes: 24
+  youtube: J5t7gzIfTt0
+  blender: "4.0"
+  cost: free
+  checked: 2026-10-15
+
+- id: tirkkonen-vertex-colors
+  title: "Vertex Colors: Introduction to Realtime Lowpoly Vertex Painting"
+  teacher: "Jenny Tirkkonen, Blender Conference"
+  url: https://www.youtube.com/watch?v=-OqRp9o9vQA
+  kind: video
+  minutes: 41
+  youtube: -OqRp9o9vQA
+  blender: "4.2"
+  cost: free
+  checked: 2026-10-15
+
+- id: southern-shotty-shader-nodes
+  title: Every Shader Node You Need to Know in Blender
+  teacher: SouthernShotty
+  url: https://www.youtube.com/watch?v=3-_zyiBk0JI
+  kind: video
+  minutes: 11
+  youtube: 3-_zyiBk0JI
+  blender: "4.5"
+  cost: free
+  checked: 2026-10-15
+
+- id: cgcookie-materials
+  title: Materials and Textures in Blender
+  teacher: CG Cookie
+  url: https://www.youtube.com/watch?v=4LySeRWSNiA
+  kind: video
+  minutes: 15
+  youtube: 4LySeRWSNiA
+  blender: "4.5"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-guru-donut-part-5
+  title: Blender Basic Texturing Tutorial (Donut Part 5)
+  teacher: Blender Guru
+  url: https://www.youtube.com/watch?v=h30ZJQrb4s8
+  kind: video
+  minutes: 32
+  youtube: h30ZJQrb4s8
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-procedural-textures
+  title: Procedural Textures
+  teacher: Blender Foundation
+  url: https://www.youtube.com/watch?v=_deRNqDcwRk
+  kind: video
+  minutes: 3
+  youtube: _deRNqDcwRk
+  blender: "2.80"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-render-materials-introduction
+  title: "Materials: Introduction"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/render/materials/introduction.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-render-materials-assignment
+  title: Material Assignment
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/render/materials/assignment.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-editors-shader-editor
+  title: Shader Editor
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/editors/shader_editor.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-render-shader-nodes-introduction
+  title: "Shader Nodes: Introduction"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/render/shader_nodes/introduction.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-render-shader-nodes-shader-principled
+  title: Principled BSDF
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/render/shader_nodes/shader/principled.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-render-shader-nodes-textures-noise
+  title: Noise Texture Node
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/render/shader_nodes/textures/noise.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-render-shader-nodes-textures-voronoi
+  title: Voronoi Texture Node
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/render/shader_nodes/textures/voronoi.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-render-shader-nodes-color-color-ramp
+  title: Color Ramp Node
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/render/shader_nodes/color/color_ramp.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-render-shader-nodes-input-vertex-color
+  title: Color Attribute Node
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/render/shader_nodes/input/vertex_color.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-render-shader-nodes-input-attribute
+  title: Attribute Node
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/render/shader_nodes/input/attribute.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-sculpt-paint-vertex-paint-introduction
+  title: "Vertex Paint: Introduction"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/sculpt_paint/vertex_paint/introduction.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+# 19. Lights, world and HDRIs
+
+- id: cgcookie-lighting
+  title: Lighting in Blender
+  teacher: CG Cookie
+  url: https://www.youtube.com/watch?v=E3d7R7BNr_4
+  kind: video
+  minutes: 8
+  youtube: E3d7R7BNr_4
+  blender: "4.5"
+  cost: free
+  checked: 2026-10-15
+
+- id: ryan-king-hdri
+  title: How to Light your Scenes with HDRIs in Blender
+  teacher: Ryan King Art
+  url: https://www.youtube.com/watch?v=QNr7lwhW0h4
+  kind: video
+  minutes: 4
+  youtube: QNr7lwhW0h4
+  blender: "3.5"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-guru-lighting
+  title: Fundamentals of Lighting in Blender
+  teacher: Blender Guru
+  url: https://www.youtube.com/watch?v=ENnEYoUpFfU
+  kind: video
+  minutes: 43
+  youtube: ENnEYoUpFfU
+  cost: free
+  checked: 2026-10-15
+
+- id: grant-abbitt-lights-compositing
+  title: "Blender 5 Complete Beginners Guide, Part 8: Lights & Compositing"
+  teacher: Grant Abbitt
+  url: https://www.youtube.com/watch?v=7moxMNaRlk8
+  kind: video
+  minutes: 14
+  youtube: 7moxMNaRlk8
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-light-types
+  title: Light Types
+  teacher: Blender Foundation
+  url: https://www.youtube.com/watch?v=FdbnzfjoOJU
+  kind: video
+  minutes: 2
+  youtube: FdbnzfjoOJU
+  blender: "2.80"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-render-lights-light-object
+  title: Light Objects
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/render/lights/light_object.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-render-lights-world
+  title: World Environment
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/render/lights/world.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-render-shader-nodes-textures-environment
+  title: Environment Texture Node
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/render/shader_nodes/textures/environment.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-render-eevee-world-settings
+  title: EEVEE World Settings
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/render/eevee/world_settings.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: polyhaven-hdris
+  title: HDRIs
+  teacher: Poly Haven
+  url: https://polyhaven.com/hdris
+  kind: free assets
+  cost: free
+  checked: 2026-10-15
+
+# 20. Cameras
+
+- id: cgcookie-cameras-rendering
+  title: Cameras and Rendering in Blender
+  teacher: CG Cookie
+  url: https://www.youtube.com/watch?v=iiXElj1DLBo
+  kind: video
+  minutes: 11
+  youtube: iiXElj1DLBo
+  blender: "4.5"
+  cost: free
+  checked: 2026-10-15
+
+- id: ryan-king-camera
+  title: How to Use the Camera in Blender
+  teacher: Ryan King Art
+  url: https://www.youtube.com/watch?v=aY04h4ujrlY
+  kind: video
+  minutes: 17
+  youtube: aY04h4ujrlY
+  blender: "3.0"
+  cost: free
+  checked: 2026-10-15
+
+- id: ryan-king-depth-of-field
+  title: How to Use Depth of Field in Blender
+  teacher: Ryan King Art
+  url: https://www.youtube.com/watch?v=ahT3P274EMw
+  kind: video
+  minutes: 3
+  youtube: ahT3P274EMw
+  blender: "3.1"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-render-cameras
+  title: Cameras
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/render/cameras.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-editors-3dview-navigate-camera-view
+  title: Camera View
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/editors/3dview/navigate/camera_view.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+# 21. EEVEE and Cycles; render settings and output
+
+- id: blender-guru-donut-finale
+  title: The Basics of Lighting and Rendering in Blender (Donut Finale)
+  teacher: Blender Guru
+  url: https://www.youtube.com/watch?v=WobATxh3i-g
+  kind: video
+  minutes: 33
+  youtube: WobATxh3i-g
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-guru-eevee
+  title: "How to use Eevee: Full Blender Course"
+  teacher: Blender Guru
+  url: https://www.youtube.com/watch?v=-gW6vk_OuNQ
+  kind: video
+  minutes: 77
+  youtube: -gW6vk_OuNQ
+  blender: "4.4"
+  cost: free
+  checked: 2026-10-15
+
+- id: cg-boost-eevee-quality
+  title: "Eevee Render Quality: Small Settings, Huge Difference"
+  teacher: CG Boost
+  url: https://www.youtube.com/watch?v=RsCNKHSRk_s
+  kind: video
+  minutes: 12
+  youtube: RsCNKHSRk_s
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-guru-render-faster
+  title: 10 Easy Ways to Render Faster in Blender
+  teacher: Blender Guru
+  url: https://www.youtube.com/watch?v=kIW648Cfo18
+  kind: video
+  minutes: 9
+  youtube: kIW648Cfo18
+  blender: "4.4"
+  cost: free
+  checked: 2026-10-15
+
+- id: ryan-king-render-video
+  title: How to Render Your 3D Animation to a Video File
+  teacher: Ryan King Art
+  url: https://www.youtube.com/watch?v=OENbinegV2c
+  kind: video
+  minutes: 7
+  youtube: OENbinegV2c
+  blender: "3.5"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-render-introduction
+  title: "Rendering: Introduction"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/render/introduction.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-render-eevee
+  title: EEVEE
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/render/eevee/index.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-render-eevee-render-settings
+  title: EEVEE Render Settings
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/render/eevee/render_settings/index.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-render-cycles
+  title: Cycles
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/render/cycles/index.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-render-cycles-render-settings-sampling
+  title: Cycles Sampling
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/render/cycles/render_settings/sampling.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-render-output-properties-format
+  title: "Output Properties: Format"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/render/output/properties/format.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-render-output-properties-output
+  title: "Output Properties: Output"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/render/output/properties/output.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-render-color-management
+  title: Color Management
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/render/color_management/index.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+# Also for this topic, listed above: cgcookie-cameras-rendering.
+
+# 22. Compositing
+
+- id: grant-abbitt-compositing
+  title: Blender 5 Compositing for Beginners
+  teacher: Grant Abbitt
+  url: https://www.youtube.com/watch?v=4zoixL45nvI
+  kind: video
+  minutes: 10
+  youtube: 4zoixL45nvI
+  cost: free
+  checked: 2026-10-15
+
+- id: ryan-king-compositing-5
+  title: New Compositing Features in Blender 5.0
+  teacher: Ryan King Art
+  url: https://www.youtube.com/watch?v=vPF8Aj20Bqc
+  kind: video
+  minutes: 16
+  youtube: vPF8Aj20Bqc
+  cost: free
+  checked: 2026-10-15
+
+- id: ryan-king-compositing
+  title: Compositing for Beginners
+  teacher: Ryan King Art
+  url: https://www.youtube.com/watch?v=JgQvvd1jryw
+  kind: video
+  minutes: 38
+  youtube: JgQvvd1jryw
+  blender: "4.4"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-compositing-introduction
+  title: "Compositing: Introduction"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/compositing/introduction.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-editors-compositor
+  title: Compositor
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/editors/compositor.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-compositing-types-output-viewer
+  title: Viewer Node
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/compositing/types/output/viewer.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+# Also for this topic, listed above: grant-abbitt-lights-compositing.
+
+# 23. Keyframes, the Timeline, Dope Sheet and Graph Editor
+
+- id: cgcookie-keyframes
+  title: 3D Animation with Keyframes in Blender
+  teacher: CG Cookie
+  url: https://www.youtube.com/watch?v=xKv0mARhsMg
+  kind: video
+  minutes: 16
+  youtube: xKv0mARhsMg
+  blender: "4.5"
+  cost: free
+  checked: 2026-10-15
+
+- id: grant-abbitt-animation-keyframes
+  title: "Beginners Guide to Animation in Blender 4, Part 1: Keyframes"
+  teacher: Grant Abbitt
+  url: https://www.youtube.com/watch?v=5WOrfMz2Sqs
+  kind: video
+  minutes: 14
+  youtube: 5WOrfMz2Sqs
+  blender: "4.1"
+  cost: free
+  checked: 2026-10-15
+
+- id: ryan-king-graph-editor
+  title: How to Use the Graph Editor for Beginners
+  teacher: Ryan King Art
+  url: https://www.youtube.com/watch?v=sc64wS-gukU
+  kind: video
+  minutes: 18
+  youtube: sc64wS-gukU
+  blender: "4.4"
+  cost: free
+  checked: 2026-10-15
+
+- id: grant-abbitt-animation-graph-editor
+  title: "Beginners Guide to Animation in Blender 4, Part 2: Graph Editor"
+  teacher: Grant Abbitt
+  url: https://www.youtube.com/watch?v=geE8Sy97CQE
+  kind: video
+  minutes: 13
+  youtube: geE8Sy97CQE
+  blender: "4.1"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-keyframes
+  title: Keyframes
+  teacher: Blender Foundation
+  url: https://www.youtube.com/watch?v=SZJswvw9wEs
+  kind: video
+  minutes: 8
+  youtube: SZJswvw9wEs
+  blender: "2.80"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-timeline
+  title: Timeline
+  teacher: Blender Foundation
+  url: https://www.youtube.com/watch?v=o19U-yPGdyY
+  kind: video
+  minutes: 14
+  youtube: o19U-yPGdyY
+  blender: "2.80"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-dope-sheet
+  title: Dope Sheet
+  teacher: Blender Foundation
+  url: https://www.youtube.com/watch?v=LHdh8p37yM8
+  kind: video
+  minutes: 9
+  youtube: LHdh8p37yM8
+  blender: "2.80"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-graph-editor
+  title: Graph Editor
+  teacher: Blender Foundation
+  url: https://www.youtube.com/watch?v=zHlln3AzeMs
+  kind: video
+  minutes: 10
+  youtube: zHlln3AzeMs
+  blender: "2.80"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-animation-introduction
+  title: "Animation: Introduction"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/animation/introduction.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-animation-keyframes-introduction
+  title: "Keyframes: Introduction"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/animation/keyframes/introduction.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-animation-keyframes-editing
+  title: "Keyframes: Editing"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/animation/keyframes/editing.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-editors-timeline
+  title: Timeline
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/editors/timeline.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-editors-dope-sheet-introduction
+  title: "Dope Sheet: Introduction"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/editors/dope_sheet/introduction.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-editors-graph-editor-introduction
+  title: "Graph Editor: Introduction"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/editors/graph_editor/introduction.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-editors-graph-editor-fcurves-introduction
+  title: "F-Curves: Introduction"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/editors/graph_editor/fcurves/introduction.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+# 24. Constraints and drivers
+
+- id: ryan-king-object-constraints
+  title: Object Constraints for Beginners
+  teacher: Ryan King Art
+  url: https://www.youtube.com/watch?v=fQJK3thkh0k
+  kind: video
+  minutes: 50
+  youtube: fQJK3thkh0k
+  blender: "4.5"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-tracking-constraints
+  title: Tracking Constraints
+  teacher: Blender Foundation
+  url: https://www.youtube.com/watch?v=aGBOu-dNZ-w
+  kind: video
+  minutes: 6
+  youtube: aGBOu-dNZ-w
+  blender: "2.80"
+  cost: free
+  checked: 2026-10-15
+
+- id: royal-skies-drivers
+  title: "Blender: Drivers Explained (60 Seconds)"
+  teacher: Royal Skies
+  url: https://www.youtube.com/watch?v=85oospWTIQ8
+  kind: video
+  minutes: 1
+  youtube: 85oospWTIQ8
+  blender: "4.4"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-transform-constraints
+  title: Transform Constraints
+  teacher: Blender Foundation
+  url: https://www.youtube.com/watch?v=1_LcXcNnieQ
+  kind: video
+  minutes: 5
+  youtube: 1_LcXcNnieQ
+  blender: "2.80"
+  cost: free
+  checked: 2026-10-15
+
+- id: polyfjord-drivers
+  title: "Quick Tip: Working With Drivers in Blender"
+  teacher: Polyfjord
+  url: https://www.youtube.com/watch?v=CPEEjlRLKEU
+  kind: video
+  minutes: 4
+  youtube: CPEEjlRLKEU
+  blender: "3.3"
+  cost: free
+  checked: 2026-10-15
+
+- id: cg-essentials-drivers
+  title: Getting Started with Drivers in Blender for Beginners
+  teacher: The CG Essentials
+  url: https://www.youtube.com/watch?v=XfHC7mpYNbA
+  kind: video
+  minutes: 6
+  youtube: XfHC7mpYNbA
+  blender: "3.0"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-animation-constraints-introduction
+  title: "Constraints: Introduction"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/animation/constraints/introduction.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-animation-constraints-interface-stack
+  title: Constraint Stack
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/animation/constraints/interface/stack.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-animation-constraints-tracking-track-to
+  title: Track To Constraint
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/animation/constraints/tracking/track_to.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-animation-constraints-relationship-child-of
+  title: Child Of Constraint
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/animation/constraints/relationship/child_of.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-animation-drivers-introduction
+  title: "Drivers: Introduction"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/animation/drivers/introduction.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-animation-drivers-usage
+  title: "Drivers: Usage"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/animation/drivers/usage.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+# 25. Shape keys
+
+- id: ryan-king-shape-keys
+  title: Shape Keys for Beginners
+  teacher: Ryan King Art
+  url: https://www.youtube.com/watch?v=Kumk-reupso
+  kind: video
+  minutes: 27
+  youtube: Kumk-reupso
+  blender: "4.5"
+  cost: free
+  checked: 2026-10-15
+
+- id: royal-skies-shape-keys
+  title: "Blender: Shape-Keys Explained"
+  teacher: Royal Skies
+  url: https://www.youtube.com/watch?v=ZRLQ6PT5c5g
+  kind: video
+  minutes: 1
+  youtube: ZRLQ6PT5c5g
+  blender: "4.4"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-animation-shape-keys-introduction
+  title: "Shape Keys: Introduction"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/animation/shape_keys/introduction.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-animation-shape-keys-shape-keys-panel
+  title: Shape Keys Panel
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/animation/shape_keys/shape_keys_panel.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+# 26. Armatures, weight painting, IK and Rigify
+
+- id: joey-carlino-rigging
+  title: Rigging for Impatient People
+  teacher: Joey Carlino
+  url: https://www.youtube.com/watch?v=DDeB4tDVCGY
+  kind: video
+  minutes: 10
+  youtube: DDeB4tDVCGY
+  blender: "3.5"
+  cost: free
+  checked: 2026-10-15
+
+- id: grant-abbitt-rigify
+  title: Easy Rigging Using Rigify in Blender
+  teacher: Grant Abbitt
+  url: https://www.youtube.com/watch?v=RdTuAY23vzk
+  kind: video
+  minutes: 15
+  youtube: RdTuAY23vzk
+  blender: "4.5"
+  cost: free
+  checked: 2026-10-15
+
+- id: royal-skies-weight-paint
+  title: "Blender 4.0: Weight Paint Workflow (& Techniques)"
+  teacher: Royal Skies
+  url: https://www.youtube.com/watch?v=PLWv9yjVaoU
+  kind: video
+  minutes: 7
+  youtube: PLWv9yjVaoU
+  blender: "4.0"
+  cost: free
+  checked: 2026-10-15
+
+- id: grant-abbitt-bones-armatures
+  title: "Beginners Guide to Animation in Blender 4, Part 3: Bones & Armatures"
+  teacher: Grant Abbitt
+  url: https://www.youtube.com/watch?v=FOdLM1gYsAM
+  kind: video
+  minutes: 15
+  youtube: FOdLM1gYsAM
+  blender: "4.1"
+  cost: free
+  checked: 2026-10-15
+
+- id: grant-abbitt-character-rigging
+  title: "Character Rigging in Blender: Easy Setup for Beginners"
+  teacher: Grant Abbitt
+  url: https://www.youtube.com/watch?v=2nlMZx0vp6E
+  kind: video
+  minutes: 9
+  youtube: 2nlMZx0vp6E
+  blender: "4.1"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-inverse-kinematics
+  title: Inverse Kinematics
+  teacher: Blender Foundation
+  url: https://www.youtube.com/watch?v=S-2v_CKmVE8
+  kind: video
+  minutes: 10
+  youtube: S-2v_CKmVE8
+  blender: "2.80"
+  cost: free
+  checked: 2026-10-15
+
+- id: ryan-king-arm-ik
+  title: How to Setup Arm IK Rigging
+  teacher: Ryan King Art
+  url: https://www.youtube.com/watch?v=Rbl080ZfAgA
+  kind: video
+  minutes: 20
+  youtube: Rbl080ZfAgA
+  blender: "3.1"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-animation-armatures-introduction
+  title: "Armatures: Introduction"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/animation/armatures/introduction.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-animation-armatures-bones-introduction
+  title: "Bones: Introduction"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/animation/armatures/bones/introduction.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-animation-armatures-skinning-parenting
+  title: Armature Deform Parent
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/animation/armatures/skinning/parenting.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-sculpt-paint-weight-paint-introduction
+  title: "Weight Paint: Introduction"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/sculpt_paint/weight_paint/introduction.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-animation-armatures-posing-bone-constraints-inverse-kinematics-introduction
+  title: Inverse Kinematics
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/animation/armatures/posing/bone_constraints/inverse_kinematics/introduction.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-animation-constraints-tracking-ik-solver
+  title: Inverse Kinematics Constraint
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/animation/constraints/tracking/ik_solver.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-addons-rigify-introduction
+  title: "Rigify: Introduction"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/addons/rigify/introduction.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-addons-rigify-basics
+  title: "Rigify: Basic Usage"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/addons/rigify/basics.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+# 27. Walk cycles, actions and the NLA
+
+- id: cg-boost-walk-cycle
+  title: Walk Cycle Animation in Blender
+  teacher: CG Boost
+  url: https://www.youtube.com/watch?v=siNABirUDMQ
+  kind: video
+  minutes: 36
+  youtube: siNABirUDMQ
+  blender: "3.0"
+  cost: free
+  checked: 2026-10-15
+
+- id: joey-carlino-nla-layers
+  title: Make Your Animation 10x Better with Layers
+  teacher: Joey Carlino
+  url: https://www.youtube.com/watch?v=Vud9Ora9IwE
+  kind: video
+  minutes: 19
+  youtube: Vud9Ora9IwE
+  blender: "4.2"
+  cost: free
+  checked: 2026-10-15
+
+- id: southern-shotty-actions
+  title: Blender 4.4 New Actions Let You Mix Animations
+  teacher: SouthernShotty
+  url: https://www.youtube.com/watch?v=HCdynE4IL5c
+  kind: video
+  minutes: 17
+  youtube: HCdynE4IL5c
+  blender: "4.4"
+  cost: free
+  checked: 2026-10-15
+
+- id: pierrick-picaut-walk-cycle
+  title: Create a Walk Cycle Animation in Blender
+  teacher: Pierrick Picaut
+  url: https://www.youtube.com/watch?v=SLh3hUIxv1s
+  kind: video
+  minutes: 19
+  youtube: SLh3hUIxv1s
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-slotted-actions
+  title: Slotted Actions Demonstration
+  teacher: Blender Developers
+  url: https://www.youtube.com/watch?v=u1VftqTABK0
+  kind: video
+  minutes: 3
+  youtube: u1VftqTABK0
+  blender: "4.4"
+  cost: free
+  checked: 2026-10-15
+
+- id: imphenzia-walk-cycle
+  title: Simple Walk Cycle in Blender 2.81
+  teacher: Imphenzia
+  url: https://www.youtube.com/watch?v=B5h2HvkqXZ0
+  kind: video
+  minutes: 11
+  youtube: B5h2HvkqXZ0
+  blender: "2.81"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-animation-actions
+  title: Actions
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/animation/actions.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-editors-dope-sheet-modes-action
+  title: Action Editor
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/editors/dope_sheet/modes/action.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-editors-nla-introduction
+  title: "Nonlinear Animation: Introduction"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/editors/nla/introduction.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-editors-nla-tracks
+  title: NLA Tracks
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/editors/nla/tracks.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-editors-nla-strips
+  title: NLA Strips
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/editors/nla/strips.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-editors-graph-editor-fcurves-modifiers
+  title: F-Curve Modifiers (Cycles)
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/editors/graph_editor/fcurves/modifiers.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+# 28. Geometry nodes basics, scattering and instances
+
+- id: ryan-king-geometry-nodes
+  title: Geometry Nodes for Beginners
+  teacher: Ryan King Art
+  url: https://www.youtube.com/watch?v=188IeRY-ch0
+  kind: video
+  minutes: 90
+  youtube: 188IeRY-ch0
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-guru-donut-part-7
+  title: How to Scatter in Blender 5.0 (Donut Part 7)
+  teacher: Blender Guru
+  url: https://www.youtube.com/watch?v=_-QsGTL7pS0
+  kind: video
+  minutes: 37
+  youtube: _-QsGTL7pS0
+  cost: free
+  checked: 2026-10-15
+
+- id: joey-carlino-instances
+  title: "Instances: Geometry Nodes for Beginners"
+  teacher: Joey Carlino
+  url: https://www.youtube.com/watch?v=JvbppmT0ILY
+  kind: video
+  minutes: 43
+  youtube: JvbppmT0ILY
+  blender: "3.1"
+  cost: free
+  checked: 2026-10-15
+
+- id: joey-carlino-geometry-nodes-start
+  title: "Getting Started: Geometry Nodes for Beginners"
+  teacher: Joey Carlino
+  url: https://www.youtube.com/watch?v=szTYXk0t09A
+  kind: video
+  minutes: 19
+  youtube: szTYXk0t09A
+  blender: "3.1"
+  cost: free
+  checked: 2026-10-15
+
+- id: cg-essentials-scatter
+  title: How to Scatter Objects with Geometry Nodes
+  teacher: The CG Essentials
+  url: https://www.youtube.com/watch?v=iNU-1ORXw74
+  kind: video
+  minutes: 19
+  youtube: iNU-1ORXw74
+  blender: "3.4"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-modeling-geometry-nodes-introduction
+  title: "Geometry Nodes: Introduction"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/modeling/geometry_nodes/introduction.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-modeling-modifiers-geometry-nodes
+  title: Geometry Nodes Modifier
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/modeling/modifiers/geometry_nodes.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-modeling-geometry-nodes-inspection
+  title: "Geometry Nodes: Inspection"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/modeling/geometry_nodes/inspection.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-modeling-geometry-nodes-fields
+  title: Fields
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/modeling/geometry_nodes/fields.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-modeling-geometry-nodes-instances
+  title: Instances
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/modeling/geometry_nodes/instances.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-modeling-geometry-nodes-point-distribute-points-on-faces
+  title: Distribute Points on Faces Node
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/modeling/geometry_nodes/point/distribute_points_on_faces.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-modeling-geometry-nodes-instances-instance-on-points
+  title: Instance on Points Node
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/modeling/geometry_nodes/instances/instance_on_points.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+# 29. Physics: rigid body, cloth, soft body, particles, hair curves and fluids
+
+- id: ryan-king-rigid-body
+  title: Rigid Body Physics for Beginners
+  teacher: Ryan King Art
+  url: https://www.youtube.com/watch?v=lctjzasiy64
+  kind: video
+  minutes: 25
+  youtube: lctjzasiy64
+  blender: "2.93"
+  cost: free
+  checked: 2026-10-15
+
+- id: ryan-king-cloth
+  title: Cloth Physics for Beginners
+  teacher: Ryan King Art
+  url: https://www.youtube.com/watch?v=c5LOOoSHh9c
+  kind: video
+  minutes: 43
+  youtube: c5LOOoSHh9c
+  blender: "3.4"
+  cost: free
+  checked: 2026-10-15
+
+- id: ryan-king-particles
+  title: Particle Systems for Beginners
+  teacher: Ryan King Art
+  url: https://www.youtube.com/watch?v=Lj2EBG2_ooQ
+  kind: video
+  minutes: 52
+  youtube: Lj2EBG2_ooQ
+  blender: "4.3"
+  cost: free
+  checked: 2026-10-15
+
+- id: ryan-king-soft-body
+  title: Soft Body Physics for Beginners
+  teacher: Ryan King Art
+  url: https://www.youtube.com/watch?v=6Dtwhd1N0bY
+  kind: video
+  minutes: 34
+  youtube: 6Dtwhd1N0bY
+  blender: "3.5"
+  cost: free
+  checked: 2026-10-15
+
+- id: ryan-king-fluids
+  title: Fluid Simulations for Beginners
+  teacher: Ryan King Art
+  url: https://www.youtube.com/watch?v=A93O4COVPyw
+  kind: video
+  minutes: 54
+  youtube: A93O4COVPyw
+  blender: "3.5"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-hair-assets
+  title: "Introducing: Hair Assets in Blender 3.5"
+  teacher: Blender Foundation
+  url: https://www.youtube.com/watch?v=_-d0HaT5f1g
+  kind: video
+  minutes: 7
+  youtube: _-d0HaT5f1g
+  blender: "3.5"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-studio-procedural-fur
+  title: How to Make Procedural Fur in Blender Geometry Nodes
+  teacher: Blender Studio
+  url: https://www.youtube.com/watch?v=gCQN5vNgHiI
+  kind: video
+  minutes: 35
+  youtube: gCQN5vNgHiI
+  blender: "3.5"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-physics-introduction
+  title: "Physics: Introduction"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/physics/introduction.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-physics-rigid-body-introduction
+  title: "Rigid Body: Introduction"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/physics/rigid_body/introduction.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-physics-cloth-introduction
+  title: "Cloth: Introduction"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/physics/cloth/introduction.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-physics-soft-body-introduction
+  title: "Soft Body: Introduction"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/physics/soft_body/introduction.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-physics-particles-introduction
+  title: "Particle System: Introduction"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/physics/particles/introduction.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-physics-fluid-introduction
+  title: "Fluid: Introduction"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/physics/fluid/introduction.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-modeling-curves-new
+  title: "Curves (New): the hair curves object"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/modeling/curves_new/index.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-sculpt-paint-curves-sculpting-introduction
+  title: "Curves Sculpting: Introduction"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/sculpt_paint/curves_sculpting/introduction.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+# 30. Grease Pencil
+
+- id: grant-abbitt-grease-pencil
+  title: Draw on 3D Objects in Blender with Grease Pencil
+  teacher: Grant Abbitt
+  url: https://www.youtube.com/watch?v=wskCvU7_xtc
+  kind: video
+  minutes: 5
+  youtube: wskCvU7_xtc
+  blender: "4.5"
+  cost: free
+  checked: 2026-10-15
+
+- id: micah-buzan-grease-pencil
+  title: 2D Blender Grease Pencil Basics
+  teacher: Micah Buzan
+  url: https://www.youtube.com/watch?v=ZkqZRe9IXQ8
+  kind: video
+  minutes: 12
+  youtube: ZkqZRe9IXQ8
+  blender: "4.4"
+  cost: free
+  checked: 2026-10-15
+
+- id: janice-journal-grease-pencil
+  title: Learn Grease Pencil in 10 Minutes
+  teacher: Janice Journal
+  url: https://www.youtube.com/watch?v=6RveA8qlSsA
+  kind: video
+  minutes: 10
+  youtube: 6RveA8qlSsA
+  blender: "4.3"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-grease-pencil-introduction
+  title: "Grease Pencil: Introduction"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/grease_pencil/introduction.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-grease-pencil-structure
+  title: "Grease Pencil: Structure"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/grease_pencil/structure.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-grease-pencil-modes-draw-introduction
+  title: "Draw Mode: Introduction"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/grease_pencil/modes/draw/introduction.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-grease-pencil-modes-draw-tools-brush
+  title: Brush Tool
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/grease_pencil/modes/draw/tools/brush.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-grease-pencil-modes-draw-stroke-placement
+  title: Stroke Placement
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/grease_pencil/modes/draw/stroke_placement.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-grease-pencil-animation-introduction
+  title: "Grease Pencil Animation: Introduction"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/grease_pencil/animation/introduction.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+# 31. The Video Sequencer
+
+- id: ryan-king-video-editing
+  title: Video Editing Quick Start Guide for Absolute Beginners
+  teacher: Ryan King Art
+  url: https://www.youtube.com/watch?v=XKqdmHRGnjI
+  kind: video
+  minutes: 23
+  youtube: XKqdmHRGnjI
+  cost: free
+  checked: 2026-10-15
+
+- id: nick-gammon-vse-trimming
+  title: "Blender 5.0 VSE: Trimming and Moving Clips"
+  teacher: Nick Gammon
+  url: https://www.youtube.com/watch?v=idwvVfNQs0Y
+  kind: video
+  minutes: 8
+  youtube: idwvVfNQs0Y
+  cost: free
+  checked: 2026-10-15
+
+- id: explainingcomputers-video-editing
+  title: "Blender Video Editing: Learn Workflow, Transitions, Modifiers & More"
+  teacher: ExplainingComputers
+  url: https://www.youtube.com/watch?v=99ZdOuJMrao
+  kind: video
+  minutes: 29
+  youtube: 99ZdOuJMrao
+  blender: "4.5"
+  cost: free
+  checked: 2026-10-15
+
+- id: ryan-king-video-editing-part-1
+  title: "Video Editing with Blender for Complete Beginners, Part 1"
+  teacher: Ryan King Art
+  url: https://www.youtube.com/watch?v=yh7YPabqeDk
+  kind: video
+  minutes: 31
+  youtube: yh7YPabqeDk
+  blender: "3.6"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-video-editing
+  title: Video Editing
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/video_editing/index.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-editors-video-sequencer-introduction
+  title: "Video Sequencer: Introduction"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/editors/video_sequencer/introduction.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-video-editing-setup
+  title: Setting Your Project
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/video_editing/setup/index.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-video-editing-edit-montage
+  title: Montage
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/video_editing/edit/montage/index.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-video-editing-edit-montage-strips
+  title: Strips
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/video_editing/edit/montage/strips/index.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+# 32. Asset browser, linking and appending
+
+- id: grant-abbitt-asset-browser
+  title: Mastering the Asset Browser in Blender 5.1
+  teacher: Grant Abbitt
+  url: https://www.youtube.com/watch?v=j1EhPPFrZgk
+  kind: video
+  minutes: 9
+  youtube: j1EhPPFrZgk
+  cost: free
+  checked: 2026-10-15
+
+- id: ryan-king-append
+  title: How to Append and Import Data in Blender
+  teacher: Ryan King Art
+  url: https://www.youtube.com/watch?v=soWVMlBe_ww
+  kind: video
+  minutes: 6
+  youtube: soWVMlBe_ww
+  blender: "3.1"
+  cost: free
+  checked: 2026-10-15
+
+- id: pierrick-picaut-linking
+  title: "Everything about Linking & Overrides in Blender"
+  teacher: Pierrick Picaut
+  url: https://www.youtube.com/watch?v=z-KH-zmV79I
+  kind: video
+  minutes: 10
+  youtube: z-KH-zmV79I
+  cost: free
+  checked: 2026-10-15
+
+- id: ryan-king-asset-import-methods
+  title: Import Methods for Asset Libraries in Blender 5.0
+  teacher: Ryan King Art
+  url: https://www.youtube.com/watch?v=1J5sdNPo5R8
+  kind: video
+  minutes: 4
+  youtube: 1J5sdNPo5R8
+  cost: free
+  checked: 2026-10-15
+
+- id: grant-abbitt-built-in-assets
+  title: Blender Just Got So Much Easier (New Built-In Assets)
+  teacher: Grant Abbitt
+  url: https://www.youtube.com/watch?v=An5ft5nXzmk
+  kind: video
+  minutes: 2
+  youtube: An5ft5nXzmk
+  cost: free
+  checked: 2026-10-15
+
+- id: grant-abbitt-asset-browser-3
+  title: "Asset Browser: Beginners Guide (Blender 3)"
+  teacher: Grant Abbitt
+  url: https://www.youtube.com/watch?v=01jcDvHpOmY
+  kind: video
+  minutes: 6
+  youtube: 01jcDvHpOmY
+  blender: "3.0"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-editors-asset-browser
+  title: Asset Browser
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/editors/asset_browser.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-files-asset-libraries-introduction
+  title: "Asset Libraries: Introduction"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/files/asset_libraries/introduction.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-files-asset-libraries-catalogs
+  title: Asset Catalogs
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/files/asset_libraries/catalogs.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-files-linked-libraries-link-append
+  title: "Link & Append"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/files/linked_libraries/link_append.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-files-linked-libraries-library-overrides
+  title: Library Overrides
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/files/linked_libraries/library_overrides.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+# 33. Add-ons and extensions, preferences
+
+- id: cg-essentials-extensions
+  title: The Blender Free Extension Store is Here
+  teacher: The CG Essentials
+  url: https://www.youtube.com/watch?v=3FkY7hXvte4
+  kind: video
+  minutes: 8
+  youtube: 3FkY7hXvte4
+  blender: "4.2"
+  cost: free
+  checked: 2026-10-15
+
+- id: cg-essentials-missing-addons
+  title: Blender 4.2 is Missing Add-ons? Where Did They Go?
+  teacher: The CG Essentials
+  url: https://www.youtube.com/watch?v=Yjr61lfPLs4
+  kind: video
+  minutes: 3
+  youtube: Yjr61lfPLs4
+  blender: "4.2"
+  cost: free
+  checked: 2026-10-15
+
+- id: skill-brew-preferences
+  title: Blender Preferences Explained
+  teacher: Skill Brew
+  url: https://www.youtube.com/watch?v=xcaHhUSScIc
+  kind: video
+  minutes: 16
+  youtube: xcaHhUSScIc
+  blender: "4.5"
+  cost: free
+  checked: 2026-10-15
+
+- id: tom-mcdonald-extensions
+  title: "How to Enable Add Ons & the Extensions Platform in Blender"
+  teacher: Tom mc donald
+  url: https://www.youtube.com/watch?v=PSzauPYseqM
+  kind: video
+  minutes: 4
+  youtube: PSzauPYseqM
+  blender: "4.4"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-editors-preferences-introduction
+  title: "Preferences: Introduction"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/editors/preferences/introduction.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-editors-preferences-extensions
+  title: "Preferences: Get Extensions"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/editors/preferences/extensions.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-editors-preferences-addons
+  title: "Preferences: Add-ons"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/editors/preferences/addons.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-editors-preferences-save-load
+  title: "Preferences: Save & Load"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/editors/preferences/save_load.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-getting-started-configuration-defaults
+  title: Defaults (startup file)
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/getting_started/configuration/defaults.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-extensions-about
+  title: About Blender Extensions
+  teacher: Blender Foundation
+  url: https://extensions.blender.org/about/
+  kind: web page
+  cost: free
+  checked: 2026-10-15
+
+# 34. Python scripting basics
+
+- id: shah-scripting-python
+  title: Getting Started with Scripting in Python
+  teacher: "Mike Shah, Blender Conference"
+  url: https://www.youtube.com/watch?v=wWTAQP7-ZUQ
+  kind: video
+  minutes: 49
+  youtube: wWTAQP7-ZUQ
+  blender: "3.6"
+  cost: free
+  checked: 2026-10-15
+
+- id: kenzocg-python-interface
+  title: "Blender Python Tutorial 1: Interface"
+  teacher: KenzoCG
+  url: https://www.youtube.com/watch?v=ZGU9VEst7hw
+  kind: video
+  minutes: 24
+  youtube: ZGU9VEst7hw
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-scripting-for-artists-addon
+  title: From Script to Add-on (Scripting for Artists 9)
+  teacher: Blender Foundation
+  url: https://www.youtube.com/watch?v=nKt6CtMH0no
+  kind: video
+  minutes: 10
+  youtube: nKt6CtMH0no
+  blender: "2.82"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-advanced-scripting-introduction
+  title: "Scripting & Extending Blender: Introduction"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/advanced/scripting/introduction.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-editors-text-editor
+  title: Text Editor
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/editors/text_editor.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-editors-python-console
+  title: Python Console
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/editors/python_console.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-editors-info-editor
+  title: Info Editor
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/editors/info_editor.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-advanced-scripting-addon-tutorial
+  title: Add-on Tutorial
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/advanced/scripting/addon_tutorial.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-python-api-quickstart
+  title: Python API Quickstart
+  teacher: Blender Python API
+  url: https://docs.blender.org/api/5.2/info_quickstart.html
+  kind: documentation
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-python-api-overview
+  title: Python API Overview
+  teacher: Blender Python API
+  url: https://docs.blender.org/api/5.2/info_overview.html
+  kind: documentation
+  cost: free
+  checked: 2026-10-15
+
+# 35. glTF export, LODs and collision, and importing into Godot 4
+
+- id: allard-blender-godot-pipeline
+  title: Setting Up Your Blender Godot Pipeline
+  teacher: "Marion Allard, GodotCon"
+  url: https://www.youtube.com/watch?v=5fDuf2IlizU
+  kind: video
+  minutes: 32
+  youtube: 5fDuf2IlizU
+  cost: free
+  checked: 2026-10-15
+
+- id: octodemy-godot-export
+  title: "Exporting 3D Models to Godot 4: glTF Settings"
+  teacher: Octodemy
+  url: https://www.youtube.com/watch?v=_eIAl_HZWXM
+  kind: video
+  minutes: 9
+  youtube: _eIAl_HZWXM
+  blender: "3.6"
+  cost: free
+  checked: 2026-10-15
+
+- id: gwizz-godot-lod
+  title: Godot 4 Automatic LOD Tutorial
+  teacher: Gwizz
+  url: https://www.youtube.com/watch?v=S8dMzNRd63E
+  kind: video
+  minutes: 2
+  youtube: S8dMzNRd63E
+  cost: free
+  checked: 2026-10-15
+
+- id: stayathomedev-godot-blender
+  title: "Godot 4 and Blender: Setup and Importing"
+  teacher: StayAtHomeDev
+  url: https://www.youtube.com/watch?v=6TsdmFvkw9w
+  kind: video
+  minutes: 11
+  youtube: 6TsdmFvkw9w
+  blender: "3.5"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-addons-scene-gltf2
+  title: glTF 2.0 (import and export)
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/addons/scene_gltf2.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-files-import-export
+  title: "Importing & Exporting Files"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/files/import_export/index.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: godot-docs-importing-3d-scenes
+  title: Importing 3D scenes
+  teacher: Godot Docs
+  url: https://docs.godotengine.org/en/stable/tutorials/assets_pipeline/importing_3d_scenes/index.html
+  kind: documentation
+  cost: free
+  checked: 2026-10-15
+
+- id: godot-docs-available-3d-formats
+  title: Available 3D formats
+  teacher: Godot Docs
+  url: https://docs.godotengine.org/en/stable/tutorials/assets_pipeline/importing_3d_scenes/available_formats.html
+  kind: documentation
+  cost: free
+  checked: 2026-10-15
+
+- id: godot-docs-model-export-considerations
+  title: Model export considerations
+  teacher: Godot Docs
+  url: https://docs.godotengine.org/en/stable/tutorials/assets_pipeline/importing_3d_scenes/model_export_considerations.html
+  kind: documentation
+  cost: free
+  checked: 2026-10-15
+
+- id: godot-docs-node-type-suffixes
+  title: Node type customization using name suffixes
+  teacher: Godot Docs
+  url: https://docs.godotengine.org/en/stable/tutorials/assets_pipeline/importing_3d_scenes/node_type_customization.html
+  kind: documentation
+  cost: free
+  checked: 2026-10-15
+
+- id: godot-docs-import-configuration
+  title: Import configuration
+  teacher: Godot Docs
+  url: https://docs.godotengine.org/en/stable/tutorials/assets_pipeline/importing_3d_scenes/import_configuration.html
+  kind: documentation
+  cost: free
+  checked: 2026-10-15
+
+- id: godot-docs-advanced-import-settings
+  title: Advanced Import Settings
+  teacher: Godot Docs
+  url: https://docs.godotengine.org/en/stable/tutorials/assets_pipeline/importing_3d_scenes/advanced_import_settings.html
+  kind: documentation
+  cost: free
+  checked: 2026-10-15
+
+- id: godot-docs-mesh-lod
+  title: Mesh level of detail (LOD)
+  teacher: Godot Docs
+  url: https://docs.godotengine.org/en/stable/tutorials/3d/mesh_lod.html
+  kind: documentation
+  cost: free
+  checked: 2026-10-15
+
+- id: godot-docs-visibility-ranges
+  title: Visibility ranges (HLOD)
+  teacher: Godot Docs
+  url: https://docs.godotengine.org/en/stable/tutorials/3d/visibility_ranges.html
+  kind: documentation
+  cost: free
+  checked: 2026-10-15
+
+# Also for this topic, listed above: blender-manual-scene-layout-object-editing-apply.

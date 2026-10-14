@@ -1,0 +1,162 @@
+# Example models for copy exercises. Every model is CC0, by Kenney (kenney.nl), checked 2026-10-15.
+# Files are in desktop/public/reference/models/, with each pack's licence text in LICENSES/.
+
+- id: kenney-platformer-crate
+  title: Crate
+  author: Kenney
+  source: Platformer Kit, kenney.nl
+  url: "https://kenney.nl/assets/platformer-kit"
+  licence: CC0 1.0
+  licenceUrl: "https://creativecommons.org/publicdomain/zero/1.0/"
+  file: kenney-platformer-crate.glb
+  alt: "A closed wooden crate shaped like a cube. Each face has a thick frame round the edge and one diagonal plank across the middle, all in orange-brown wood."
+
+- id: kenney-pirate-crate
+  title: Open crate
+  author: Kenney
+  source: Pirate Kit, kenney.nl
+  url: "https://kenney.nl/assets/pirate-kit"
+  licence: CC0 1.0
+  licenceUrl: "https://creativecommons.org/publicdomain/zero/1.0/"
+  file: kenney-pirate-crate.glb
+  alt: "A shallow open-topped crate of dark brown planks, with a square post standing up at each corner."
+
+- id: kenney-pirate-barrel
+  title: Barrel
+  author: Kenney
+  source: Pirate Kit, kenney.nl
+  url: "https://kenney.nl/assets/pirate-kit"
+  licence: CC0 1.0
+  licenceUrl: "https://creativecommons.org/publicdomain/zero/1.0/"
+  file: kenney-pirate-barrel.glb
+  alt: "A wooden barrel with two grey metal hoops, slightly wider in the middle, with a sunken lid on top."
+
+- id: kenney-dungeon-sword
+  title: Sword
+  author: Kenney
+  source: Mini Dungeon, kenney.nl
+  url: "https://kenney.nl/assets/mini-dungeon"
+  licence: CC0 1.0
+  licenceUrl: "https://creativecommons.org/publicdomain/zero/1.0/"
+  file: kenney-dungeon-sword.glb
+  alt: "A short sword with a straight grey blade that ends in a point, a wide dark grey crossguard and a short brown handle."
+
+- id: kenney-pirate-chest
+  title: Treasure chest
+  author: Kenney
+  source: Pirate Kit, kenney.nl
+  url: "https://kenney.nl/assets/pirate-kit"
+  licence: CC0 1.0
+  licenceUrl: "https://creativecommons.org/publicdomain/zero/1.0/"
+  file: kenney-pirate-chest.glb
+  alt: "A wooden chest with a rounded lid, a thick grey metal band wrapped over each end, and a small square grey lock on the front."
+
+- id: kenney-furniture-chair
+  title: Chair
+  author: Kenney
+  source: Furniture Kit, kenney.nl
+  url: "https://kenney.nl/assets/furniture-kit"
+  licence: CC0 1.0
+  licenceUrl: "https://creativecommons.org/publicdomain/zero/1.0/"
+  file: kenney-furniture-chair.glb
+  alt: "A plain light wooden chair with a square seat, four square legs joined by thin rails, and a tall back with two crossbars."
+
+- id: kenney-furniture-table
+  title: Table
+  author: Kenney
+  source: Furniture Kit, kenney.nl
+  url: "https://kenney.nl/assets/furniture-kit"
+  licence: CC0 1.0
+  licenceUrl: "https://creativecommons.org/publicdomain/zero/1.0/"
+  file: kenney-furniture-table.glb
+  alt: "A long light wooden table with a flat rectangular top on four square legs, joined low down by thin rails."
+
+- id: kenney-dungeon-potion
+  title: Potion
+  author: Kenney
+  source: Mini Dungeon, kenney.nl
+  url: "https://kenney.nl/assets/mini-dungeon"
+  licence: CC0 1.0
+  licenceUrl: "https://creativecommons.org/publicdomain/zero/1.0/"
+  file: kenney-dungeon-potion.glb
+  alt: "A round-bellied potion flask, red in the lower half and pale blue-grey glass above, with a grey ring at the neck and a brown cork."
+
+- id: kenney-survival-rock
+  title: Rock
+  author: Kenney
+  source: Survival Kit, kenney.nl
+  url: "https://kenney.nl/assets/survival-kit"
+  licence: CC0 1.0
+  licenceUrl: "https://creativecommons.org/publicdomain/zero/1.0/"
+  file: kenney-survival-rock.glb
+  alt: "A tall grey rock made of large flat faces, with two smaller rocks at its base and a few pebbles beside them."
+
+- id: kenney-nature-tree
+  title: Tree
+  author: Kenney
+  source: Nature Kit, kenney.nl
+  url: "https://kenney.nl/assets/nature-kit"
+  licence: CC0 1.0
+  licenceUrl: "https://creativecommons.org/publicdomain/zero/1.0/"
+  file: kenney-nature-tree.glb
+  alt: "A simple tree with a thin light brown trunk, two stubby side branches, and a tall rounded canopy of flat teal-green faces."
+
+- id: kenney-survival-pine
+  title: Pine tree
+  author: Kenney
+  source: Survival Kit, kenney.nl
+  url: "https://kenney.nl/assets/survival-kit"
+  licence: CC0 1.0
+  licenceUrl: "https://creativecommons.org/publicdomain/zero/1.0/"
+  file: kenney-survival-pine.glb
+  alt: "A tall pine tree of stacked green tiers that narrow to a point, on a short brown trunk."
+
+- id: kenney-suburban-house
+  title: Small house
+  author: Kenney
+  source: City Kit (Suburban), kenney.nl
+  url: "https://kenney.nl/assets/city-kit-suburban"
+  licence: CC0 1.0
+  licenceUrl: "https://creativecommons.org/publicdomain/zero/1.0/"
+  file: kenney-suburban-house.glb
+  alt: "A single-storey house with white walls, a green gabled roof, a dark front door between two blue windows, and a dark grey base."
+
+- id: kenney-town-wall
+  title: Timber wall section
+  author: Kenney
+  source: Fantasy Town Kit, kenney.nl
+  url: "https://kenney.nl/assets/fantasy-town-kit"
+  licence: CC0 1.0
+  licenceUrl: "https://creativecommons.org/publicdomain/zero/1.0/"
+  file: kenney-town-wall.glb
+  alt: "A flat wall section of dark brown wood between two square posts, braced by two lighter planks that cross in an X."
+
+- id: kenney-survival-floor
+  title: Plank floor tile
+  author: Kenney
+  source: Survival Kit, kenney.nl
+  url: "https://kenney.nl/assets/survival-kit"
+  licence: CC0 1.0
+  licenceUrl: "https://creativecommons.org/publicdomain/zero/1.0/"
+  file: kenney-survival-floor.glb
+  alt: "A square floor tile made of orange-brown wooden planks laid side by side, with narrow gaps between them."
+
+- id: kenney-mini-character
+  title: Character
+  author: Kenney
+  source: Mini Characters, kenney.nl
+  url: "https://kenney.nl/assets/mini-characters"
+  licence: CC0 1.0
+  licenceUrl: "https://creativecommons.org/publicdomain/zero/1.0/"
+  file: kenney-mini-character.glb
+  alt: "A small blocky man with a large square head, ginger hair and a smile, in a black suit with a white shirt and red tie, standing with his arms held out to the sides."
+
+- id: kenney-car-sedan
+  title: Car
+  author: Kenney
+  source: Car Kit, kenney.nl
+  url: "https://kenney.nl/assets/car-kit"
+  licence: CC0 1.0
+  licenceUrl: "https://creativecommons.org/publicdomain/zero/1.0/"
+  file: kenney-car-sedan.glb
+  alt: "A red four-door car with pale blue windows, yellow headlights, a dark grey lower body and bumpers, and four dark wheels."
