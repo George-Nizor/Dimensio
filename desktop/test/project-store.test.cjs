@@ -320,3 +320,28 @@ test("fix 4: one Forge3D at a time; a second launch focuses the window and opens
   assert.equal(projectFromArgv(["--allow-file-access-from-files", "--original-process-start-time=1", file]), file);
   assert.equal(projectFromArgv(["--flag", path.join(root, "Gone.forge3d")]), null);
 });
+
+test("fix 5: Run checks the agent before it makes a run folder", () => {
+  const handler = main.slice(main.indexOf('handle("forge3d:start-run"'), main.indexOf('handle("forge3d:continue-run"'));
+  assert.ok(handler.indexOf("await ensureAgentReady()") > 0, "the agent is checked");
+  assert.ok(handler.indexOf("await ensureAgentReady()") < handler.indexOf("store().create("), "before the run folder exists");
+  assert.match(body("ensureAgentReady"), /driver\.prepare\(agentContext\(\)\)/);
+});
+
+test("fix 5: on opening a project, a run that never started fails with a reason and a live one is interrupted", async (t) => {
+  const { NEVER_STARTED } = require("../src/lib/run-store.cjs");
+  const root = temporaryDirectory(t);
+  const store = new RunStore(path.join(root, "runs"));
+  const stale = await store.create({ prompt: "A lantern" });
+  const live = await store.create({ prompt: "A crate" });
+  store.setStatus(live.run_id, "running");
+  const done = await store.create({ prompt: "A barrel" });
+  store.setStatus(done.run_id, "completed");
+  const recovered = Object.fromEntries(store.recoverInterrupted().map((run) => [run.run_id, run]));
+  assert.equal(recovered[stale.run_id].status, "failed");
+  assert.equal(recovered[stale.run_id].failure, NEVER_STARTED);
+  assert.match(NEVER_STARTED, /never started/);
+  assert.equal(recovered[live.run_id].status, "interrupted");
+  assert.equal(recovered[done.run_id], undefined);
+  assert.equal(store.find(done.run_id).manifest.status, "completed");
+});

@@ -9,6 +9,7 @@ const { assertLeafName, assertRegularFile, assertSafeRunId, resolveContained } =
 const SCHEMA_VERSION = 2;
 const READABLE_SCHEMAS = new Set([1, 2]);
 const ACTIVE_STATUSES = new Set(["launching", "running", "cancelling"]);
+const NEVER_STARTED = "This run never started: Forge3D closed, or could not reach the agent, before it began. Run the prompt again.";
 
 function timestamp() {
   return new Date().toISOString();
@@ -281,11 +282,17 @@ class RunStore {
     });
   }
 
+  // On opening a project nothing of it is running, so a run caught mid-job becomes interrupted (it can be resumed),
+  // and a run still "prepared" never started: it failed, and says why.
   recoverInterrupted() {
     const recovered = [];
     for (const manifest of this.list()) {
-      if (manifest.archived || !ACTIVE_STATUSES.has(manifest.status)) continue;
-      this.setStatus(manifest.run_id, "interrupted", "Forge3D recovered this job after the desktop process stopped unexpectedly.");
+      if (manifest.archived) continue;
+      if (ACTIVE_STATUSES.has(manifest.status)) {
+        this.setStatus(manifest.run_id, "interrupted", "Forge3D recovered this job after the desktop process stopped unexpectedly.");
+      } else if (manifest.status === "prepared") {
+        this.setStatus(manifest.run_id, "failed", NEVER_STARTED);
+      } else continue;
       recovered.push(this.refreshArtifacts(manifest.run_id));
     }
     return recovered;
@@ -340,4 +347,4 @@ function agentSession(manifest) {
   return { id: null, sessionId: null };
 }
 
-module.exports = { READABLE_SCHEMAS, RunStore, agentSession, atomicWriteJson, renameWithRetry, validateManifest };
+module.exports = { NEVER_STARTED, READABLE_SCHEMAS, RunStore, agentSession, atomicWriteJson, renameWithRetry, validateManifest };

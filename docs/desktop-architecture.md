@@ -180,8 +180,9 @@ writes a fresh versioned folder under the run's `exports/` and succeeds only whe
 
 ## Recovery and file actions
 
-`run.json` is written atomically. On startup, launching, running, and cancelling states recover as
-interrupted. Duplicate copies the prompt and declared attachments into a new run. Archive moves a run
+`run.json` is written atomically. On opening a project, launching, running, and cancelling states
+recover as interrupted, and a run still `prepared` (it never started) becomes failed with that reason.
+Run checks the agent before it makes a run folder, and stays off until the setup check has answered. Duplicate copies the prompt and declared attachments into a new run. Archive moves a run
 into the hidden archive below the run root. Trash uses the Windows Recycle Bin.
 
 Every action remains run-scoped. Arbitrary filesystem moves are outside the desktop contract.

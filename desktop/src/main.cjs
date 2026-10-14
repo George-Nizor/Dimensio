@@ -859,8 +859,12 @@ function registerIpc() {
     return result.canceled ? [] : result.filePaths.slice(0, 12);
   });
 
+  // The agent is checked (installed, signed in, started) before the run folder is made, so a missing agent leaves
+  // no run behind that never started.
   handle("forge3d:start-run", async (payload = {}) => {
     store();
+    if (activeJob) throw new Error("Forge3D already has an active job");
+    await ensureAgentReady();
     const manifest = await store().create(payload);
     return beginRun(manifest, payload);
   });
