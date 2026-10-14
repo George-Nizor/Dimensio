@@ -1,0 +1,32 @@
+# Practice for lesson 51. The item marked main is the lesson's exercise.
+
+- id: brick-wall-maps
+  main: true
+  title: A brick wall from three maps
+  kind: drill
+  minutes: 15
+  text: "Open the exercise in Blender. The wall's material is empty, and the file holds three brick images from ambientCG: a colour map, a roughness map and a normal map. Connect all three to the Principled BSDF with the right colour spaces, then orbit the wall in Material Preview."
+  steps: [Add an Image Texture, Set the colour space, Link roughness and normals, Use Closest for pixel art, Pack the images]
+  starter: { id: textured-wall, colorMap: 051-image-textures/bricks059-color.jpg, roughnessMap: 051-image-textures/bricks059-roughness.jpg, normalMap: 051-image-textures/bricks059-normal-gl.jpg }
+  timer: { minutes: 15 }
+  reference: { images: [051-image-textures/bricks059-color.jpg, 051-image-textures/bricks059-roughness.jpg, 051-image-textures/bricks059-normal-gl.jpg] }
+
+- id: closest-pixels
+  title: Sharp pixels
+  kind: warm-up
+  minutes: 5
+  text: "Add a plane and give it a material with an Image Texture linked to Base Color. Click New and make a 16 by 16 image with Generated Type set to Color Grid. Look at it in Material Preview with Interpolation on Linear, then on Closest."
+  timer: { minutes: 5 }
+  check:
+    - With Linear, the colours blur into each other.
+    - With Closest, every pixel is a sharp square.
+
+- id: your-own-texture-set
+  title: A texture set of your own
+  kind: drill
+  minutes: 15
+  text: "Download a 1K texture set from ambientCG or Poly Haven. Put its colour, roughness and normal maps on the default cube, which has a UV map already. Then choose File > External Data > Pack Resources and save the file."
+  timer: { minutes: 15 }
+  check:
+    - The roughness and normal maps are set to Non-Color.
+    - Each image shows a small packed icon beside its file path.

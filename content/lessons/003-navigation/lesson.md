@@ -3,7 +3,7 @@ needs: [interface]
 exercise: find-the-letters
 watch: [cgcookie-navigation, blender-viewport-navigation]
 sources:
-  - Blender 5.2 Manual, "Navigation": Orbit, Pan, Zoom, Frame All and Frame Selected (https://docs.blender.org/manual/en/5.2/editors/3dview/navigate/navigation.html), read 2026-10-15
+  - "Blender 5.2 Manual, \"Navigation\": Orbit, Pan, Zoom, Frame All and Frame Selected (https://docs.blender.org/manual/en/5.2/editors/3dview/navigate/navigation.html), read 2026-10-15"
   - Blender 5.2 Manual, "Viewpoint" (https://docs.blender.org/manual/en/5.2/editors/3dview/navigate/viewpoint.html), read 2026-10-15
   - Blender 5.2 Manual, "Perspective/Orthographic" (https://docs.blender.org/manual/en/5.2/editors/3dview/navigate/projections.html), read 2026-10-15
   - Blender 5.2 Manual, "Navigating", Navigation Gizmo (https://docs.blender.org/manual/en/5.2/editors/3dview/navigate/introduction.html), read 2026-10-15

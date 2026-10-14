@@ -1,0 +1,35 @@
+# Practice for lesson 57. The item marked main is the lesson's exercise.
+
+- id: palette-barrel
+  main: true
+  title: A barrel from a palette
+  kind: drill
+  minutes: 20
+  text: "Open the exercise in Blender. The file holds a grey barrel and an image called palette. Make one material that uses the palette with Closest interpolation, then colour the staves, the metal bands and the ends by moving their UVs onto swatches."
+  steps: [Set up one material, Select faces of one colour, Shrink them to a point, Move them onto a swatch]
+  starter: palette-barrel
+  timer: { minutes: 20 }
+  reference: { diagram: example }
+  measure:
+    - { metric: materials, equals: 1, label: "One material on the barrel" }
+    - { metric: uvLayers, min: 1, label: "A UV map on the barrel" }
+
+- id: recolour-quickly
+  title: Change a colour
+  kind: warm-up
+  minutes: 5
+  text: "In the finished barrel, select the bands, then in the UV Editor move their point to a different swatch. Then try the staves on three different wood colours and keep the one you like best."
+  timer: { minutes: 5 }
+  check:
+    - The bands changed colour without a new material.
+    - The barrel still has one material.
+
+- id: palette-crate
+  title: Your crate on the palette
+  kind: drill
+  minutes: 15
+  text: "Save the palette from the exercise file with Image > Save As in the Image Editor. Open your crate from lesson 27, give it one material using that image with Closest, and colour its planks and frame from the swatches."
+  timer: { minutes: 15 }
+  check:
+    - The crate has one material.
+    - Planks and frame each show one flat colour.

@@ -1,0 +1,35 @@
+# Practice for lesson 55. The item marked main is the lesson's exercise.
+
+- id: unwrap-three-props
+  main: true
+  title: Unwrap three props
+  kind: drill
+  minutes: 20
+  text: "Open the exercise in Blender. A crate, a barrel and a rock share a grid material but have no UV maps, so the grid shows as one colour. Mark seams on the crate and the barrel and unwrap them, unwrap the rock with Smart UV Project, then check the grid on all three."
+  steps: [Mark seams, Choose where they go, Unwrap, Use Smart UV Project]
+  starter: unwrap-props
+  timer: { minutes: 20 }
+  reference: { diagram: where }
+  measure:
+    - { metric: uvLayers, min: 1, label: "A UV map on every prop" }
+
+- id: seams-two-ways
+  title: The same crate two ways
+  kind: drill
+  minutes: 10
+  text: "Open the exercise again. Mark the crate's seams, unwrap it with Unwrap Angle Based and look at its UV map. Then select all, choose U > Cube Projection, and compare the two layouts in the UV Editor."
+  starter: unwrap-props
+  timer: { minutes: 10 }
+  check:
+    - With seams, the crate unwraps as one island.
+    - Cube Projection lays the six faces on top of each other.
+
+- id: unwrap-your-barrel
+  title: Unwrap your own barrel
+  kind: drill
+  minutes: 10
+  text: "Open your barrel from lesson 36. Mark a seam round each end and one down its back, unwrap it with Unwrap Angle Based and give it a UV Grid image to check the result."
+  timer: { minutes: 10 }
+  check:
+    - The side unwraps as one strip.
+    - The grid's squares look square on the side.

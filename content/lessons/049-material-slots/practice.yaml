@@ -1,0 +1,34 @@
+# Practice for lesson 49. The item marked main is the lesson's exercise.
+
+- id: house-three-slots
+  main: true
+  title: A house in three slots
+  kind: drill
+  minutes: 10
+  text: "Open the exercise in Blender. The house has no material yet. Give it three slots with three materials, for the walls, the roof and the door, and assign the roof's two faces and the door face to their slots. Then check each slot with Select."
+  steps: [Add a slot, Assign faces, Check with Select, Share them with other objects]
+  starter: house-block
+  timer: { minutes: 10 }
+  reference: { diagram: example }
+  measure:
+    - { metric: materials, equals: 3, label: "Three materials on the house" }
+
+- id: link-to-cubes
+  title: Link materials to cubes
+  kind: warm-up
+  minutes: 5
+  text: "Open the house you coloured in the main exercise and add two cubes beside it. Select both cubes, then the house last, and press Ctrl+L to choose Link Materials. Look at the cubes in Material Preview."
+  timer: { minutes: 5 }
+  check:
+    - Both cubes list the house's three slots.
+    - Every face of each cube shows the first slot's material.
+
+- id: two-tone-crate
+  title: A two-tone crate
+  kind: drill
+  minutes: 10
+  text: "Open your crate from lesson 27. Give it two slots, wood for the planks and a dark metal for the frame, and assign the frame's faces to the metal slot. Use Select on each slot to check you missed none."
+  timer: { minutes: 10 }
+  check:
+    - The crate has two slots.
+    - Select on the metal slot selects the whole frame and nothing else.

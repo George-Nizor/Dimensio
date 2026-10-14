@@ -1,0 +1,32 @@
+# Practice for lesson 58. The item marked main is the lesson's exercise.
+
+- id: paint-crate
+  main: true
+  title: Dirt and wear on your crate
+  kind: drill
+  minutes: 20
+  text: "Open your crate from lesson 27. If its UVs overlap, unwrap it with U > Smart UV Project. Add a Base Color image in Texture Paint mode. Paint darker dirt along the bottom and lighter wear on the edges and corners, then save the image as a PNG."
+  steps: [Open Texture Paint, Add an image to paint on, Pick a brush and a colour, Paint, Save the image]
+  timer: { minutes: 20 }
+  reference: { diagram: example }
+  measure:
+    - { metric: uvLayers, min: 1, label: "A UV map on the crate" }
+
+- id: brush-control
+  title: Size and strength
+  kind: warm-up
+  minutes: 5
+  text: "On any unwrapped model with a Base Color image, paint three strokes with Paint Soft: one small and faint, one large and faint, one large and strong. Set each with F and Shift+F before you paint it."
+  timer: { minutes: 5 }
+  check:
+    - The three strokes differ in size and strength as you meant.
+
+- id: paint-the-chest
+  title: Paint the chest
+  kind: drill
+  minutes: 20
+  text: "Open the chest you arranged in lesson 56. Add a Base Color image and paint the body as planks and the lid a darker wood, with Symmetry X on. Save the image as a PNG."
+  timer: { minutes: 20 }
+  check:
+    - Both sides of the chest got the same strokes.
+    - A PNG of the paint sits next to the .blend.

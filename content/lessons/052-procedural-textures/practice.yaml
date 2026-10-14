@@ -1,0 +1,33 @@
+# Practice for lesson 52. The item marked main is the lesson's exercise.
+
+- id: planks-and-stone
+  main: true
+  title: Planks and a stone floor
+  kind: drill
+  minutes: 15
+  text: "In a new General file, scale the cube into a plank 2 m by 0.2 m by 0.05 m and apply its scale. Add a 2 m plane for a floor. Give the plank a wood material made from a Wave Texture and the floor a stone material made from a Voronoi Texture. Use no images."
+  steps: [Add a pattern, Colour it with a Color Ramp, Size it with Mapping, Make wood grain, Make stone]
+  timer: { minutes: 15 }
+  reference: { diagram: example }
+  measure:
+    - { metric: materials, min: 1, label: "A material on each object" }
+
+- id: rust-patches
+  title: Rust patches
+  kind: drill
+  minutes: 10
+  text: "Give a cube a grey metal material with orange rust patches. Feed a Noise Texture's Factor into a Color Ramp with a grey stop and an orange stop close together, then into Base Color. Try Scale on the Noise Texture to change the size of the patches."
+  timer: { minutes: 10 }
+  check:
+    - The rust patches have hard edges.
+    - A higher Noise Scale gives smaller patches.
+
+- id: brick-wall
+  title: A brick wall without images
+  kind: drill
+  minutes: 10
+  text: "Make a wall from a plane standing up and give it a Brick Texture through Texture Coordinate's Object output. Pick two brick colours and a mortar colour on the node, then change Scale until the bricks look the size of real ones."
+  timer: { minutes: 10 }
+  check:
+    - Each row of bricks is offset by half a brick from the next.
+    - The mortar shows in its own colour.

@@ -1,0 +1,21 @@
+# Pictures for lessons 48 to 58. Files are in desktop/public/reference/<lesson folder>/.
+
+# Lesson 51, Image textures: ambientCG's Bricks 059, the 1K JPG set scaled to 512 by 512. The
+# textured-wall starter packs these three into the exercise file.
+- file: 051-image-textures/bricks059-color.jpg
+  credit: "ambientCG, Bricks 059, colour map"
+  alt: "A square of red brick wall seen straight on: rows of worn red bricks with pale grey mortar between them."
+  source: "https://ambientcg.com/a/Bricks059"
+  licence: CC0
+
+- file: 051-image-textures/bricks059-roughness.jpg
+  credit: "ambientCG, Bricks 059, roughness map"
+  alt: "The same bricks in greys: the bricks dark to mid grey and the mortar lines almost white, because the mortar is rougher."
+  source: "https://ambientcg.com/a/Bricks059"
+  licence: CC0
+
+- file: 051-image-textures/bricks059-normal-gl.jpg
+  credit: "ambientCG, Bricks 059, normal map (OpenGL)"
+  alt: "The same bricks in violet blue, with pink and pale blue edges where each brick's surface turns down towards the mortar."
+  source: "https://ambientcg.com/a/Bricks059"
+  licence: CC0

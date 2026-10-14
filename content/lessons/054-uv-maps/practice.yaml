@@ -1,0 +1,32 @@
+# Practice for lesson 54. The item marked main is the lesson's exercise.
+
+- id: read-three-uv-maps
+  main: true
+  title: Read three UV maps
+  kind: drill
+  minutes: 10
+  text: "Open the exercise in Blender. Three props wear a test grid through ready-made UV maps. For each one, find the faces where the grid's squares stretch. Select them to see where they lie in the UV map, and write down which faces they are."
+  steps: [Open UV Editing, Read the square, Select in either editor, Add a test grid, Find the stretching]
+  starter: uv-three-props
+  timer: { minutes: 10 }
+  reference: { diagram: stretch }
+
+- id: default-cube-uvs
+  title: The default cube's UV map
+  kind: warm-up
+  minutes: 5
+  text: "In a new General file, open the UV Editing workspace with the default cube selected. Click each face of the cube in the 3D Viewport and find where it lies in the UV Editor. Then make a UV Grid image and put it on the cube."
+  timer: { minutes: 5 }
+  check:
+    - You found all six faces in the UV map.
+    - The grid's squares are square on every face.
+
+- id: color-grid
+  title: The Color Grid image
+  kind: drill
+  minutes: 5
+  text: "Make a second test image with Generated Type set to Color Grid and put it on the default cube in place of the UV Grid. Its letters and numbers show which way each face's UVs turn. Find a face whose letters are upside down or mirrored."
+  timer: { minutes: 5 }
+  check:
+    - The cube shows letters and numbers on every face.
+    - You found the face, or saw that every face reads the right way.

@@ -1,0 +1,34 @@
+# Practice for lesson 48. The item marked main is the lesson's exercise.
+
+- id: six-materials
+  main: true
+  title: Six spheres, six materials
+  kind: drill
+  minutes: 15
+  text: "Open the exercise in Blender. Six spheres stand on a checked floor: Painted wood, Rough stone, Gold, Red plastic, Glowing crystal and Glass. Give each one a new material named after it, made with the Principled BSDF alone, and compare them in Material Preview."
+  steps: [Find the settings, Set colour and roughness, Make it metal, Make it glow, Make it see-through]
+  starter: material-spheres
+  timer: { minutes: 15 }
+  reference: { diagram: example }
+  measure:
+    - { metric: materials, min: 1, label: "A material on every sphere" }
+
+- id: roughness-row
+  title: A row of roughness
+  kind: warm-up
+  minutes: 5
+  text: "In a new General file, add a UV Sphere, shade it smooth and duplicate it into a row of five. Give each its own grey material with Roughness 0, 0.25, 0.5, 0.75 and 1, from left to right, and look at them in Material Preview."
+  timer: { minutes: 5 }
+  check:
+    - The highlight grows wider and softer from left to right.
+    - The last sphere shows no highlight at all.
+
+- id: three-metals
+  title: Copper, silver and iron
+  kind: drill
+  minutes: 10
+  text: "Make three metal materials on three spheres: copper with a reddish orange Base Color, silver with a light grey one and iron with a dark grey one. Set Metallic to 1 on all three, and give each a different Roughness so that the iron looks the dullest."
+  timer: { minutes: 10 }
+  check:
+    - All three materials have Metallic at 1.
+    - The iron has the highest Roughness of the three.

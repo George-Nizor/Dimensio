@@ -1,0 +1,39 @@
+# Practice for lesson 53. The item marked main is the lesson's exercise.
+
+- id: chest-copy
+  main: true
+  title: Copy Kenney's chest
+  kind: copy
+  minutes: 40
+  text: "Open the exercise in Blender and copy Kenney's treasure chest beside you. Make a hollow body and a separate rounded lid on a hinge, opened as far as Kenney's, with metal bands and a lock. Colour it with material slots and keep it under 500 triangles."
+  steps: [Model the body, Model the lid, Set the hinge, Add bands and a lock, Colour it with slots, Open it in Godot]
+  starter: copy-reference
+  timer: { minutes: 40 }
+  reference: { model: kenney-pirate-chest }
+  measure:
+    - { metric: tris, max: 500, label: "Under 500 triangles" }
+    - { metric: ngons, max: 0, label: "No n-gons" }
+    - { metric: nonManifoldEdges, max: 0, label: "No holes or loose edges" }
+    - { metric: scaleApplied, equals: true, label: "Scale applied" }
+    - { metric: materials, min: 2, label: "Two or more materials on each part" }
+    - { metric: outline, min: 0.75, label: "Outline close to Kenney's chest" }
+
+- id: hinge-only
+  title: A lid on a hinge
+  kind: drill
+  minutes: 10
+  text: "Make a box and a flat lid as two objects. Snap the 3D cursor to the box's top back edge and set the lid's origin there with Origin to 3D Cursor. Then turn the lid on X to open it."
+  timer: { minutes: 10 }
+  check:
+    - The lid opens around the back edge.
+    - The lid never cuts into the box as it turns.
+
+- id: chest-retest
+  title: The chest from memory
+  kind: retest
+  minutes: 30
+  text: "A few days after the lesson, model a treasure chest again from memory. Give it a body, a rounded lid on a hinge, bands, a lock and material slots. Then compare it with Kenney's chest."
+  timer: { minutes: 30 }
+  check:
+    - The lid opens on its hinge.
+    - The chest has under 500 triangles.

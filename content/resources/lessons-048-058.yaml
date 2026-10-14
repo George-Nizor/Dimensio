@@ -1,0 +1,14 @@
+# Resources added for lessons 48 to 58 (materials, UVs and painting). Format as in catalogue.yaml.
+# Each video was checked on 2026-10-15: oEmbed answered with the same title and channel, and the
+# watch page's description and chapter list cover the lesson's subject.
+
+- id: ryan-king-managing-materials
+  title: Understanding and Managing Materials in Blender
+  teacher: Ryan King Art
+  url: https://www.youtube.com/watch?v=cKl_USwNc8M
+  kind: video
+  minutes: 15
+  youtube: cKl_USwNc8M
+  blender: "3.2"
+  cost: free
+  checked: 2026-10-15

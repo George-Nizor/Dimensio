@@ -1,0 +1,35 @@
+# Practice for lesson 56. The item marked main is the lesson's exercise.
+
+- id: pack-chest-islands
+  main: true
+  title: Arrange the chest's islands
+  kind: drill
+  minutes: 15
+  text: "Open the exercise in Blender. The chest has a UV map, but its islands overlap, their sizes differ and the lid's strip bends. Straighten the strip, give every island the same density, and pack them all into the square with a margin."
+  steps: [Select an island, Straighten a bent strip, Even out the sizes, Pack the islands, Pin what should stay]
+  starter: chest-unwrapped
+  timer: { minutes: 15 }
+  reference: { diagram: example }
+  measure:
+    - { metric: uvLayers, min: 1, label: "A UV map on the chest" }
+
+- id: island-moves
+  title: Move, turn and scale islands
+  kind: warm-up
+  minutes: 5
+  text: "Open the chest exercise. Select islands one at a time with L and move each with G. Turn one by exactly 90 degrees with R and 90, and halve another with S and 0.5."
+  starter: chest-unwrapped
+  timer: { minutes: 5 }
+  check:
+    - You selected each island with L, not by dragging a box.
+    - One island turned exactly 90 degrees.
+
+- id: pin-and-pack
+  title: Pack round a pinned island
+  kind: drill
+  minutes: 5
+  text: "Open the chest you arranged in the main exercise. Move the body's side strip to the top of the square and pin it with P. Pack Islands again with Lock Pinned Islands on, and watch the other islands pack round it."
+  timer: { minutes: 5 }
+  check:
+    - The pinned strip stayed where you put it.
+    - The other islands packed round it without overlapping.

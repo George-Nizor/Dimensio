@@ -1,0 +1,33 @@
+# Practice for lesson 50. The item marked main is the lesson's exercise.
+
+- id: gradient-two-colours
+  main: true
+  title: A cube that fades
+  kind: drill
+  minutes: 15
+  text: "In a new General file, give the default cube a new material. In the Shading workspace, mix two colours with a Mix Color node and drive its Factor with a Gradient Texture, so the cube fades from left to right. Then add a Color Ramp between them and make the fade shorter."
+  steps: [Open the Shading workspace, Add a node, Connect and cut, Mix two colours, Drive it with a gradient, Mute and preview]
+  timer: { minutes: 15 }
+  reference: { diagram: example }
+  measure:
+    - { metric: materials, min: 1, label: "A material on the cube" }
+
+- id: node-handling
+  title: Add, link, cut and mute
+  kind: warm-up
+  minutes: 5
+  text: "In the Shader Editor, add a Noise Texture, a Color Ramp and a Mix Color node with Shift+A. Link them in a row and cut one link with Ctrl and a right drag. Mute the Color Ramp with M, then select all three and delete them with X."
+  timer: { minutes: 5 }
+  check:
+    - You cut a link with Ctrl and a right drag.
+    - The muted Color Ramp showed a red link through it.
+
+- id: three-colour-ramp
+  title: Three colours from one ramp
+  kind: drill
+  minutes: 10
+  text: "Give a cube a material that runs through three colours from left to right, like a sunset. Link a Gradient Texture's Factor to a Color Ramp and the Color Ramp's Color straight to Base Color. Click + on the Color Ramp to add a third stop and give each stop its own colour."
+  timer: { minutes: 10 }
+  check:
+    - The Color Ramp has three stops, each a different colour.
+    - The cube shows all three colours from left to right.
