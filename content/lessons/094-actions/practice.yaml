@@ -1,0 +1,22 @@
+# Practice for lesson 94. The item marked main is the lesson's exercise.
+
+- id: door-actions
+  main: true
+  title: Open and close as two actions
+  kind: drill
+  minutes: 15
+  text: "Open the exercise. Make two actions for the door: open, turning it from 0° to -100° over frames 1 to 24, and close, turning it back. Make close with New Action. Give close a Fake User, switch to open, then save, reopen and switch back."
+  steps: [Open the Action Editor, Animate the opening, Make a second action, Switch between them]
+  starter: hinged-door
+  timer: { minutes: 15 }
+  reference: { diagram: example }
+
+- id: third-action
+  title: A door left ajar
+  kind: drill
+  minutes: 5
+  text: "In your door file, make a third action, ajar, that opens the door to -20° over 12 frames and holds it there. Use New Action to start it. Save, reopen and look in the browse list."
+  timer: { minutes: 5 }
+  check:
+    - ajar, open and close are all in the browse list after reopening.
+    - ajar stops the door at -20°.

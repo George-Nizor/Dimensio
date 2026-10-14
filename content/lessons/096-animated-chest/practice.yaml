@@ -1,0 +1,21 @@
+# Practice for lesson 96. The item marked main is the lesson's exercise.
+
+- id: chest-in-godot
+  main: true
+  title: A chest that opens in Godot
+  kind: project
+  minutes: 30
+  text: "Open your chest from lesson 53. Give its lid two actions: open, which swings it up 100° over 12 frames, and close, which brings it down with a bounce. Export the chest as a .glb, open it in Godot and play both animations from its AnimationPlayer."
+  steps: [Check the hinge, Animate the opening, Animate the closing, Make it bounce, Export the chest, Play it in Godot]
+  timer: { minutes: 30 }
+  reference: { model: kenney-pirate-chest }
+
+- id: animated-chest-retest
+  title: The animated chest from memory
+  kind: retest
+  minutes: 30
+  text: "A few days after the lesson, start again from your chest model with no actions. Make open and close, export the chest and play both animations in Godot, without the lesson open."
+  timer: { minutes: 30 }
+  check:
+    - Both animations play in Godot under their own names.
+    - You finished without opening the lesson.

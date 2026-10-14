@@ -1,0 +1,25 @@
+# Practice for lesson 99. The item marked main is the lesson's exercise.
+
+- id: bind-character
+  main: true
+  title: Bind your character
+  kind: drill
+  minutes: 10
+  text: "Apply your character's transforms and bind it to its armature with automatic weights. In Pose Mode, turn each arm, each leg, the spine and the head about 45° and note any part that stretches or stays behind. Clear the pose with Alt+R before you save."
+  steps: [Apply the transforms, Parent with automatic weights, See what it made, Bend each limb]
+  timer: { minutes: 10 }
+  reference: { diagram: parent }
+  measure:
+    - { metric: scaleApplied, equals: true, label: "Scale is 1, 1, 1" }
+    - { metric: modifier, equals: ARMATURE, label: "An Armature modifier on the mesh" }
+
+- id: bind-blocky
+  title: Bind the blocky character
+  kind: drill
+  minutes: 10
+  text: "Open the exercise: the blocky character and its 15-bone armature, not yet bound. Bind them with automatic weights, then bend every limb in Pose Mode."
+  starter: { id: blocky-character, rig: armature }
+  timer: { minutes: 10 }
+  check:
+    - Each bone moves its own part of the mesh.
+    - The mesh has an Armature modifier and 15 vertex groups.

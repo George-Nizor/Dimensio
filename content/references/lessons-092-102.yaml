@@ -1,0 +1,16 @@
+# Reference pictures for lessons 92 to 102. Each is a render of a CC0 model, made with Blender 5.2.2
+# from desktop/public/reference/models/kenney-mini-character.glb in its rest pose: an orthographic
+# Workbench render with flat lighting and the model's own texture, framed to the model's height, on
+# a transparent background.
+
+- file: 097-character-modelling/kenney-character-front.png
+  credit: "Kenney, Mini Characters (character-male-d), rendered for Dimensio from the front"
+  alt: "A small blocky man from the front: a large square head with ginger hair and a smile, a black suit with a white shirt and red tie, arms held straight out to the sides and short legs."
+  source: "https://kenney.nl/assets/mini-characters"
+  licence: CC0
+
+- file: 097-character-modelling/kenney-character-side.png
+  credit: "Kenney, Mini Characters (character-male-d), rendered for Dimensio from the right side"
+  alt: "The same blocky man from his right side, facing left: the large head with hair over the back, an arm held out towards the viewer, and short legs."
+  source: "https://kenney.nl/assets/mini-characters"
+  licence: CC0

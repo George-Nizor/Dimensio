@@ -1,0 +1,22 @@
+# Practice for lesson 102. The item marked main is the lesson's exercise.
+
+- id: planted-feet
+  main: true
+  title: Feet that stay planted
+  kind: drill
+  minutes: 20
+  text: "Add IK to your character's legs. Clear each foot's parent and give each shin an IK constraint aimed at its foot, with Chain Length 2. Add a pole bone in front of each knee with Deform off. Then lower the hips 0.3 m: the feet should stay put and the knees bend forward."
+  steps: [Free the foot, Add the constraint, Set the chain length, Add a pole for the knee, Mirror and test]
+  timer: { minutes: 20 }
+  reference: { diagram: test }
+
+- id: ik-blocky
+  title: IK on the blocky character
+  kind: drill
+  minutes: 20
+  text: "Open the exercise: the blocky character, bound to its 15-bone armature. Set up IK on both legs with knee poles, then pose it sitting down on a low step, moving only the hips and feet."
+  starter: { id: blocky-character, rig: bound }
+  timer: { minutes: 20 }
+  check:
+    - The knees point forward in every pose you tried.
+    - Moving the hips never moves the feet.

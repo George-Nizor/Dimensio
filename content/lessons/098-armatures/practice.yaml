@@ -1,0 +1,22 @@
+# Practice for lesson 98. The item marked main is the lesson's exercise.
+
+- id: build-skeleton
+  main: true
+  title: A skeleton for your character
+  kind: drill
+  minutes: 20
+  text: "Open your character from lesson 97. Add one armature and build 15 bones inside the mesh. Make hips, spine, chest, neck and head, then upper arm, forearm, thigh, shin and foot on the left, named with .L. Parent the limbs with Keep Offset and symmetrize the right side."
+  steps: [Add an armature, Build the spine, Name the bones, Add the left limbs, Parent them, Mirror the other side]
+  timer: { minutes: 20 }
+  reference: { diagram: example }
+
+- id: skeleton-blocky
+  title: A skeleton for the blocky character
+  kind: drill
+  minutes: 20
+  text: "Open the exercise: a blocky character 1.8 m tall with loops at its joints. Build the same 15-bone skeleton inside it, with the joints at the loops, and symmetrize the right side."
+  starter: blocky-character
+  timer: { minutes: 20 }
+  check:
+    - The Outliner shows one armature with 15 bones.
+    - Each elbow and knee joint sits at the middle of its loops.

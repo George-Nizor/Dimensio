@@ -1,0 +1,32 @@
+# Practice for lesson 92. The item marked main is the lesson's exercise.
+
+- id: rolling-wheels
+  main: true
+  title: Wheels that roll
+  kind: drill
+  minutes: 15
+  text: "Open the exercise. The cart rolls 8 m along X between frames 1 and 96, and its wheels stay still. Give one wheel a driver on its Y rotation, var / 0.4, with var reading the cart's X location. Copy the driver to the other three wheels and play the animation in the front view."
+  steps: [Add a driver, Point it at the cart, Write the expression, Copy it to the other wheels, Play it]
+  starter: driver-cart
+  timer: { minutes: 15 }
+  reference: { diagram: rolling }
+
+- id: frame-driver
+  title: Turn with the frame number
+  kind: warm-up
+  minutes: 3
+  text: "In a new General file, click the cube's Z rotation field, type #frame / 10 and press Enter. Play the animation. Then right click the field, choose Edit Driver and change the expression to frame / 5."
+  timer: { minutes: 3 }
+  check:
+    - The cube turns as the animation plays, with no keyframes.
+    - After the change it turns twice as fast.
+
+- id: roll-back
+  title: Roll the cart back
+  kind: drill
+  minutes: 5
+  text: "Open your finished wheels file and make the cart roll backwards. At frame 1, set its X location to 8 and press I over the field. At frame 96, set it to 0 and press I. Leave every driver as it is and play."
+  timer: { minutes: 5 }
+  check:
+    - The wheels turn backwards without any change to their drivers.
+    - At frame 96 each wheel's Y rotation reads 0°.

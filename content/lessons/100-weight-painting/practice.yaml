@@ -1,0 +1,22 @@
+# Practice for lesson 100. The item marked main is the lesson's exercise.
+
+- id: fix-weights
+  main: true
+  title: Fix the shoulders and hips
+  kind: fix
+  minutes: 20
+  text: "Open the exercise. The upper arms pull the sides of the chest, the left thigh drags the whole pelvis, and a loop below the right hip has no weight. Lower the arms and lift each leg, then paint until every part bends cleanly. Finish with Normalize All and Limit Total."
+  steps: [Enter Weight Paint, Pick a bone, Paint the weights, Blur the borders, Clean up, Find unweighted vertices]
+  starter: { id: blocky-character, rig: bad }
+  timer: { minutes: 20 }
+  reference: { diagram: mistake }
+
+- id: paint-own-character
+  title: Paint your own character
+  kind: drill
+  minutes: 15
+  text: "Open your bound character from lesson 99. Lower both arms, bend each knee and turn the head. Paint wherever the mesh stretches, creases or stays behind, then clear the pose."
+  timer: { minutes: 15 }
+  check:
+    - Every pose you tried bends without a crease.
+    - With Zero Weights on All, nothing shows black.

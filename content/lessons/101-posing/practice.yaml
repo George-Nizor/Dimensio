@@ -1,0 +1,22 @@
+# Practice for lesson 101. The item marked main is the lesson's exercise.
+
+- id: three-poses
+  main: true
+  title: Wave, crouch and point
+  kind: drill
+  minutes: 15
+  text: "Pose your rigged character three ways: a wave, a crouch and pointing ahead. Save each one with Pose > Create Pose Asset in the current file. Paste the wave flipped onto the other arm. Then clear the pose and apply each one again from the asset shelf."
+  steps: [Enter Pose Mode, Rotate the bones, Clear a pose, Copy and flip, Save it as an asset]
+  timer: { minutes: 15 }
+  reference: { diagram: library }
+
+- id: pose-blocky
+  title: Pose the blocky character
+  kind: drill
+  minutes: 10
+  text: "Open the exercise: the blocky character, already bound to its armature. Pose it sitting on an invisible chair, then save the pose as an asset called sit."
+  starter: { id: blocky-character, rig: bound }
+  timer: { minutes: 10 }
+  check:
+    - The thighs point forward and the shins hang down.
+    - The asset shelf shows sit.

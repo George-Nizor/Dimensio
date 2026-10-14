@@ -1,0 +1,58 @@
+# Teachers' videos for lessons 92 to 102 (drivers to inverse kinematics) that are not in
+# catalogue.yaml. Each was opened on 2026-10-15: its page and description read, and its id, title,
+# channel and length checked through YouTube's oEmbed and watch page. blender is the release current
+# on the upload date when the video is older than 5.0.
+
+- id: cg-world-wheel-drivers
+  title: "Blender Drivers Tutorial: Synchronize Wheel Rotation with Car Motion"
+  teacher: CG-WORLD
+  url: https://www.youtube.com/watch?v=1N-0U58tpUY
+  kind: video
+  minutes: 6
+  youtube: 1N-0U58tpUY
+  blender: "3.2"
+  cost: free
+  checked: 2026-10-15
+
+- id: michael-jared-godot-animations
+  title: Importing Animations into Godot (the Best Way)
+  teacher: Michael Jared
+  url: https://www.youtube.com/watch?v=aCl3wdQvDng
+  kind: video
+  minutes: 6
+  youtube: aCl3wdQvDng
+  blender: "4.1"
+  cost: free
+  checked: 2026-10-15
+
+- id: joey-carlino-character-animation
+  title: Character Animation for Impatient People
+  teacher: Joey Carlino
+  url: https://www.youtube.com/watch?v=GAIZkIfXXjQ
+  kind: video
+  minutes: 13
+  youtube: GAIZkIfXXjQ
+  blender: "3.5"
+  cost: free
+  checked: 2026-10-15
+
+- id: woodplank-pose-library
+  title: "Pose Library Tutorial: How to Make Pose Assets"
+  teacher: Woodplank
+  url: https://www.youtube.com/watch?v=Kxe8QMnktXc
+  kind: video
+  minutes: 19
+  youtube: Kxe8QMnktXc
+  cost: free
+  checked: 2026-10-15
+
+- id: what-make-art-leg-ik
+  title: How to Rig a Leg with Inverse Kinematics in Blender
+  teacher: What Make Art
+  url: https://www.youtube.com/watch?v=PctSMB-RGsM
+  kind: video
+  minutes: 6
+  youtube: PctSMB-RGsM
+  blender: "4.4"
+  cost: free
+  checked: 2026-10-15

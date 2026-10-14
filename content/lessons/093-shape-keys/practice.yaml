@@ -1,0 +1,33 @@
+# Practice for lesson 93. The item marked main is the lesson's exercise.
+
+- id: squashing-sack
+  main: true
+  title: A sack that squashes
+  kind: drill
+  minutes: 15
+  text: "In a new file, add a UV Sphere with 12 segments and 6 rings. In Edit Mode, pull its top vertices in and up into a neck to make a sack. Add a Basis and a second shape key, squash, that is lower and wider. Insert keyframes on its Value: 0, 1 and 0 on frames 1, 6 and 12."
+  steps: [Add the Basis and a key, Shape the key, Blend with Value, Keyframe the Value]
+  timer: { minutes: 15 }
+  reference: { diagram: keys }
+  measure:
+    - { metric: scaleApplied, equals: true, label: "Scale is 1, 1, 1" }
+
+- id: bulging-lid
+  title: A lid that bulges
+  kind: drill
+  minutes: 10
+  text: "Open your chest from lesson 53. Give the lid a Basis and a second shape key, bulge, that pushes the middle of its top up by 5 cm, as if something inside were pushing. Insert keyframes on its Value, 0, 1 and 0 over 8 frames, and play it."
+  timer: { minutes: 10 }
+  check:
+    - At Value 1 the lid's top bulges and its edges stay put.
+    - At Value 0 the lid is as you modelled it.
+
+- id: two-keys
+  title: Two keys at once
+  kind: drill
+  minutes: 5
+  text: "Give your sack a third shape key, lean, with its neck tipped 20 cm to one side. Set squash to 1 and lean to 0.5, then try other mixes of the two Values."
+  timer: { minutes: 5 }
+  check:
+    - With both Values above 0, the sack squashes and leans at once.
+    - Setting both to 0 brings back the Basis.

@@ -1,0 +1,30 @@
+# Practice for lesson 97. The item marked main is the lesson's exercise.
+
+- id: model-character
+  main: true
+  title: Model a low-poly character
+  kind: copy
+  minutes: 60
+  text: "Open the exercise. Front and side pictures of Kenney's mini character stand behind the default cube, 1.8 m tall. Model the character from the cube with a Mirror modifier: body, legs, arms straight out, neck and head, with loops at each joint. Stand it at the origin, apply its scale and stay under 2,000 triangles."
+  steps: [Fit the cube to the torso, Mirror one half, Extrude the limbs, Add loops at the joints, Shape it from the side, Stand it at the origin]
+  starter: { id: reference-images, imageFront: 097-character-modelling/kenney-character-front.png, imageSide: 097-character-modelling/kenney-character-side.png, height: 1.8 }
+  timer: { minutes: 60 }
+  reference: { model: kenney-mini-character }
+  measure:
+    - { metric: tris, max: 2000, label: "Under 2,000 triangles" }
+    - { metric: ngons, max: 0, label: "No n-gons" }
+    - { metric: nonManifoldEdges, max: 0, label: "No holes or loose edges" }
+    - { metric: scaleApplied, equals: true, label: "Scale is 1, 1, 1" }
+    - { metric: height, min: 1.7, label: "At least 1.7 m tall" }
+    - { metric: height, max: 1.9, label: "At most 1.9 m tall" }
+
+- id: character-model-retest
+  title: The character from memory
+  kind: retest
+  minutes: 60
+  text: "A few days after the lesson, model the character again from the same pictures, without the lesson open. Then put your two versions side by side in Models."
+  starter: { id: reference-images, imageFront: 097-character-modelling/kenney-character-front.png, imageSide: 097-character-modelling/kenney-character-side.png, height: 1.8 }
+  timer: { minutes: 60 }
+  check:
+    - The halves meet down the middle with no gap.
+    - Every elbow and knee has its three loops.

@@ -1,0 +1,32 @@
+# Practice for lesson 95. The item marked main is the lesson's exercise.
+
+- id: open-wait-close
+  main: true
+  title: Open, wait and close
+  kind: drill
+  minutes: 15
+  text: "Open the exercise. The door has two actions: open, the active one, and close, kept in the stash. In the NLA editor, push down open. Then add close at frame 60 on the same track, so the door opens, waits and is shut again by frame 83."
+  steps: [Open the NLA editor, Push down open, Add close after it]
+  starter: { id: hinged-door, actions: true }
+  timer: { minutes: 15 }
+  reference: { diagram: example }
+
+- id: repeat-strip
+  title: Repeat a strip
+  kind: drill
+  minutes: 5
+  text: "In your finished door file, select the open strip and set Repeat to 3 in the Sidebar's Strip tab. Play the animation, then set Repeat back to 1."
+  timer: { minutes: 5 }
+  check:
+    - With Repeat at 3 the door opens three times before close.
+    - close moves along to start at frame 70.
+
+- id: slow-close
+  title: Close it slowly
+  kind: drill
+  minutes: 5
+  text: "In your door file, select the close strip and set its Playback Scale to 2 in the Sidebar's Strip tab. Play it and compare the two speeds."
+  timer: { minutes: 5 }
+  check:
+    - close now takes twice as long.
+    - Its strip in the NLA editor is twice as long as before.
