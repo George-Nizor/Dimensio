@@ -217,7 +217,7 @@ srv.listen(0, "127.0.0.1", async () => {
       { path: `${earlier}\\Earlier runs.dimensio`, name: "Earlier runs", folder: earlier, opened_at: iso(60 * 30), missing: false },
       { path: "D:\\Art\\Controller\\Controller.dimensio", name: "Controller", folder: "D:\\Art\\Controller", opened_at: iso(60 * 24 * 6), missing: true },
     ];
-    const project = ["start", "startempty"].includes(sc) ? null
+    const project = ["start", "startempty", "setuplink", "setuplinkclosed"].includes(sc) ? null
       : { id: "p1", name: sc === "untitled" ? "Untitled project" : "Medical pod", file: sc === "untitled" ? null : recent[0].path, folder: recent[0].folder, untitled: sc === "untitled", dirty: ["untitled", "filemenu"].includes(sc), settings: {}, view: {} };
     if (sc === "untitled") runs = [done];
     const projectState = () => ({ project, runs, recent: sc === "startempty" ? [] : recent, recoverable: sc === "start" ? [{ id: "20261009T221500Z-1a2b3c4d", modified_at: iso(60 * 14) }] : [], preferences: { reopenLast: false } });
@@ -234,6 +234,9 @@ srv.listen(0, "127.0.0.1", async () => {
   const sel = async (s) => { await page.click(s).catch(() => console.log("miss", s)); };
   const scenes = {
     start: async () => {}, startempty: async () => {}, untitled: async () => {},
+    // The course app's Settings opens workshop.html#setup: the setup card, with no project open.
+    setuplink: async () => {},
+    setuplinkclosed: async () => { await sel("[data-close-setup]"); },
     filemenu: async () => { await sel("#file-menu"); },
     first: async () => {}, checking: async () => {}, offline: async () => {}, plugin: async () => {}, done: async () => {},
     image: async () => { await sel('[data-tab="artifacts"]'); await sel('[data-artifact-path="renders/hero.png"]'); },
@@ -256,7 +259,7 @@ srv.listen(0, "127.0.0.1", async () => {
   const only = process.argv[2] ? process.argv[2].split(",") : Object.keys(scenes);
   for (const n of only) {
     if (!scenes[n]) { console.log("unknown scene", n); continue; }
-    await page.goto(`http://127.0.0.1:${port}/?s=${n}`);
+    await page.goto(`http://127.0.0.1:${port}/?s=${n}${n.startsWith("setuplink") ? "#setup" : ""}`);
     await page.waitForTimeout(900);
     await scenes[n]();
     await page.waitForTimeout(400);

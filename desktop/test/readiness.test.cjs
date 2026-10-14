@@ -243,4 +243,6 @@ test("the setup headline names the real problem", async () => {
   const splat = deriveReadiness({ capabilities: report(), settings: { workflow: "gaussian-splat" } });
   assert.equal(setupHeadline(splat).title, "Gaussian splat isn't ready");
   assert.equal(setupHeadline(deriveReadiness({ capabilities: report(), settings: {} }), { firstRun: true }).lead, "Describe a model in the prompt bar to start the first run.");
+  // Opened from the course app's Settings (workshop.html#setup) before any project is open.
+  assert.equal(setupHeadline(deriveReadiness({ capabilities: report(), settings: {} }), { firstRun: true, noProject: true }).lead, "Create or open a project, then describe a model in the prompt bar.");
 });

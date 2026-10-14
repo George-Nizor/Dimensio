@@ -16,7 +16,9 @@ Scenes: `first checking offline plugin done image model checks text logs running
 approval settings focus`, plus the readiness scenes `blocked signedout degraded ready capserror stopped blockedrun checkingcaps`
 (the mocked `capabilities()` answers with a report in the schema of `docs/capabilities.md`; `capserror` answers `{ ok: false }`).
 Project scenes: `start` (start screen with recent projects and unsaved work), `startempty`, `untitled` (an unsaved new
-project) and `filemenu` (the File menu open). Every other scene runs inside a saved project.
+project), `filemenu` (the File menu open), `setuplink` (the page opened as `workshop.html#setup`, as the course
+app's Settings links to it: the setup card with no project open) and `setuplinkclosed` (the same after Close).
+Every other scene runs inside a saved project.
 Both themes: `THEME=light P=light- npm run shots`. Pick some with `node test-tools/screenshots/harness.cjs first,model,failed`.
 
 Environment variables:

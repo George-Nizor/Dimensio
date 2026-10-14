@@ -8,7 +8,7 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { SparkRenderer, SplatMesh } from "@sparkjsdev/spark";
 import { filmstripArtifacts, selectedArtifactForRun } from "./preview-routing.mjs";
 import { normalizeRunSettings, readRunSettings, writeRunSettings } from "./preferences.mjs";
-import { displayFolder, fileMenuModel, projectTitle, shortcutCommand } from "./project-view.mjs";
+import { displayFolder, fileMenuModel, projectTitle, setupRequested, shortcutCommand, startScreenVisible } from "./project-view.mjs";
 import { summarizeRunSteps } from "./run-presentation.mjs";
 import { agentChoices, deriveReadiness, isImagePath, runGate, setupHeadline, splitFix, statusEntries, toolVersionsFromReport, formatElapsed, sentenceCase } from "./readiness.mjs";
 import { stageState } from "./stage-state.mjs";
@@ -548,7 +548,10 @@ function refreshReadiness() {
 
 function openSetup(open = true) {
   showSetup = open;
+  // Closed after arriving at workshop.html#setup: drop the hash so a reload shows the Workshop as usual.
+  if (!open && setupRequested(location.hash)) history.replaceState(null, "", `${location.pathname}${location.search}`);
   renderDependencies();
+  renderStartScreen();
   renderPreview();
   if (open) elements.preview.querySelector("[data-recheck]")?.focus();
 }
@@ -1171,7 +1174,7 @@ function agentChoiceGroup() {
 function setupCard(forced) {
   const readiness = currentReadiness();
   const firstRun = !state.runs.length;
-  const head = setupHeadline(readiness, { firstRun });
+  const head = setupHeadline(readiness, { firstRun, noProject: !state.project });
   const tone = readiness.phase === "blocked" ? "blocked" : readiness.phase === "ready" ? "ready" : readiness.phase === "checking" ? "checking" : "warn";
   const checking = capsChecking;
   const reportError = readiness.phase === "error";
@@ -1376,6 +1379,7 @@ function syncProject() {
   const project = state.project;
   const key = project === undefined ? undefined : project ? project.id : null;
   if (key === projectKey) return;
+  const firstKnown = projectKey === undefined; // the first state from the main process since the page loaded
   projectKey = key;
   if (key === undefined) return;
   composing = false;
@@ -1387,7 +1391,8 @@ function syncProject() {
   selectedArtifactPath = project?.view?.selected_artifact || null;
   sentView = JSON.stringify({ selected_run_id: selectedRunId, selected_artifact: selectedArtifactPath });
   if (project && Object.keys(project.settings || {}).length) applyRunSettings({ ...runSettings, ...project.settings });
-  showSetup = false;
+  // Another project closes the setup card; the page's first state keeps it open when the page came for it (#setup).
+  showSetup = firstKnown && showSetup && setupRequested(location.hash);
 }
 
 // Where the person is in the project travels with it (saved with the project, never making it unsaved).
@@ -1426,7 +1431,7 @@ function recentRow(entry) {
 }
 
 function renderStartScreen() {
-  const visible = state.project === null;
+  const visible = startScreenVisible({ project: state.project, setupOpen: showSetup });
   elements.startScreen.classList.toggle("hidden", !visible);
   if (!visible) { elements.startScreen.innerHTML = ""; return; }
   const recent = state.recent || [];
@@ -1991,6 +1996,9 @@ updateStatusTime();
 setInterval(updateStatusTime, 30000);
 renderAll();
 checkCapabilities(false); // not awaited: a cold WSL can take seconds, and the window must not wait for it
+// The course app's Settings links to workshop.html#setup to choose and sign in to the agent.
+if (setupRequested(location.hash)) openSetup(true);
+addEventListener("hashchange", () => { if (setupRequested(location.hash)) openSetup(true); });
 
 api.onState((next) => { state = { ...state, ...next }; renderAll({ preview: !state.activeJob }); });
 api.onEvent(() => scheduleRefresh());

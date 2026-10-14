@@ -80,3 +80,24 @@ test("rename and delete are for a saved project with no run in flight", async ()
   assert.deepEqual([state({ project: saved, busy: true }).rename, state({ project: saved, busy: true }).delete], [true, true]);
   assert.equal(fileMenuModel({ project: null }).find((item) => item.id === "delete").disabled, true);
 });
+
+test("workshop.html#setup opens the setup card, which the start screen does not cover", async () => {
+  const { setupRequested, startScreenVisible } = await view();
+  assert.equal(setupRequested("#setup"), true);
+  assert.equal(setupRequested("setup"), true);
+  assert.equal(setupRequested(""), false);
+  assert.equal(setupRequested("#/settings"), false);
+  assert.equal(startScreenVisible({ project: null }), true);
+  assert.equal(startScreenVisible({ project: null, setupOpen: true }), false);
+  assert.equal(startScreenVisible({ project: undefined }), false, "nothing is known yet");
+  assert.equal(startScreenVisible({ project: { name: "Spoon" } }), false);
+});
+
+test("the Workshop opens its setup card when it loads with #setup", () => {
+  const fs = require("node:fs");
+  const renderer = fs.readFileSync(path.join(__dirname, "..", "src", "renderer", "main.js"), "utf8");
+  assert.match(renderer, /if \(setupRequested\(location\.hash\)\) openSetup\(true\);/);
+  assert.match(renderer, /addEventListener\("hashchange"/);
+  const settings = fs.readFileSync(path.join(__dirname, "..", "src", "course", "places", "Settings.tsx"), "utf8");
+  assert.match(settings, /href="\.\/workshop\.html#setup"/);
+});

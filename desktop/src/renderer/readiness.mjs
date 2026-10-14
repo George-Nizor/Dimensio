@@ -178,7 +178,7 @@ export function sentenceCase(value) {
 }
 
 // The headline and lead line of the setup card.
-export function setupHeadline(readiness, { firstRun = false } = {}) {
+export function setupHeadline(readiness, { firstRun = false, noProject = false } = {}) {
   switch (readiness.phase) {
     case "checking":
       return { title: "Checking this machine", lead: readiness.reason };
@@ -195,6 +195,7 @@ export function setupHeadline(readiness, { firstRun = false } = {}) {
         ? { title: `The ${readiness.agentName || DEFAULT_AGENT.name} session ended`, lead: readiness.reason }
         : { title: "Ready, with a caveat", lead: `${readiness.reason} Run is still available.` };
     default:
+      if (noProject) return { title: "Everything is ready", lead: "Create or open a project, then describe a model in the prompt bar." };
       return firstRun
         ? { title: "Everything is ready", lead: "Describe a model in the prompt bar to start the first run." }
         : { title: "Everything is ready", lead: "Everything the Workshop checked is in place." };
