@@ -18,22 +18,24 @@ const {
 } = require("electron");
 
 const TITLE_BAR_HEIGHT = 72;
-const { CodexAppServerClient } = require("./lib/codex-client.cjs");
-const { RunStore } = require("./lib/run-store.cjs");
+const { RunStore, agentSession } = require("./lib/run-store.cjs");
 const {
   BUNDLE_VERSION,
   detectExternalTools,
   detectWslModelsDirectory,
   ensureRuntimeState,
-  findCodexExecutable,
-  inspectForgeSkill,
+  generatedMcpConfig,
   primeGodotProject,
   repairForgePlugin,
 } = require("./lib/runtime.cjs");
+const { agentInfo, createRegistry } = require("./lib/agents/index.cjs");
+const { AgentSettings } = require("./lib/agents/settings.cjs");
+const { VISIBLE_ITEM_TYPES, applyStep, describeItem } = require("./lib/agents/steps.cjs");
 const { resolveContained } = require("./lib/path-policy.cjs");
 const { automaticApproval } = require("./lib/approval-policy.cjs");
 const { exportArtifact, exportFormatsForArtifact } = require("./lib/export-service.cjs");
 const { createCapabilitiesService } = require("./lib/capabilities-service.cjs");
+const { closeAction, stopRunQuestion } = require("./lib/close-guard.cjs");
 const {
   PROJECT_EXTENSION,
   RecentProjects,
@@ -46,8 +48,11 @@ const {
   newManifest,
   projectFromArgv,
   projectName,
+  projectTrashTargets,
   readProject,
   recoverableScratch,
+  renameProject,
+  retireScratch,
   runsRoot,
   sameSettings,
   samePath,
@@ -56,7 +61,13 @@ const {
   scratchFolder,
   windowTitle,
   writeProject,
+  writeProjectView,
 } = require("./lib/project-store.cjs");
+
+// One Forge3D at a time. A second launch hands its command line to this one, which comes to the front and opens a
+// project named there.
+const singleInstance = app.requestSingleInstanceLock();
+if (!singleInstance) app.quit();
 
 protocol.registerSchemesAsPrivileged([
   {
@@ -72,20 +83,16 @@ let recentProjects = null;
 let recoverable = [];
 let allowWindowClose = false;
 let runtimeState = null;
-let codexClient = null;
+let agents = null; // one driver per agent (lib/agents); the chosen one is in agentSettings
+let agentSettings = null;
 let currentSkill = null;
-let activeJob = null;
-let appServerError = null;
+let activeJob = null; // { runId, agent, sessionId, turnId }
+let appServerError = null; // the agent's last error: it stopped, or could not start
 let detectedTools = null;
 let runEventTimer = null;
 let godotPrimePromise = Promise.resolve();
+let wslModelsDirectory;
 const pendingRunEvents = new Map();
-const VISIBLE_ITEM_TYPES = new Set(["commandExecution", "mcpToolCall", "fileChange", "dynamicToolCall", "imageGeneration", "webSearch"]);
-const APPROVAL_METHODS = new Set([
-  "item/commandExecution/requestApproval",
-  "item/fileChange/requestApproval",
-  "mcpServer/elicitation/request",
-]);
 
 const repoRoot = path.resolve(__dirname, "..", "..");
 const bundledPlugin = () => app.isPackaged
@@ -135,6 +142,7 @@ function externalTools(force = false) {
 function currentState() {
   return {
     version: BUNDLE_VERSION,
+    agent: agentSettings ? { id: agentSettings.agent(), name: agentInfo(agentSettings.agent()).name } : null,
     activeJob,
     appServerError,
     skill: currentSkill,
@@ -281,6 +289,7 @@ async function saveProjectAs() {
   const layout = layoutForSavePath(result.filePath);
   const source = project;
   flushRunEvents();
+  if (source.untitled) await releaseProjectFolder();
   const manifest = materializeProject(layout, {
     sourceFolder: source.folder,
     move: source.untitled,
@@ -291,11 +300,17 @@ async function saveProjectAs() {
       app_version: BUNDLE_VERSION,
     },
   });
-  if (source.untitled) {
-    try { fs.rmSync(source.folder, { recursive: true, force: true }); } catch {}
-  }
+  if (source.untitled) retireScratch(source.folder, layout.file);
   openSession({ file: layout.file, folder: layout.folder, manifest });
   return true;
+}
+
+// Stops every agent process before the project's folder is moved or renamed. Codex's App Server works in the
+// runs folder, and on Windows a folder a process is using cannot be moved (EBUSY), which used to leave a copy
+// behind under "Unsaved work". The next run starts the agent again in the new place.
+async function releaseProjectFolder() {
+  if (agents) await agents.closeAll();
+  currentSkill = null;
 }
 
 async function newProject(payload = {}) {
@@ -345,6 +360,74 @@ async function openRecovered(payload = {}) {
   return openSession({ folder, untitled: true, manifest: newManifest({ appVersion: BUNDLE_VERSION }) });
 }
 
+// Renames the open, saved project (its file, and its folder when the folder carries its name). The agent is
+// stopped first, as for Save, because the runs folder moves with it.
+async function renameOpenProject(payload = {}) {
+  if (!project) throw new Error("No project is open");
+  if (project.untitled) throw new Error("Save the project first. You name it when you save it.");
+  assertIdle("renaming the project");
+  flushRunEvents();
+  await releaseProjectFolder();
+  const previous = project.file;
+  const renamed = renameProject(previous, payload.name);
+  if (renamed.file === previous) return currentState();
+  recentProjects.remove(previous);
+  recentProjects.add(renamed.file);
+  project = { ...project, file: renamed.file, folder: renamed.folder };
+  runStore = new RunStore(runsRoot(renamed.folder));
+  sendState();
+  return currentState();
+}
+
+// Moves the open, saved project to the Recycle Bin after asking, and returns to the start screen.
+async function deleteOpenProject() {
+  if (!project) throw new Error("No project is open");
+  if (project.untitled) throw new Error("This project is not saved. Close it and choose Don't save to discard it.");
+  assertIdle("deleting the project");
+  const file = project.file;
+  const name = projectName(file);
+  const { whole, targets } = projectTrashTargets(file);
+  const { response } = await dialog.showMessageBox(mainWindow, {
+    type: "warning",
+    title: "Delete project",
+    message: `Move "${name}" to the Recycle Bin?`,
+    detail: whole
+      ? "Its folder goes to the Recycle Bin with every run and file in it. You can restore it from there."
+      : "The project file and its runs folder go to the Recycle Bin. Other files in the folder stay where they are.",
+    buttons: ["Move to Recycle Bin", "Cancel"],
+    defaultId: 1,
+    cancelId: 1,
+    noLink: true,
+  });
+  if (response !== 0) return { canceled: true, ...currentState() };
+  flushRunEvents();
+  await releaseProjectFolder();
+  project = null;
+  runStore = null;
+  for (const target of targets) {
+    try {
+      await shell.trashItem(target);
+    } catch (error) {
+      sendState();
+      throw new Error(`Forge3D could not move ${target} to the Recycle Bin: ${error.message}`);
+    }
+  }
+  recentProjects.remove(file);
+  refreshRecoverable();
+  sendState();
+  return currentState();
+}
+
+// A second launch: bring this window forward and open the project it named, if any.
+function onSecondInstance(argv = []) {
+  if (!mainWindow || mainWindow.isDestroyed()) return;
+  if (mainWindow.isMinimized()) mainWindow.restore();
+  mainWindow.show();
+  mainWindow.focus();
+  const file = projectFromArgv(argv.slice(1));
+  if (file) openProject({ path: file }).catch((error) => send("forge3d:error", `Forge3D could not open ${path.basename(file)}: ${error.message}`));
+}
+
 async function closeProject() {
   if (!project) return currentState();
   assertIdle("closing the project");
@@ -355,23 +438,58 @@ async function closeProject() {
   return currentState();
 }
 
+// Closing the window. A run in progress is asked about first, even when the project has nothing unsaved: closing
+// used to end the agent with no warning. Then the usual save question.
 function onWindowClose(event) {
-  if (allowWindowClose || !project) return;
-  if (!projectDirty()) {
-    if (project.untitled) leaveSession();
+  if (allowWindowClose) return;
+  const running = Boolean(activeJob);
+  if (closeAction({ running, project, dirty: projectDirty() }) === "close") {
+    if (project?.untitled) leaveSession();
     return;
   }
   event.preventDefault();
-  confirmLeave("closing Forge3D").then(async ({ proceed, discard }) => {
-    if (!proceed) return;
-    if (discard && activeJob) {
-      codexClient?.close();
-      activeJob = null;
+  (async () => {
+    if (running) {
+      if (!(await confirmStopRun("closing Forge3D"))) return;
+      await stopActiveRun("Stopped because Forge3D was closed during the run.");
     }
+    const { proceed, discard } = await confirmLeave("closing Forge3D");
+    if (!proceed) return;
     await leaveSession({ discard });
     allowWindowClose = true;
     mainWindow.close();
-  }).catch((error) => send("forge3d:error", error.message));
+  })().catch((error) => send("forge3d:error", error.message));
+}
+
+async function confirmStopRun(doing) {
+  if (!activeJob) return true;
+  let runName = "";
+  try { runName = store().find(activeJob.runId, false).manifest.prompt; } catch { /* the question still works */ }
+  const { response } = await dialog.showMessageBox(mainWindow, stopRunQuestion({ agentName: agentInfo(activeJob.agent).name, runName, doing }));
+  return response === 0;
+}
+
+// Interrupts the active run and waits up to five seconds for the agent to report it stopped. An agent that does
+// not answer is closed, and the run is marked interrupted with the reason, so it can be resumed later.
+async function stopActiveRun(reason) {
+  if (!activeJob) return;
+  const job = activeJob;
+  const driver = jobAgent();
+  try {
+    queueRunEvent(job.runId, { kind: "event", text: reason });
+    store().setStatus(job.runId, "cancelling");
+  } catch { /* the run folder may be gone */ }
+  try { await driver.interrupt(); } catch { /* closed below */ }
+  const deadline = Date.now() + 5000;
+  while (activeJob === job && Date.now() < deadline) await new Promise((resolve) => setTimeout(resolve, 100));
+  if (activeJob !== job) return;
+  activeJob = null;
+  await driver.close().catch(() => {});
+  try {
+    flushRunEvents();
+    store().setStatus(job.runId, "interrupted", reason);
+  } catch { /* the run folder may be gone */ }
+  sendState();
 }
 
 function queueRunEvent(runId, event) {
@@ -395,7 +513,7 @@ function flushRunEvents() {
 }
 
 function failActiveJob(error) {
-  const message = `Forge3D could not process Codex activity: ${error.message}`;
+  const message = `Forge3D could not process the agent's activity: ${error.message}`;
   appServerError = message;
   send("forge3d:error", message);
   try { flushRunEvents(); } catch {}
@@ -412,31 +530,27 @@ function capabilitiesService() {
     const binDirectory = app.isPackaged ? path.join(process.resourcesPath, "bin") : path.join(repoRoot, ".venv", "Scripts");
     capabilitiesServiceInstance = createCapabilitiesService({
       command: path.join(binDirectory, process.platform === "win32" ? "forge3d.exe" : "forge3d"),
+      args: () => ["capabilities", "--json", "--agent", agentSettings.agent()],
       env: { ...process.env, FORGE3D_TOOLKIT_ROOT: bundledToolkit(), FORGE3D_PLUGIN_ROOT: bundledPlugin() },
     });
   }
   return capabilitiesServiceInstance;
 }
 
-// Codex App Server runs inside the open project's runs folder (or the local state root on the start screen).
-// Switching projects retires the old server; the next request starts one in the new place.
-function codexWorkspace() {
+/* ── agents ─────────────────────────────────────────────────── */
+
+// The agent runs inside the open project's runs folder (or the local state root on the start screen).
+function agentWorkspace() {
   return runStore?.root || runtimeState.root;
 }
 
-async function ensureCodex() {
-  if (codexClient?.started && codexClient.cwd === codexWorkspace()) return codexClient;
-  if (codexClient?.started && !activeJob) {
-    const retired = codexClient;
-    codexClient = null;
-    currentSkill = null;
-    retired.close();
-  } else if (codexClient?.started) return codexClient;
-  const executable = findCodexExecutable();
+// What every agent process gets: forge3d.exe on PATH, the toolkit and plugin roots, where runs go, and the tools
+// the host already found, so the agent never has to look for them.
+function agentEnvironment() {
   const binDirectory = app.isPackaged ? path.join(process.resourcesPath, "bin") : path.join(repoRoot, ".venv", "Scripts");
   const tools = externalTools();
-  const wslModelsDirectory = process.env.FORGE3D_WSL_MODELS_DIR || detectWslModelsDirectory(tools.wsl);
-  const env = {
+  if (wslModelsDirectory === undefined) wslModelsDirectory = process.env.FORGE3D_WSL_MODELS_DIR || detectWslModelsDirectory(tools.wsl);
+  return {
     ...process.env,
     PATH: `${binDirectory}${path.delimiter}${process.env.PATH || ""}`,
     ...(runStore ? { FORGE3D_OUTPUT: runStore.root } : {}),
@@ -447,49 +561,115 @@ async function ensureCodex() {
     ...(tools.godot ? { GODOT_EXECUTABLE: tools.godot } : {}),
     ...(wslModelsDirectory ? { FORGE3D_WSL_MODELS_DIR: wslModelsDirectory } : {}),
   };
-  const client = new CodexAppServerClient({ command: executable, cwd: codexWorkspace(), env });
-  codexClient = client;
-  codexClient.on("notification", (message) => {
-    try { onCodexNotification(message); } catch (error) { failActiveJob(error); }
-  });
-  codexClient.on("request", (message) => {
-    try { onCodexRequest(message); } catch (error) { failActiveJob(error); }
-  });
-  codexClient.on("protocolError", (error) => send("forge3d:error", error.message));
-  codexClient.on("stderr", (text) => {
-    if (activeJob) queueRunEvent(activeJob.runId, { kind: "app-server-stderr", text: String(text).slice(-4000) });
-  });
-  codexClient.on("exit", ({ detail }) => {
-    if (client !== codexClient) return; // a retired server from an earlier project
-    try { flushRunEvents(); } catch {}
-    appServerError = detail || "Codex App Server stopped unexpectedly";
-    if (activeJob) {
-      store().setStatus(activeJob.runId, "failed", appServerError);
-      activeJob = null;
-    }
-    sendState();
-  });
+}
+
+function agentContext() {
+  return { workspace: agentWorkspace(), env: agentEnvironment(), bundledPlugin: bundledPlugin() };
+}
+
+function agentRegistry() {
+  if (!agents) agents = createRegistry({ claude: { stateRoot: runtimeState.root }, codex: {}, onCreate: wireAgent });
+  return agents;
+}
+
+function currentAgent() {
+  return agentRegistry().get(agentSettings.agent());
+}
+
+function jobAgent() {
+  if (!activeJob) throw new Error("This run is not active");
+  return agentRegistry().get(activeJob.agent);
+}
+
+// Whatever must be running before a session starts (Codex: its App Server), and installed and signed in.
+async function ensureAgentReady(driver = currentAgent()) {
   try {
-    await codexClient.start();
+    await driver.prepare(agentContext());
     appServerError = null;
   } catch (error) {
     appServerError = error.message;
-    codexClient = null;
     throw error;
   }
-  return codexClient;
 }
 
 async function refreshSkill(forceReload = false) {
-  const client = await ensureCodex();
-  const skills = await client.listSkills(codexWorkspace(), forceReload);
-  const installed = skills.find((skill) => skill.name === "forge3d" && skill.enabled !== false) || null;
-  currentSkill = inspectForgeSkill(installed);
-  if (!installed) {
-    const fallback = path.join(bundledPlugin(), "skills", "forge3d", "SKILL.md");
-    currentSkill = { ...currentSkill, path: fallback, state: "missing", usingBundledFallback: true };
-  }
+  currentSkill = await currentAgent().skill({ ...agentContext(), force: forceReload });
+  appServerError = null;
   return currentSkill;
+}
+
+async function agentModels(id) {
+  const driver = id ? agentRegistry().get(id) : currentAgent();
+  try {
+    return { agent: driver.id, ...(await driver.models(agentContext())) };
+  } catch {
+    return { agent: driver.id, models: [], defaultModel: "", defaultEffort: "", efforts: [] };
+  }
+}
+
+// Driver events become run steps and transcript entries, for the driver whose run is active.
+function wireAgent(driver) {
+  const forActive = (handler) => (payload = {}) => {
+    if (!activeJob || activeJob.agent !== driver.id) return;
+    try { handler(payload); } catch (error) { failActiveJob(error); }
+  };
+  driver.on("tool", forActive(({ phase, method, item }) => {
+    if (updateSteps(activeJob.runId, phase, item)) queueRunEvent(activeJob.runId, { kind: "activity", method, text: describeItem(item) });
+  }));
+  driver.on("message", forActive(({ method, text }) => queueRunEvent(activeJob.runId, { kind: "agent", method, text: String(text).slice(0, 20000) })));
+  driver.on("log", forActive(({ method, text }) => queueRunEvent(activeJob.runId, { kind: "log", method, text: String(text).slice(0, 20000) })));
+  driver.on("stderr", forActive(({ kind, text }) => queueRunEvent(activeJob.runId, { kind: kind || "agent-stderr", text: String(text).slice(-4000) })));
+  driver.on("step", forActive(({ method, text }) => queueRunEvent(activeJob.runId, { kind: "event", method, text })));
+  driver.on("usage", forActive((usage) => store().addUsage(activeJob.runId, usage)));
+  driver.on("session", forActive(({ sessionId }) => {
+    activeJob.sessionId = sessionId;
+    store().setAgent(activeJob.runId, { id: driver.id, sessionId });
+  }));
+  driver.on("approval", forActive((request) => onAgentApproval(driver, request)));
+  driver.on("done", forActive((done) => finishActiveJob(driver, done)));
+  driver.on("error", (payload = {}) => onAgentError(driver, payload));
+}
+
+function onAgentApproval(driver, { requestId, method, params, message }) {
+  const automatic = automaticApproval(message, store().runDirectory(activeJob.runId));
+  if (automatic) {
+    driver.decide(requestId, automatic.decision);
+    queueRunEvent(activeJob.runId, { kind: "approval-decision", requestId, method, decision: automatic.decision, text: automatic.label });
+    return;
+  }
+  queueRunEvent(activeJob.runId, { kind: "approval-request", requestId, method, params: compact(params) });
+  send("forge3d:approval", { requestId, method, params: compact(params) });
+  sendState();
+}
+
+function finishActiveJob(driver, { status, error = null, turnId = null }) {
+  const runId = activeJob.runId;
+  flushRunEvents();
+  if (turnId) store().setAgent(runId, { id: driver.id, turnId });
+  store().setStatus(runId, status, error);
+  store().refreshArtifacts(runId);
+  activeJob = null;
+  driver.endSession();
+  sendState();
+}
+
+// fatal: the agent stopped (its process exited or its output could not be read). method: a line for the run's log.
+// notify: a protocol problem worth a toast.
+function onAgentError(driver, { message, fatal = false, method = null, notify = false, internal = false }) {
+  const ours = activeJob && activeJob.agent === driver.id;
+  if (notify || internal) send("forge3d:error", message);
+  if (fatal) {
+    if (!ours && driver.id !== agentSettings.agent()) return; // an agent no longer in use
+    try { flushRunEvents(); } catch {}
+    appServerError = message;
+    if (ours) {
+      try { store().setStatus(activeJob.runId, "failed", message); } catch {}
+      activeJob = null;
+    }
+    try { sendState(); } catch {}
+    return;
+  }
+  if (ours && method) queueRunEvent(activeJob.runId, { kind: "error", method, text: message });
 }
 
 function promptWithPolicy(manifest) {
@@ -507,33 +687,47 @@ function promptWithPolicy(manifest) {
   ].join("\n\n");
 }
 
+function runAttachments(manifest, directory) {
+  return (manifest.inputs || []).map((item) => ({
+    path: resolveContained(directory, item.path),
+    relative: item.path,
+    mediaType: String(item.media_type || ""),
+  }));
+}
+
+// Starts or continues a run with the chosen agent. A run continues in its own session when that session belongs to
+// the chosen agent; otherwise (a run from the other agent, or a copy that never ran) a new session gets the whole
+// brief followed by the note.
 async function beginRun(manifest, { model = "auto", effort = "auto", continuation = null } = {}) {
   if (activeJob) throw new Error("Forge3D already has an active job");
-  const client = await ensureCodex();
+  const driver = currentAgent();
+  await ensureAgentReady(driver);
   if (!currentSkill) await refreshSkill(false);
   const directory = store().runDirectory(manifest.run_id);
   store().setStatus(manifest.run_id, "launching");
-  activeJob = { runId: manifest.run_id, threadId: null, turnId: null };
+  activeJob = { runId: manifest.run_id, agent: driver.id, sessionId: null, turnId: null };
   sendState();
   try {
-    let thread;
-    if (manifest.codex?.thread_id) thread = await client.resumeThread(manifest.codex.thread_id);
-    else thread = await client.startThread({ cwd: directory, model });
-    const copiedImages = (manifest.inputs || [])
-      .filter((item) => String(item.media_type || "").startsWith("image/"))
-      .map((item) => resolveContained(directory, item.path));
-    const turn = await client.startTurn({
-      threadId: thread.id,
-      prompt: continuation || promptWithPolicy(manifest),
+    const previous = agentSession(manifest);
+    const resume = previous.id === driver.id ? previous.sessionId : null;
+    const brief = promptWithPolicy(manifest);
+    const fresh = continuation ? `${brief}\n\n${continuation}` : brief;
+    const session = await driver.startSession({
       cwd: directory,
+      workspace: agentWorkspace(),
+      env: agentEnvironment(),
+      project: projectSummary(),
+      mcp: generatedMcpConfig(runtimeState),
+      skillDir: bundledPlugin(),
       skill: currentSkill,
-      images: continuation ? [] : copiedImages,
       model,
       effort,
-      allowNetwork: false,
+      resume,
     });
-    activeJob = { runId: manifest.run_id, threadId: thread.id, turnId: turn.id };
-    store().setCodex(manifest.run_id, thread.id, turn.id);
+    activeJob.sessionId = session.sessionId;
+    const turn = await driver.send(resume ? continuation : fresh, resume ? [] : runAttachments(manifest, directory), { fresh });
+    activeJob.turnId = turn.turnId;
+    store().setAgent(manifest.run_id, { id: driver.id, sessionId: session.sessionId, turnId: turn.turnId });
     store().setStatus(manifest.run_id, "running");
     store().appendEvent(manifest.run_id, { kind: "user", text: continuation || manifest.prompt });
     sendState();
@@ -541,112 +735,44 @@ async function beginRun(manifest, { model = "auto", effort = "auto", continuatio
   } catch (error) {
     store().setStatus(manifest.run_id, "failed", error.message);
     activeJob = null;
+    driver.endSession();
     sendState();
     throw error;
   }
 }
 
-function onCodexRequest(message) {
-  const params = message.params || {};
-  const supported = APPROVAL_METHODS.has(message.method);
-  if (!supported) {
-    codexClient.reject(message.id, `Forge3D does not support App Server request ${message.method}`);
-    if (activeJob) queueRunEvent(activeJob.runId, { kind: "error", method: message.method, text: "Unsupported App Server request was rejected safely." });
-    return;
-  }
-  if (!activeJob || params.threadId !== activeJob.threadId || (params.turnId && params.turnId !== activeJob.turnId)) {
-    codexClient.decide(message.id, "cancel");
-    return;
-  }
-  const automatic = automaticApproval(message, store().runDirectory(activeJob.runId));
-  if (automatic) {
-    codexClient.decide(message.id, automatic.decision);
-    queueRunEvent(activeJob.runId, {
-      kind: "approval-decision",
-      requestId: message.id,
-      method: message.method,
-      decision: automatic.decision,
-      text: automatic.label,
-    });
-    return;
-  }
-  queueRunEvent(activeJob.runId, { kind: "approval-request", requestId: message.id, method: message.method, params: compact(params) });
-  send("forge3d:approval", { requestId: message.id, method: message.method, params: compact(params) });
-  sendState();
-}
-
-function describeItem(item) {
-  if (Array.isArray(item.command)) return item.command.join(" ");
-  if (typeof item.command === "string") return item.command;
-  if (item.type === "mcpToolCall") return [item.server, item.tool].filter(Boolean).join(" · ") || "MCP tool";
-  if (item.type === "fileChange") return `${item.changes?.length || 0} file change${item.changes?.length === 1 ? "" : "s"}`;
-  return item.name || item.type || "Work";
-}
-
-function presentItem(item) {
-  const raw = describeItem(item);
-  const lower = raw.toLowerCase();
-  if (item.type === "imageGeneration") return { phase: "reference", name: "Prepare reference", detail: "Creating the source image" };
-  if (item.type === "fileChange") return { phase: "package", name: "Package deliverables", detail: "Saving generated files" };
-  if (/triposplat|models run|gaussian|candidate\.(splat|ply)/.test(lower)) return { phase: "generate", name: "Generate asset", detail: "Generating the Gaussian splat locally" };
-  if (/validat|report|quality check|doctor/.test(lower)) return { phase: "validate", name: "Check quality", detail: "Checking output quality" };
-  if (/export|proxy|collision|save|convert/.test(lower)) return { phase: "package", name: "Package deliverables", detail: "Preparing reusable output files" };
-  if (/blender|procedural|forge3d_task/.test(lower)) return { phase: "generate", name: "Generate asset", detail: "Building the asset in Blender" };
-  return { phase: "local", name: "Local processing", detail: item.type === "mcpToolCall" ? "Using a local 3D tool" : "Running a local production task" };
-}
-
-function updateSteps(runId, method, params) {
-  const item = params.item;
+function updateSteps(runId, phase, item) {
   if (!item?.id || !VISIBLE_ITEM_TYPES.has(item.type)) return false;
-  store().update(runId, (manifest) => {
-    manifest.steps ||= [];
-    let step = manifest.steps.find((candidate) => candidate.item_id === item.id);
-    if (!step) {
-      step = { item_id: item.id, name: item.type || "work", status: "running", started_at: new Date().toISOString() };
-      manifest.steps.push(step);
-    }
-    const presented = presentItem(item);
-    step.status = method === "item/completed" ? (item.status || "completed") : (item.status || "running");
-    step.phase = presented.phase;
-    step.name = presented.name;
-    step.detail = presented.detail;
-    if (method === "item/completed") step.completed_at = new Date().toISOString();
-  });
+  store().update(runId, (manifest) => applyStep(manifest, phase, item));
   return true;
 }
 
-function onCodexNotification(message) {
-  if (!activeJob) return;
-  const params = message.params || {};
-  const scopedThread = params.threadId || params.thread?.id;
-  if (scopedThread && scopedThread !== activeJob.threadId) return;
-
-  const itemLifecycle = message.method === "item/started" || message.method === "item/completed";
-  const visibleItem = itemLifecycle && updateSteps(activeJob.runId, message.method, params);
-  const delta = params.delta;
-  if (typeof delta === "string") {
-    if (message.method.includes("agentMessage")) {
-      queueRunEvent(activeJob.runId, { kind: "agent", method: message.method, text: delta.slice(0, 20000) });
-    } else if (message.method.includes("outputDelta")) {
-      queueRunEvent(activeJob.runId, { kind: "log", method: message.method, text: delta.slice(0, 20000) });
-    }
-  } else if (visibleItem) {
-    queueRunEvent(activeJob.runId, { kind: "activity", method: message.method, text: describeItem(params.item) });
-  } else if (message.method === "turn/started" || message.method === "turn/completed") {
-    queueRunEvent(activeJob.runId, { kind: "event", method: message.method, text: message.method === "turn/started" ? "Codex turn started." : "Codex turn finished." });
-  }
-
-  if (message.method === "turn/completed") {
-    flushRunEvents();
-    const turn = params.turn || {};
-    const rawStatus = turn.status || "failed";
-    const status = rawStatus === "completed" ? "completed" : rawStatus === "interrupted" ? "interrupted" : "failed";
-    const failure = turn.error?.message || (status === "failed" ? "The Codex turn failed" : null);
-    store().setStatus(activeJob.runId, status, failure);
-    store().refreshArtifacts(activeJob.runId);
-    activeJob = null;
+// Choosing the agent. A Codex App Server left running is stopped, and the setup check runs again for the new one.
+async function setAgent(id) {
+  if (activeJob) throw new Error("Wait for the active run to finish, or cancel it, before changing the agent");
+  const previous = agentSettings.agent();
+  const result = agentSettings.setAgent(id);
+  if (previous !== result.agent) {
+    currentSkill = null;
+    appServerError = null;
+    if (agents) await agentRegistry().get(previous).close().catch(() => {});
+    capabilitiesService().invalidate();
     sendState();
   }
+  return result;
+}
+
+// { agent, statuses: { claude: {...}, codex: {...} } }: what the setup card shows for each choice.
+async function agentStatus({ force = false } = {}) {
+  const registry = agentRegistry();
+  const entries = await Promise.all(registry.listAgents().map(async (agent) => {
+    try {
+      return [agent.id, { ...agent, ...(await registry.get(agent.id).status({ force })) }];
+    } catch (error) {
+      return [agent.id, { ...agent, installed: false, signedIn: false, version: "", path: "", reason: error.message, fix: "" }];
+    }
+  }));
+  return { agent: agentSettings.agent(), statuses: Object.fromEntries(entries) };
 }
 
 // The renderer paints its own application bar, so on Windows the native caption is
@@ -717,14 +843,8 @@ function registerIpc() {
     } catch (error) {
       appServerError = error.message;
     }
-    let models = [];
-    if (codexClient?.started) {
-      try {
-        const result = await codexClient.request("model/list", { limit: 50, includeHidden: false });
-        models = result?.data || [];
-      } catch {}
-    }
-    return { ...currentState(), models };
+    const info = await agentModels();
+    return { ...currentState(), models: info.models, modelDefaults: { model: info.defaultModel || "", effort: info.defaultEffort || "" } };
   });
 
   handle("forge3d:pick-attachments", async () => {
@@ -739,8 +859,12 @@ function registerIpc() {
     return result.canceled ? [] : result.filePaths.slice(0, 12);
   });
 
+  // The agent is checked (installed, signed in, started) before the run folder is made, so a missing agent leaves
+  // no run behind that never started.
   handle("forge3d:start-run", async (payload = {}) => {
     store();
+    if (activeJob) throw new Error("Forge3D already has an active job");
+    await ensureAgentReady();
     const manifest = await store().create(payload);
     return beginRun(manifest, payload);
   });
@@ -754,7 +878,7 @@ function registerIpc() {
   handle("forge3d:steer", async (payload = {}) => {
     if (!activeJob || payload.runId !== activeJob.runId) throw new Error("This run is not active");
     if (typeof payload.text !== "string" || !payload.text.trim()) throw new Error("Steering text is required");
-    await codexClient.steer(activeJob.threadId, activeJob.turnId, payload.text.trim());
+    await jobAgent().steer(payload.text.trim());
     store().appendEvent(activeJob.runId, { kind: "user-steer", text: payload.text.trim() });
     return currentState();
   });
@@ -762,14 +886,14 @@ function registerIpc() {
   handle("forge3d:cancel", async (payload = {}) => {
     if (!activeJob || payload.runId !== activeJob.runId) throw new Error("This run is not active");
     store().setStatus(activeJob.runId, "cancelling");
-    await codexClient.interrupt(activeJob.threadId, activeJob.turnId);
+    await jobAgent().interrupt();
     sendState();
     return currentState();
   });
 
   handle("forge3d:approval", async (payload = {}) => {
     if (!activeJob) throw new Error("No active job is awaiting approval");
-    codexClient.decide(payload.requestId, payload.decision);
+    jobAgent().decide(payload.requestId, payload.decision);
     store().appendEvent(activeJob.runId, { kind: "approval-decision", requestId: payload.requestId, decision: payload.decision });
     return currentState();
   });
@@ -848,6 +972,7 @@ function registerIpc() {
   });
 
   handle("forge3d:repair-plugin", async () => {
+    if (agentSettings.agent() !== "codex") throw new Error("Claude Code loads the Forge3D plugin from this app each run, so there is nothing to repair.");
     const result = repairForgePlugin({ bundledPlugin: bundledPlugin(), runtimeState });
     await refreshSkill(true);
     sendState();
@@ -860,19 +985,26 @@ function registerIpc() {
   });
   nativeTheme.on("updated", applyChromeColors);
   handle("forge3d:capabilities", (payload = {}) => capabilitiesService().get({ force: Boolean(payload?.force) }));
+  handle("forge3d:agent-settings", () => agentSettings.get());
+  handle("forge3d:set-agent", (payload) => setAgent(typeof payload === "string" ? payload : payload?.agent));
+  handle("forge3d:agent-status", (payload = {}) => agentStatus(payload));
+  handle("forge3d:models", (payload = {}) => agentModels(payload?.agent));
   handle("forge3d:project-new", (payload = {}) => newProject(payload));
   handle("forge3d:project-open", (payload = {}) => openProject(payload));
   handle("forge3d:project-open-recovered", (payload = {}) => openRecovered(payload));
   handle("forge3d:project-save", async () => ({ saved: await saveProject(), ...currentState() }));
   handle("forge3d:project-save-as", async () => ({ saved: await saveProjectAs(), ...currentState() }));
   handle("forge3d:project-close", () => closeProject());
+  handle("forge3d:project-rename", (payload = {}) => renameOpenProject(payload));
+  handle("forge3d:project-delete", () => deleteOpenProject());
   handle("forge3d:project-reveal", async () => {
     if (!project) throw new Error("No project is open");
     if (project.file) shell.showItemInFolder(project.file);
     else await shell.openPath(project.folder);
     return { path: project.file || project.folder };
   });
-  // Run settings belong to the project and make it unsaved; the selection is remembered without asking.
+  // Run settings belong to the project and make it unsaved. The selection is written to a saved project's file as
+  // it changes, without asking and without making the project unsaved.
   handle("forge3d:project-settings", (payload = {}) => {
     if (!project) return null;
     project.settings = sanitizeSettings(payload);
@@ -882,6 +1014,13 @@ function registerIpc() {
   handle("forge3d:project-view", (payload = {}) => {
     if (!project) return null;
     project.view = sanitizeView(payload);
+    if (!project.untitled) {
+      try {
+        project.manifest = writeProjectView(project.file, project.manifest, project.view);
+      } catch (error) {
+        send("forge3d:error", `Forge3D could not keep the selection in the project file: ${error.message}`);
+      }
+    }
     return null;
   });
   handle("forge3d:recent-remove", (payload = {}) => {
@@ -907,6 +1046,7 @@ function registerIpc() {
 }
 
 app.whenReady().then(async () => {
+  if (!singleInstance) return;
   const legacyLibrary = path.join(app.getPath("documents"), "Forge3D");
   const localStateRoot = path.join(process.env.LOCALAPPDATA || app.getPath("appData"), "Instrumenta", "Forge3D");
   const resourceBase = app.isPackaged ? process.resourcesPath : path.join(repoRoot, "desktop");
@@ -916,6 +1056,7 @@ app.whenReady().then(async () => {
     fs.writeFileSync(path.join(runtimeState.godot, ".forge3d-template-version"), `${BUNDLE_VERSION}\n`, "utf8");
   }
   recentProjects = new RecentProjects(path.join(runtimeState.root, "config", "recent-projects.json"));
+  agentSettings = new AgentSettings(path.join(runtimeState.root, "config", "settings.json"));
   if (!recentProjects.legacyAdopted()) {
     try {
       const adopted = adoptLegacyLibrary(legacyLibrary, { appVersion: BUNDLE_VERSION });
@@ -957,9 +1098,10 @@ app.whenReady().then(async () => {
   });
 });
 
+app.on("second-instance", (_event, argv) => onSecondInstance(argv));
 app.on("before-quit", () => {
   try { flushRunEvents(); } catch {}
-  codexClient?.close();
+  agents?.closeAllNow();
 });
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") app.quit();

@@ -6,6 +6,9 @@ what should the person do". Every dependency is a small `probe_*` function that
 takes an `Env` (runner, PATH lookup, globbing, environment variables), so tests
 swap in fakes. Nothing here writes to disk or changes any configuration.
 
+The routes need "an agent": the one chosen in the desktop (`--agent`, or
+FORGE3D_AGENT), Claude Code by default. It is reported as the `agent` item.
+
 Schema: docs/capabilities.md. Vocabulary: states are ready | missing |
 signed_out | degraded | optional_missing; route states are ready | degraded |
 blocked.
@@ -14,6 +17,8 @@ blocked.
 from __future__ import annotations
 
 import glob as _glob
+import json
+import ntpath
 import os
 import platform as _platform
 import re
@@ -43,21 +48,31 @@ BLENDER_MCP_ADDON = "blender_mcp.py"
 _PROBE_TIMEOUT = 15.0
 _WSL_TIMEOUT = 45.0  # a cold WSL VM can take several seconds to boot
 
+AGENTS = {"claude": "Claude Code", "codex": "Codex"}
+DEFAULT_AGENT = "claude"
+
 # Which capabilities each route needs. `required` capabilities that are missing
 # or signed out block the route; degraded ones degrade it. `soft` capabilities
 # only degrade it (a missing one is listed, never blocks).
+_SPLAT_STACK = ["wsl", "wsl_tools", "cuda", "triposplat", "triposplat_weights"]
 ROUTES: dict[str, dict[str, Any]] = {
     "splat": {
         "label": "Gaussian splat (TripoSplat)",
-        "required": [
-            "codex", "wsl", "wsl_tools", "cuda", "triposplat", "triposplat_weights",
-        ],
+        "required": ["agent", *_SPLAT_STACK],
+        "soft": [],
+        "optional": False,
+    },
+    # A splat with no attached image: the agent has to make the reference image,
+    # which only Codex can do.
+    "splat_text": {
+        "label": "Gaussian splat from words alone",
+        "required": ["agent", "image_generation", *_SPLAT_STACK],
         "soft": [],
         "optional": False,
     },
     "blender": {
         "label": "Procedural Blender asset",
-        "required": ["codex", "blender"],
+        "required": ["agent", "blender"],
         "soft": ["blender_mcp"],
         "optional": False,
     },
@@ -227,6 +242,146 @@ def probe_codex(env: Env) -> dict[str, Any]:
     return _item(
         "codex", "Codex", "ready", version=version, path=exe, gates=gates,
         detail={"login_status": _first_line(status)},
+    )
+
+
+# ---------------------------------------------------------------------- claude
+
+
+def find_claude(env: Env) -> str | None:
+    """DIMENSIO_CLAUDE_EXE, the native installer's copy, PATH, then npm's claude.cmd."""
+    configured = env.get("DIMENSIO_CLAUDE_EXE")
+    if configured and env.is_file(configured):
+        return configured
+    if env.platform == "windows":
+        profile = env.get("USERPROFILE")
+        if profile:
+            native = ntpath.join(profile, ".local", "bin", "claude.exe")
+            if env.is_file(native):
+                return native
+        for name in ("claude.exe", "claude.cmd"):
+            found = env.which(name)
+            if found:
+                return found
+        appdata = env.get("APPDATA")
+        if appdata:
+            npm = ntpath.join(appdata, "npm", "claude.cmd")
+            if env.is_file(npm):
+                return npm
+        return None
+    home = env.get("HOME")
+    if home:
+        native = os.path.join(home, ".local", "bin", "claude")
+        if env.is_file(native):
+            return native
+    return env.which("claude")
+
+
+def claude_install_fix(env: Env) -> str:
+    if env.platform == "windows":
+        return (
+            "Install Claude Code: in PowerShell run `irm https://claude.ai/install.ps1 | iex`, "
+            "then run `claude` once to sign in. Press Check again when it is done."
+        )
+    return (
+        "Install Claude Code: run `curl -fsSL https://claude.ai/install.sh | bash`, "
+        "then run `claude` once to sign in. Press Check again when it is done."
+    )
+
+
+def _logged_in(result: CommandResult) -> bool:
+    """`claude auth status` prints JSON with loggedIn and exits 0 when signed in, 1 when not."""
+    if result.returncode != 0:
+        return False
+    try:
+        data = json.loads(result.stdout or "{}")
+    except ValueError:
+        return '"loggedIn": false' not in (result.stdout or "")
+    return data.get("loggedIn") is not False
+
+
+def probe_claude(env: Env) -> dict[str, Any]:
+    gates = ("splat", "blender")
+    fix_missing = claude_install_fix(env)
+    exe = find_claude(env)
+    if not exe:
+        return _item("claude", "Claude Code", "missing", reason="Claude Code was not found.", fix=fix_missing, gates=gates)
+    version = parse_version(_first_line(env.run([exe, "--version"])))
+    if version is None:
+        return _item(
+            "claude", "Claude Code", "missing", path=exe, gates=gates,
+            reason="Claude Code was found but did not report a version.", fix=fix_missing,
+        )
+    status = env.run([exe, "auth", "status"])
+    if status is None:
+        return _item(
+            "claude", "Claude Code", "degraded", version=version, path=exe, gates=gates,
+            reason="Claude Code did not answer the sign-in check in time, so sign-in is unconfirmed.",
+            fix="Press Check again. If it persists, run `claude auth status` in a terminal.",
+        )
+    if not _logged_in(status):
+        return _item(
+            "claude", "Claude Code", "signed_out", version=version, path=exe, gates=gates,
+            reason="Claude Code is installed but not signed in.",
+            fix="Run `claude` in a terminal and sign in with your Claude account, then press Check again.",
+        )
+    return _item("claude", "Claude Code", "ready", version=version, path=exe, gates=gates)
+
+
+def find_git_bash(env: Env) -> str | None:
+    """Where Claude Code looks for Git Bash on Windows."""
+    configured = env.get("CLAUDE_CODE_GIT_BASH_PATH")
+    if configured and ntpath.basename(configured).lower() in ("bash.exe", "sh.exe", "bash", "sh") and env.is_file(configured):
+        return configured
+    for root in (env.get("ProgramFiles") or "C:\\Program Files", env.get("ProgramFiles(x86)") or "C:\\Program Files (x86)"):
+        candidate = ntpath.join(root, "Git", "bin", "bash.exe")
+        if env.is_file(candidate):
+            return candidate
+    git = env.which("git.exe") or env.which("git")
+    if git:
+        candidate = ntpath.join(ntpath.dirname(ntpath.dirname(git)), "bin", "bash.exe")
+        if env.is_file(candidate):
+            return candidate
+    return None
+
+
+def probe_git_bash(env: Env) -> dict[str, Any]:
+    """Claude Code's Bash tool needs Git Bash on Windows. Without it Claude Code
+    runs commands in PowerShell, which Forge3D allows too, so this never blocks."""
+    found = find_git_bash(env)
+    label = "Git Bash for Claude Code"
+    if found:
+        return _item("git_bash", label, "ready", path=found, optional=True)
+    return _item(
+        "git_bash", label, "optional_missing", optional=True,
+        reason="Git for Windows is not installed, so Claude Code runs commands in PowerShell. Forge3D works with either.",
+        fix="Install Git for Windows (https://git-scm.com/download/win) if you want Claude Code to use Bash.",
+    )
+
+
+def probe_agent(env: Env, agent: str) -> dict[str, Any]:
+    """The chosen agent as the `agent` item every generating route requires."""
+    item = probe_claude(env) if agent == "claude" else probe_codex(env)
+    item = dict(item, id="agent", label=AGENTS[agent])
+    item["detail"] = dict(item["detail"], agent=agent)
+    return item
+
+
+def probe_image_generation(agent: str, agent_item: dict[str, Any]) -> dict[str, Any]:
+    """A splat from words alone needs a reference image the agent makes. Only Codex can."""
+    gates = ("splat_text",)
+    label = "Reference image from words"
+    if agent == "codex" and agent_item["state"] in ("ready", "degraded"):
+        return _item("image_generation", label, "ready", gates=gates, optional=True, detail={"agent": agent})
+    if agent == "codex":
+        return _item(
+            "image_generation", label, "optional_missing", gates=gates, optional=True, detail={"agent": agent},
+            reason="Codex makes the reference image, and Codex is not ready.", fix=agent_item["fix"],
+        )
+    return _item(
+        "image_generation", label, "optional_missing", gates=gates, optional=True, detail={"agent": agent},
+        reason=f"{AGENTS[agent]} cannot make images, so a splat from words alone needs Codex.",
+        fix="Attach a reference image to the prompt, or choose Codex as the agent.",
     )
 
 
@@ -653,10 +808,17 @@ def compute_routes(capabilities: Mapping[str, Mapping[str, Any]]) -> dict[str, d
 # ------------------------------------------------------------------------ report
 
 
-def collect(env: Env | None = None) -> dict[str, Any]:
+def collect(env: Env | None = None, agent: str | None = None) -> dict[str, Any]:
     env = env or Env()
+    agent = agent or env.get("FORGE3D_AGENT") or DEFAULT_AGENT
+    if agent not in AGENTS:
+        agent = DEFAULT_AGENT
     items: list[dict[str, Any]] = []
-    items.append(probe_codex(env))
+    agent_item = probe_agent(env, agent)
+    items.append(agent_item)
+    items.append(probe_image_generation(agent, agent_item))
+    if agent == "claude" and env.platform == "windows":
+        items.append(probe_git_bash(env))
     blender = probe_blender(env)
     items.append(blender)
     items.append(probe_kiri(env, blender))
@@ -670,6 +832,7 @@ def collect(env: Env | None = None) -> dict[str, Any]:
         "schema": SCHEMA_VERSION,
         "forge3d_version": __version__,
         "generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "agent": {"id": agent, "name": AGENTS[agent]},
         "platform": {
             "system": env.platform,
             "python": sys.version.split()[0],
@@ -679,7 +842,7 @@ def collect(env: Env | None = None) -> dict[str, Any]:
         "routes": compute_routes(capabilities),
         "versions": {
             "forge3d": __version__,
-            "codex": capabilities["codex"]["version"],
+            "agent": capabilities["agent"]["version"],
             "blender": capabilities["blender"]["version"],
             "godot": capabilities["godot"]["version"],
             "uv": capabilities["uv"]["version"],
@@ -691,7 +854,7 @@ def collect(env: Env | None = None) -> dict[str, Any]:
 
 
 def render_text(report: Mapping[str, Any]) -> str:
-    lines = [f"Forge3D {report['forge3d_version']} on {report['platform']['system']}"]
+    lines = [f"Forge3D {report['forge3d_version']} on {report['platform']['system']}, agent {report['agent']['name']}"]
     for item in report["capabilities"].values():
         version = f" {item['version']}" if item["version"] else ""
         lines.append(f"[{item['state']:16}] {item['label']}{version}")

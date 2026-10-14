@@ -216,4 +216,4 @@ function repairForgePlugin({ bundledPlugin, runtimeState, codexExecutable = find
   }
 }
 
-module.exports = { BUNDLE_VERSION, detectExternalTools, detectWslModelsDirectory, ensureRuntimeState, findCodexExecutable, inspectForgeSkill, primeGodotProject, repairForgePlugin };
+module.exports = { BUNDLE_VERSION, detectExternalTools, detectWslModelsDirectory, ensureRuntimeState, findCodexExecutable, generatedMcpConfig, inspectForgeSkill, primeGodotProject, repairForgePlugin };

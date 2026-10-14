@@ -32,9 +32,9 @@ def make_asset(
         raise Forge3DError("--params applies only to procedural recipes.")
     if reference is None and recipe is None:
         raise Forge3DError(
-            "A free-form prompt needs the Forge3D Codex skill to author the "
-            "model. For direct CLI use, supply --reference or an explicit "
-            "--recipe."
+            "A free-form prompt needs the forge3d skill, run by an agent "
+            "(Claude Code or Codex), to author the model. For direct CLI use, "
+            "supply --reference or an explicit --recipe."
         )
     selected: str | None = None
     if reference:
@@ -628,7 +628,7 @@ def prepare_animation_request(
     run.manifest["status"] = "awaiting_codex"
     run.manifest["outputs"]["codex_request"] = str(request_path)
     run.manifest["next_step"] = (
-        "Use the Forge3D Codex skill and Blender MCP to perform this animation request."
+        "Use the forge3d skill and Blender MCP to perform this animation request."
     )
     run.write()
     return run

@@ -132,7 +132,7 @@ srv.listen(0, "127.0.0.1", async () => {
     const cap = (id, label, state, extra = {}) => ({ id, label, state, reason: state === "ready" ? "" : extra.reason || "", fix: state === "ready" ? "" : extra.fix || "", version: extra.version ?? null, path: null, detail: {}, gates: extra.gates || [], optional: Boolean(extra.optional) });
     const report = (over = {}) => {
       const capabilities = {
-        codex: cap("codex", "Codex CLI", "ready", { version: "0.159.2", gates: ["splat", "blender"] }),
+        agent: cap("agent", "Claude Code", "ready", { version: "2.1.299", gates: ["splat", "blender"] }),
         blender: cap("blender", "Blender", "ready", { version: "5.0.1", gates: ["blender", "export"] }),
         kiri: cap("kiri", "KIRI Engine extension", "ready", { version: "3.1.0", gates: ["export"] }),
         blender_mcp: cap("blender_mcp", "Blender MCP add-on", "ready", { optional: true, gates: ["blender"] }),
@@ -147,16 +147,16 @@ srv.listen(0, "127.0.0.1", async () => {
         ...(over.capabilities || {}),
       };
       const route = (label, state, blocked_by = [], degraded_by = [], optional = false) => ({ label, state, optional, reason: state === "ready" ? "" : (capabilities[(blocked_by[0] || degraded_by[0])] || {}).reason || "", requires: [], soft: [], blocked_by, degraded_by });
-      return { ok: true, schema: 1, forge3d_version: "0.3.0", generated_at: new Date().toISOString(), platform: { system: "windows" }, capabilities,
+      return { ok: true, schema: 1, forge3d_version: "0.3.0", generated_at: new Date().toISOString(), platform: { system: "windows" }, agent: { id: "claude", name: "Claude Code" }, capabilities,
         routes: over.routes || { splat: route("Gaussian splat", "ready"), blender: route("Blender", "ready"), export: route("Export", "ready"), godot: route("Godot", "ready", [], [], true) },
-        versions: { forge3d: "0.3.0", codex: "0.159.2", blender: "5.0.1", godot: "4.6.2", uv: "0.8.3", node: "22.1.0", cuda: "12.9", wsl_distro: "Ubuntu-24.04", ...(over.versions || {}) } };
+        versions: { forge3d: "0.3.0", agent: "2.1.299", blender: "5.0.1", godot: "4.6.2", uv: "0.8.3", node: "22.1.0", cuda: "12.9", wsl_distro: "Ubuntu-24.04", ...(over.versions || {}) } };
     };
     const route = (label, state, blocked_by = [], degraded_by = [], reason = "", optional = false) => ({ label, state, optional, reason, requires: [], soft: [], blocked_by, degraded_by });
     let capsResult = report();
     let runs = [], tools = { codex: true, blender: true, godot: true, wsl: true }, active = null, err = "", skill = { state: "ready" };
     if (["done", "image", "model", "checks", "logs", "menu", "dialog", "approval", "settings", "text"].includes(sc)) runs = [done, failed];
     if (sc === "checking") tools = {};
-    if (sc === "offline") { err = "Codex App Server could not start: codex not found on PATH"; tools = { codex: false, blender: true, godot: false, wsl: true }; }
+    if (sc === "offline") { err = "Claude Code stopped before the run finished (exit 1)."; tools = { codex: false, blender: true, godot: false, wsl: true }; }
     if (sc === "running") { runs = [{ ...running, created_at: iso(3), steps: [{ name: "Route request", status: "completed", started_at: iso(3), completed_at: iso(2.8) }, { name: "Generate mesh with SPAR3D", status: "running", detail: "spar3d inference", started_at: iso(2.6) }], artifacts: [] }, done, failed]; active = { runId: "r2" }; }
     if (sc === "failed") runs = [failed, done];
     if (sc === "blocked") {
@@ -177,8 +177,8 @@ srv.listen(0, "127.0.0.1", async () => {
     if (sc === "signedout") {
       runs = [done];
       capsResult = report({
-        capabilities: { codex: cap("codex", "Codex CLI", "signed_out", { version: "0.159.2", reason: "Codex is installed but not signed in.", fix: "Run `codex login` in a terminal, then check again.", gates: ["splat", "blender"] }) },
-        routes: { splat: route("Gaussian splat", "blocked", ["codex"], [], "Codex is installed but not signed in."), blender: route("Blender", "blocked", ["codex"], [], "Codex is installed but not signed in."), export: route("Export", "ready"), godot: route("Godot", "ready", [], [], "", true) },
+        capabilities: { agent: cap("agent", "Claude Code", "signed_out", { version: "2.1.299", reason: "Claude Code is installed but not signed in.", fix: "Run `claude` in a terminal and sign in with your Claude account, then press Check again.", gates: ["splat", "blender"] }) },
+        routes: { splat: route("Gaussian splat", "blocked", ["agent"], [], "Claude Code is installed but not signed in."), blender: route("Blender", "blocked", ["agent"], [], "Claude Code is installed but not signed in."), export: route("Export", "ready"), godot: route("Godot", "ready", [], [], "", true) },
       });
     }
     if (sc === "degraded") {
@@ -221,7 +221,12 @@ srv.listen(0, "127.0.0.1", async () => {
     const projectState = () => ({ project, runs, recent: sc === "startempty" ? [] : recent, recoverable: sc === "start" ? [{ id: "20261009T221500Z-1a2b3c4d", modified_at: iso(60 * 14) }] : [], preferences: { reopenLast: false } });
     const projectApi = { create: async () => projectState(), open: async () => projectState(), openRecovered: async () => projectState(), save: async () => projectState(), saveAs: async () => projectState(),
       close: async () => projectState(), reveal: async () => ({}), setSettings: async () => project, setView: async () => null, removeRecent: async () => projectState(), clearRecent: async () => projectState(), setPreferences: async () => projectState() };
-    window.forge3d = { bootstrap: async () => ({ version: "0.2.2", activeJob: active, appServerError: err, skill, tools, runs, models: [{ id: "gpt-5", displayName: "GPT-5" }], ...projectState() }),
+    const agentStatuses = { agent: "claude", statuses: {
+      claude: { id: "claude", name: "Claude Code", imageGeneration: false, installed: true, signedIn: sc !== "signedout", version: "2.1.299", reason: sc === "signedout" ? "Claude Code is installed but not signed in." : "", fix: sc === "signedout" ? "Run `claude` in a terminal and sign in with your Claude account, then press Check again." : "" },
+      codex: { id: "codex", name: "Codex", imageGeneration: true, installed: false, signedIn: false, version: "", reason: "Codex was not found.", fix: "Install the Codex app or CLI (https://developers.openai.com/codex) and sign in, then press Check again." },
+    } };
+    window.forge3d = { bootstrap: async () => ({ version: "0.2.2", agent: { id: "claude", name: "Claude Code" }, activeJob: active, appServerError: err, skill, tools, runs, models: [{ id: "opus", label: "Opus" }, { id: "sonnet", label: "Sonnet" }, { id: "haiku", label: "Haiku" }], modelDefaults: { model: "opus", effort: "medium" }, ...projectState() }),
+      agentStatus: async () => agentStatuses, models: async () => ({ models: [{ id: "opus", label: "Opus" }], defaultModel: "opus", defaultEffort: "medium" }), setAgent: async (id) => ({ agent: id, name: id === "codex" ? "Codex" : "Claude Code" }),
       project: projectApi, onState: noop, onEvent: noop, onApproval: (cb) => { window.__approve = cb; return () => {}; }, onError: noop, refreshTools: async () => projectState(), capabilities: async () => { await new Promise((r) => setTimeout(r, sc === "checkingcaps" ? 60000 : 150)); return capsResult; }, artifactAction: async () => ({}), pickAttachments: async () => [], continueRun: async () => ({}) };
   });
   const sel = async (s) => { await page.click(s).catch(() => console.log("miss", s)); };

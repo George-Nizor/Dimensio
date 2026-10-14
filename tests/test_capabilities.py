@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import ntpath
 from pathlib import Path
 
 import pytest
@@ -62,8 +63,14 @@ def make_env(platform="windows", *, rules=None, which=None, files=(), globs=None
     )
 
 
+CLAUDE_EXE = ntpath.join("C:/Users/u", ".local", "bin", "claude.exe")
+GIT_BASH = ntpath.join("C:\\Program Files", "Git", "bin", "bash.exe")
+
+
 def full_windows_env(**overrides):
     rules = [
+        ("claude.exe --version", ok("2.1.299 (Claude Code)")),
+        ("claude.exe auth status", ok('{\n  "loggedIn": true,\n  "authMethod": "claude.ai"\n}')),
         ("codex.exe --version", ok("codex-cli 0.159.2")),
         ("codex.exe login status", ok("Logged in using ChatGPT")),
         ("blender.exe --version", ok("Blender 5.0.1\n\tbuild date: x")),
@@ -83,8 +90,8 @@ def full_windows_env(**overrides):
         f"{appdata}/Blender Foundation/Blender/5.0/scripts/addons/blender_mcp.py": ["mcp.py"],
     }
     kwargs = dict(
-        rules=rules, which=which, globs=globs, environ={"APPDATA": appdata},
-        blender=Path("blender.exe"), godot=Path("godot.exe"),
+        rules=rules, which=which, globs=globs, environ={"APPDATA": appdata, "USERPROFILE": "C:/Users/u"},
+        files=(CLAUDE_EXE, GIT_BASH), blender=Path("blender.exe"), godot=Path("godot.exe"),
     )
     kwargs.update(overrides)
     return make_env(**kwargs)
@@ -99,17 +106,94 @@ def test_detect_platform():
 
 
 def test_everything_ready_on_windows():
-    report = caps.collect(full_windows_env())
+    report = caps.collect(full_windows_env(), agent="codex")
     states = {k: v["state"] for k, v in report["capabilities"].items()}
     assert set(states.values()) == {"ready"}, states
     assert {r["state"] for r in report["routes"].values()} == {"ready"}
+    assert report["agent"] == {"id": "codex", "name": "Codex"}
+    assert report["capabilities"]["agent"]["label"] == "Codex"
     assert report["versions"]["blender"] == "5.0.1"
     assert report["versions"]["godot"] == "4.6.2"
-    assert report["versions"]["codex"] == "0.159.2"
+    assert report["versions"]["agent"] == "0.159.2"
     assert report["versions"]["cuda"] == "12.9"
     assert report["versions"]["wsl_distro"] == "Ubuntu-24.04"
     assert report["capabilities"]["cuda"]["detail"]["vram_free_mib"] == 14000
     json.dumps(report)
+
+
+def test_claude_code_is_the_default_agent_and_routes_require_it():
+    report = caps.collect(full_windows_env())
+    assert report["agent"] == {"id": "claude", "name": "Claude Code"}
+    agent = report["capabilities"]["agent"]
+    assert (agent["state"], agent["label"], agent["version"], agent["path"]) == ("ready", "Claude Code", "2.1.299", CLAUDE_EXE)
+    assert agent["detail"]["agent"] == "claude"
+    assert "codex" not in report["capabilities"]
+    assert report["versions"]["agent"] == "2.1.299"
+    assert report["capabilities"]["git_bash"]["state"] == "ready"
+    for route in ("splat", "blender", "splat_text"):
+        assert "agent" in report["routes"][route]["requires"]
+    assert "codex" not in json.dumps(report["routes"])
+    assert report["routes"]["splat"]["state"] == "ready"
+    assert report["routes"]["blender"]["state"] == "ready"
+
+
+def test_a_splat_from_words_alone_needs_codex_and_says_so():
+    report = caps.collect(full_windows_env())
+    route = report["routes"]["splat_text"]
+    assert route["state"] == "blocked" and route["blocked_by"] == ["image_generation"]
+    assert route["reason"] == "Claude Code cannot make images, so a splat from words alone needs Codex."
+    item = report["capabilities"]["image_generation"]
+    assert item["optional"] is True and "Attach a reference image" in item["fix"]
+    with_codex = caps.collect(full_windows_env(), agent="codex")
+    assert with_codex["routes"]["splat_text"]["state"] == "ready"
+
+
+def test_the_agent_comes_from_the_flag_then_the_environment():
+    env = full_windows_env(environ={"APPDATA": "C:/A", "USERPROFILE": "C:/Users/u", "FORGE3D_AGENT": "codex"})
+    assert caps.collect(env)["agent"]["id"] == "codex"
+    assert caps.collect(env, agent="claude")["agent"]["id"] == "claude"
+    odd = full_windows_env(environ={"USERPROFILE": "C:/Users/u", "FORGE3D_AGENT": "gemini"})
+    assert caps.collect(odd)["agent"]["id"] == "claude"
+
+
+def test_claude_is_looked_for_in_order_and_sign_in_is_auth_status():
+    environ = {"DIMENSIO_CLAUDE_EXE": "D:/c.exe", "USERPROFILE": "C:/Users/u", "APPDATA": "C:/A"}
+    npm = ntpath.join("C:/A", "npm", "claude.cmd")
+    assert caps.find_claude(make_env(environ=environ, files=("D:/c.exe", CLAUDE_EXE))) == "D:/c.exe"
+    assert caps.find_claude(make_env(environ=environ, files=(CLAUDE_EXE,))) == CLAUDE_EXE
+    assert caps.find_claude(make_env(environ=environ, which={"claude.cmd": "C:/bin/claude.cmd"})) == "C:/bin/claude.cmd"
+    assert caps.find_claude(make_env(environ=environ, files=(npm,))) == npm
+    assert caps.find_claude(make_env(environ=environ)) is None
+
+    missing = caps.probe_claude(make_env())
+    assert missing["state"] == "missing" and "install.ps1" in missing["fix"]
+    assert "install.sh" in caps.probe_claude(make_env("linux"))["fix"]
+    signed_out = make_env(
+        which={"claude.exe": "C:/claude.exe"},
+        rules=[("--version", ok("2.1.299 (Claude Code)")), ("auth status", ok('{"loggedIn": false}', code=1))],
+    )
+    item = caps.probe_claude(signed_out)
+    assert item["state"] == "signed_out" and "`claude`" in item["fix"]
+    timeout = make_env(
+        which={"claude.exe": "C:/claude.exe"},
+        rules=[("--version", ok("2.1.299 (Claude Code)")), ("auth status", CommandError(["x"], 124, "", "Timed out"))],
+    )
+    assert caps.probe_claude(timeout)["state"] == "degraded"
+
+
+def test_missing_git_bash_is_a_note_not_a_block():
+    env = full_windows_env(files=(CLAUDE_EXE,))
+    report = caps.collect(env)
+    item = report["capabilities"]["git_bash"]
+    assert item["state"] == "optional_missing" and item["optional"] is True
+    assert "PowerShell" in item["reason"] and "git-scm.com" in item["fix"]
+    assert report["routes"]["blender"]["state"] == "ready"
+    assert report["routes"]["splat"]["state"] == "ready"
+    found = make_env(environ={"CLAUDE_CODE_GIT_BASH_PATH": "E:/git/bin/bash.exe"}, files=("E:/git/bin/bash.exe",))
+    assert caps.find_git_bash(found) == "E:/git/bin/bash.exe"
+    via_path = make_env(which={"git.exe": "D:\\Git\\cmd\\git.exe"}, files=("D:\\Git\\bin\\bash.exe",))
+    assert caps.find_git_bash(via_path) == "D:\\Git\\bin\\bash.exe"
+    assert "git_bash" not in caps.collect(full_windows_env(), agent="codex")["capabilities"]
 
 
 def test_every_item_has_the_documented_fields():
@@ -158,7 +242,7 @@ def test_blender_states():
 
 
 def test_kiri_and_mcp_missing():
-    env = full_windows_env(globs={}, environ={"APPDATA": "C:/Users/u/AppData/Roaming"})
+    env = full_windows_env(globs={}, environ={"APPDATA": "C:/Users/u/AppData/Roaming", "USERPROFILE": "C:/Users/u"})
     report = caps.collect(env)
     assert report["capabilities"]["kiri"]["state"] == "missing"
     assert report["capabilities"]["blender_mcp"]["state"] == "optional_missing"
@@ -255,10 +339,16 @@ def test_cli_json_runs_here(capsys):
     assert main(["capabilities", "--json"]) == 0
     report = json.loads(capsys.readouterr().out)
     assert report["schema"] == caps.SCHEMA_VERSION
-    assert set(report["routes"]) == {"splat", "blender", "export", "godot"}
+    assert set(report["routes"]) == {"splat", "splat_text", "blender", "export", "godot"}
+    assert report["agent"]["id"] in ("claude", "codex")
     assert report["platform"]["system"] in ("windows", "wsl", "linux", "macos")
 
 
 def test_cli_text_runs_here(capsys):
     assert main(["capabilities"]) == 0
     assert "route splat" in capsys.readouterr().out
+
+
+def test_cli_takes_the_agent(capsys):
+    assert main(["capabilities", "--json", "--agent", "codex"]) == 0
+    assert json.loads(capsys.readouterr().out)["agent"]["id"] == "codex"

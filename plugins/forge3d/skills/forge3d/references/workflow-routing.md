@@ -27,7 +27,7 @@ MCP, and retain the script with the run.
 - Reuse user-supplied references when they clearly express the target.
 - For reconstruction, prefer an isolated object, neutral lighting, simple background, no text or watermark, and orthographic-like front/side/back views with consistent proportions.
 - A single oblique view cannot establish hidden shape or semantic up/front. Record the intended orientation explicitly and reject any reconstruction that changes the reference proportions.
-- Use the image-generation capability only when a reference materially improves modelling. Preserve the image prompt and source paths in the run output.
+- Use the image-generation capability only when a reference materially improves modelling. Preserve the image prompt and source paths in the run output. Codex can generate images; Claude Code cannot, so with Claude Code use only images the user attached.
 - Avoid image-to-mesh for simple forms that Blender can build accurately in less time.
 - For TripoSplat, supply one complete isolated subject with a sharp silhouette,
   orthographic-like three-quarter framing, neutral diffuse lighting, no text,

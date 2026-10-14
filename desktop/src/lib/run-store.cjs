@@ -9,6 +9,7 @@ const { assertLeafName, assertRegularFile, assertSafeRunId, resolveContained } =
 const SCHEMA_VERSION = 2;
 const READABLE_SCHEMAS = new Set([1, 2]);
 const ACTIVE_STATUSES = new Set(["launching", "running", "cancelling"]);
+const NEVER_STARTED = "This run never started: Forge3D closed, or could not reach the agent, before it began. Run the prompt again.";
 
 function timestamp() {
   return new Date().toISOString();
@@ -186,7 +187,7 @@ class RunStore {
         artifacts: [],
         validation: {},
         tools: {},
-        codex: { thread_id: null, turn_ids: [] },
+        agent: { id: null, session_id: null, turn_ids: [] },
         transcript: [],
         failure: null,
       };
@@ -215,11 +216,32 @@ class RunStore {
     });
   }
 
-  setCodex(runId, threadId, turnId = null) {
+  // The agent working on the run and its session, so the run can be continued in the same session later.
+  setAgent(runId, { id, sessionId = null, turnId = null }) {
     return this.update(runId, (manifest) => {
-      manifest.codex ||= { thread_id: null, turn_ids: [] };
-      manifest.codex.thread_id = threadId;
-      if (turnId && !manifest.codex.turn_ids.includes(turnId)) manifest.codex.turn_ids.push(turnId);
+      const previous = manifest.agent && manifest.agent.id === id ? manifest.agent : null;
+      manifest.agent = {
+        ...(previous || {}),
+        id,
+        session_id: sessionId ?? previous?.session_id ?? null,
+        turn_ids: Array.isArray(previous?.turn_ids) ? previous.turn_ids : [],
+      };
+      if (turnId && !manifest.agent.turn_ids.includes(turnId)) manifest.agent.turn_ids.push(turnId);
+    });
+  }
+
+  // Adds one turn's cost and tokens (Claude Code reports them; Codex does not).
+  addUsage(runId, usage = {}) {
+    return this.update(runId, (manifest) => {
+      manifest.agent ||= { id: null, session_id: null, turn_ids: [] };
+      const total = manifest.agent.usage || { cost_usd: 0, input_tokens: 0, output_tokens: 0, turns: 0 };
+      const add = (value) => (Number.isFinite(Number(value)) ? Number(value) : 0);
+      manifest.agent.usage = {
+        cost_usd: Math.round((total.cost_usd + add(usage.costUsd)) * 1e6) / 1e6,
+        input_tokens: total.input_tokens + add(usage.inputTokens),
+        output_tokens: total.output_tokens + add(usage.outputTokens),
+        turns: total.turns + add(usage.turns),
+      };
     });
   }
 
@@ -260,11 +282,17 @@ class RunStore {
     });
   }
 
+  // On opening a project nothing of it is running, so a run caught mid-job becomes interrupted (it can be resumed),
+  // and a run still "prepared" never started: it failed, and says why.
   recoverInterrupted() {
     const recovered = [];
     for (const manifest of this.list()) {
-      if (manifest.archived || !ACTIVE_STATUSES.has(manifest.status)) continue;
-      this.setStatus(manifest.run_id, "interrupted", "Forge3D recovered this job after the desktop process stopped unexpectedly.");
+      if (manifest.archived) continue;
+      if (ACTIVE_STATUSES.has(manifest.status)) {
+        this.setStatus(manifest.run_id, "interrupted", "Forge3D recovered this job after the desktop process stopped unexpectedly.");
+      } else if (manifest.status === "prepared") {
+        this.setStatus(manifest.run_id, "failed", NEVER_STARTED);
+      } else continue;
       recovered.push(this.refreshArtifacts(manifest.run_id));
     }
     return recovered;
@@ -307,4 +335,16 @@ class RunStore {
   }
 }
 
-module.exports = { READABLE_SCHEMAS, RunStore, atomicWriteJson, validateManifest };
+// The agent session a run can be continued in: { id, sessionId }. Runs written before agents became a choice hold
+// a Codex thread under codex.thread_id instead, and are still read.
+function agentSession(manifest) {
+  const agent = manifest?.agent;
+  if (agent && typeof agent.id === "string" && typeof agent.session_id === "string" && agent.session_id) {
+    return { id: agent.id, sessionId: agent.session_id };
+  }
+  const thread = manifest?.codex?.thread_id;
+  if (typeof thread === "string" && thread) return { id: "codex", sessionId: thread };
+  return { id: null, sessionId: null };
+}
+
+module.exports = { NEVER_STARTED, READABLE_SCHEMAS, RunStore, agentSession, atomicWriteJson, renameWithRetry, validateManifest };

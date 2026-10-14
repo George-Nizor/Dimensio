@@ -16,15 +16,28 @@ const {
   materializeProject,
   newManifest,
   projectFromArgv,
+  projectStem,
+  projectTrashTargets,
   readProject,
   recoverableScratch,
+  renameProject,
+  retireScratch,
   runsRoot,
+  SAVED_MARKER,
   sameSettings,
   sanitizeView,
   scratchFolder,
   windowTitle,
   writeProject,
+  writeProjectView,
 } = require("../src/lib/project-store.cjs");
+
+const main = fs.readFileSync(path.join(__dirname, "..", "src", "main.cjs"), "utf8");
+const body = (name) => {
+  const start = main.indexOf(`function ${name}(`);
+  assert.ok(start >= 0, `main.cjs has ${name}`);
+  return main.slice(start, main.indexOf("\n}\n", start));
+};
 
 function temporaryDirectory(t) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "forge3d-project-"));
@@ -183,4 +196,152 @@ test("a .forge3d path on the command line is the project to open", (t) => {
   fs.writeFileSync(file, "{}");
   assert.equal(projectFromArgv([".", "--inspect", file]), file);
   assert.equal(projectFromArgv(["relative.forge3d", path.join(root, "missing.forge3d")]), null);
+});
+
+/* ── project fixes ─────────────────────────────────────────────── */
+
+test("fix 1: the selection is written to a saved project as it changes, without its unsaved settings", (t) => {
+  const root = temporaryDirectory(t);
+  const file = path.join(root, "Bottle", "Bottle.forge3d");
+  fs.mkdirSync(path.dirname(file));
+  const saved = writeProject(file, newManifest({ settings: { quality: "draft" } }));
+  const runId = "0d8a7c2e-3f4b-4c5d-8e9f-0a1b2c3d4e5f";
+  const next = writeProjectView(file, saved, { selected_run_id: runId, selected_artifact: "out/a.glb" });
+  const disk = readProject(file);
+  assert.deepEqual(disk.view, { selected_run_id: runId, selected_artifact: "out/a.glb" });
+  assert.deepEqual(disk.settings, { quality: "draft" }, "the saved settings, not whatever is unsaved");
+  assert.equal(next.project_id, saved.project_id);
+  // main.cjs writes it from the project-view handler for saved projects.
+  assert.match(main, /handle\("forge3d:project-view"[^]*?writeProjectView\(project\.file, project\.manifest, project\.view\)/);
+});
+
+test("fix 2: saving an untitled project stops the agent before moving its folder", () => {
+  const save = body("saveProjectAs");
+  const release = save.indexOf("await releaseProjectFolder()");
+  assert.ok(release > 0, "the agent is stopped");
+  assert.ok(release < save.indexOf("materializeProject("), "before the folder moves");
+  assert.match(body("releaseProjectFolder"), /agents\.closeAll\(\)/);
+  assert.match(save, /retireScratch\(source\.folder, layout\.file\)/);
+});
+
+test("fix 2: a scratch folder that could not be removed after saving is never offered as unsaved work", async (t) => {
+  const state = temporaryDirectory(t);
+  const scratch = createScratch(state);
+  await addRun(scratch);
+  // Simulate the Windows case: the copy is in place but the scratch folder stays (a file in it was in use).
+  fs.writeFileSync(path.join(scratch, SAVED_MARKER), JSON.stringify({ saved_to: "D:\\Art\\Bottle\\Bottle.forge3d" }));
+  assert.deepEqual(recoverableScratch(state), []);
+  assert.equal(fs.existsSync(scratch), false, "and it is cleared once it can be");
+
+  const removable = createScratch(state);
+  await addRun(removable);
+  assert.equal(retireScratch(removable, "D:\\x.forge3d"), true);
+  assert.equal(fs.existsSync(removable), false);
+});
+
+test("fix 3: closing the window during a run always asks, even with nothing unsaved", () => {
+  const { closeAction, stopRunQuestion } = require("../src/lib/close-guard.cjs");
+  assert.equal(closeAction({ running: true, project: { untitled: false }, dirty: false }), "ask");
+  assert.equal(closeAction({ running: false, project: { untitled: false }, dirty: false }), "close");
+  assert.equal(closeAction({ running: false, project: { untitled: true }, dirty: true }), "ask");
+  assert.equal(closeAction({ running: false, project: null }), "close");
+  const question = stopRunQuestion({ agentName: "Claude Code", runName: "A brass lantern with a glass chimney and a handle on top that swings", doing: "closing Forge3D" });
+  assert.equal(question.message, "Stop the run before closing Forge3D?");
+  assert.match(question.detail, /^Claude Code is still working on "A brass lantern .*…"\. Stopping it keeps the files/);
+  assert.deepEqual(question.buttons, ["Stop the run", "Cancel"]);
+  assert.equal(question.cancelId, 1);
+  assert.equal(question.defaultId, 1, "Enter does not stop a run");
+  assert.doesNotMatch(JSON.stringify(question), /[“”—–]/);
+  const close = body("onWindowClose");
+  assert.match(close, /closeAction\(\{ running, project, dirty: projectDirty\(\) \}\)/);
+  assert.ok(close.indexOf("confirmStopRun") < close.indexOf("confirmLeave"), "the run is asked about before saving");
+  assert.match(body("stopActiveRun"), /setStatus\(job\.runId, "interrupted", reason\)/);
+});
+
+test("fix 4: renaming a project renames its file, and its folder when the folder has its name", (t) => {
+  const root = temporaryDirectory(t);
+  const file = path.join(root, "Bottle", "Bottle.forge3d");
+  fs.mkdirSync(path.join(root, "Bottle", "runs"), { recursive: true });
+  writeProject(file, newManifest());
+  const renamed = renameProject(file, "  Glass bottle.forge3d ");
+  assert.deepEqual(renamed, { file: path.join(root, "Glass bottle", "Glass bottle.forge3d"), folder: path.join(root, "Glass bottle"), name: "Glass bottle" });
+  assert.equal(fs.existsSync(renamed.file), true);
+  assert.equal(fs.existsSync(path.join(renamed.folder, "runs")), true);
+  assert.equal(fs.existsSync(path.join(root, "Bottle")), false);
+  assert.deepEqual(renameProject(renamed.file, "Glass bottle"), { file: renamed.file, folder: renamed.folder, name: "Glass bottle" });
+
+  // A folder that does not carry the project's name (the adopted library) keeps its name.
+  const library = path.join(root, "Forge3D");
+  fs.mkdirSync(path.join(library, "Projects"), { recursive: true });
+  const earlier = path.join(library, "Earlier runs.forge3d");
+  writeProject(earlier, newManifest());
+  assert.deepEqual(renameProject(earlier, "Old work"), { file: path.join(library, "Old work.forge3d"), folder: library, name: "Old work" });
+
+  fs.mkdirSync(path.join(root, "Taken"));
+  assert.throws(() => renameProject(renamed.file, "Taken"), /already exists/);
+  assert.equal(fs.existsSync(renamed.file), true, "nothing moved");
+  for (const bad of ["", "a/b", "x:y", "dots.", "..", " "]) assert.throws(() => projectStem(bad), /project name/);
+});
+
+test("fix 4: deleting a project trashes its folder when it holds only the project, else only the project's parts", (t) => {
+  const root = temporaryDirectory(t);
+  const file = path.join(root, "Bottle", "Bottle.forge3d");
+  fs.mkdirSync(path.join(root, "Bottle", "runs"), { recursive: true });
+  writeProject(file, newManifest());
+  fs.writeFileSync(path.join(root, "Bottle", "desktop.ini"), "");
+  assert.deepEqual(projectTrashTargets(file), { whole: true, targets: [path.join(root, "Bottle")] });
+
+  const library = path.join(root, "Forge3D");
+  fs.mkdirSync(path.join(library, "runs"), { recursive: true });
+  fs.mkdirSync(path.join(library, "Projects"));
+  const earlier = path.join(library, "Earlier runs.forge3d");
+  writeProject(earlier, newManifest());
+  assert.deepEqual(projectTrashTargets(earlier), { whole: false, targets: [earlier, path.join(library, "runs")] }, "Projects\\ beside it is never touched");
+
+  const remove = body("deleteOpenProject");
+  assert.match(remove, /showMessageBox/);
+  assert.ok(remove.indexOf("showMessageBox") < remove.indexOf("shell.trashItem"), "asks before anything moves");
+  assert.ok(remove.indexOf("releaseProjectFolder") < remove.indexOf("shell.trashItem"), "the agent is stopped first");
+  assert.match(remove, /recentProjects\.remove\(file\)/);
+  assert.match(body("renameOpenProject"), /releaseProjectFolder\(\)[^]*renameProject\(previous, payload\.name\)/);
+});
+
+test("fix 4: one Forge3D at a time; a second launch focuses the window and opens the project it names", (t) => {
+  assert.match(main, /const singleInstance = app\.requestSingleInstanceLock\(\);\nif \(!singleInstance\) app\.quit\(\);/);
+  assert.match(main, /app\.whenReady\(\)\.then\(async \(\) => \{\n  if \(!singleInstance\) return;/);
+  assert.match(main, /app\.on\("second-instance", \(_event, argv\) => onSecondInstance\(argv\)\)/);
+  const second = body("onSecondInstance");
+  assert.match(second, /mainWindow\.focus\(\)/);
+  assert.match(second, /projectFromArgv\(argv\.slice\(1\)\)[^]*openProject\(\{ path: file \}\)/);
+  // The argv a second instance hands over carries Chromium switches; only an existing .forge3d path counts.
+  const root = temporaryDirectory(t);
+  const file = path.join(root, "Pod.forge3d");
+  writeProject(file, newManifest());
+  assert.equal(projectFromArgv(["--allow-file-access-from-files", "--original-process-start-time=1", file]), file);
+  assert.equal(projectFromArgv(["--flag", path.join(root, "Gone.forge3d")]), null);
+});
+
+test("fix 5: Run checks the agent before it makes a run folder", () => {
+  const handler = main.slice(main.indexOf('handle("forge3d:start-run"'), main.indexOf('handle("forge3d:continue-run"'));
+  assert.ok(handler.indexOf("await ensureAgentReady()") > 0, "the agent is checked");
+  assert.ok(handler.indexOf("await ensureAgentReady()") < handler.indexOf("store().create("), "before the run folder exists");
+  assert.match(body("ensureAgentReady"), /driver\.prepare\(agentContext\(\)\)/);
+});
+
+test("fix 5: on opening a project, a run that never started fails with a reason and a live one is interrupted", async (t) => {
+  const { NEVER_STARTED } = require("../src/lib/run-store.cjs");
+  const root = temporaryDirectory(t);
+  const store = new RunStore(path.join(root, "runs"));
+  const stale = await store.create({ prompt: "A lantern" });
+  const live = await store.create({ prompt: "A crate" });
+  store.setStatus(live.run_id, "running");
+  const done = await store.create({ prompt: "A barrel" });
+  store.setStatus(done.run_id, "completed");
+  const recovered = Object.fromEntries(store.recoverInterrupted().map((run) => [run.run_id, run]));
+  assert.equal(recovered[stale.run_id].status, "failed");
+  assert.equal(recovered[stale.run_id].failure, NEVER_STARTED);
+  assert.match(NEVER_STARTED, /never started/);
+  assert.equal(recovered[live.run_id].status, "interrupted");
+  assert.equal(recovered[done.run_id], undefined);
+  assert.equal(store.find(done.run_id).manifest.status, "completed");
 });

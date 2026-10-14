@@ -7,7 +7,8 @@ const OFFLINE_FIX = "Reinstall Forge3D, or run `forge3d capabilities --json` in 
 
 // Wraps `forge3d capabilities --json`: asynchronous (a cold WSL boot takes seconds, so it must
 // never run on the main thread), cached, and de-duplicated while a probe is in flight. A failed
-// probe never throws; it resolves to `{ ok: false, error, fix }` so the renderer can say so.
+// probe never throws; it resolves to `{ ok: false, error, fix }` so the renderer can say so. `args` may be a function,
+// read at each probe, so the report can follow the chosen agent (`--agent claude`).
 function createCapabilitiesService({
   command,
   args = ["capabilities", "--json"],
@@ -23,7 +24,7 @@ function createCapabilitiesService({
 
   function run() {
     return new Promise((resolve) => {
-      execFileImpl(command, args, { env, cwd, timeout: timeoutMs, windowsHide: true, maxBuffer: 4 * 1024 * 1024 }, (error, stdout, stderr) => {
+      execFileImpl(command, typeof args === "function" ? args() : args, { env, cwd, timeout: timeoutMs, windowsHide: true, maxBuffer: 4 * 1024 * 1024 }, (error, stdout, stderr) => {
         if (error) {
           const detail = String(stderr || error.message || "").trim().split(/\r?\n/).slice(-3).join(" ");
           resolve({ ok: false, error: error.killed ? "The capability check timed out." : `The capability check failed: ${detail}`, fix: OFFLINE_FIX });

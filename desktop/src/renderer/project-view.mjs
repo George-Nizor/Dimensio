@@ -10,6 +10,10 @@ export const SHORTCUTS = Object.freeze({
 
 const RECENT_IN_MENU = 6;
 
+function switching(busy) {
+  return busy ? "Wait for the active run to finish first" : "";
+}
+
 function sameProject(entry, project) {
   if (!entry || !project?.file) return false;
   return String(entry.path).toLowerCase() === String(project.file).toLowerCase();
@@ -23,11 +27,13 @@ export function recentEntries(recent = [], project = null, limit = RECENT_IN_MEN
 /** The File menu as data: action items, "-" separators and { heading } labels. `busy` is a run in flight. */
 export function fileMenuModel({ project = null, recent = [], busy = false } = {}) {
   const open = Boolean(project);
-  const switching = busy ? "Wait for the active run to finish first" : "";
+  const saved = open && !project.untitled;
+  const savedOnly = !open ? "" : busy ? switching(busy) : !saved ? "Save the project first" : "";
+  const switchingTitle = switching(busy);
   const recents = recentEntries(recent, project);
   return [
-    { id: "new", icon: "add", label: "New project", hint: SHORTCUTS.new, disabled: busy, title: switching },
-    { id: "open", icon: "folder", label: "Open project…", hint: SHORTCUTS.open, disabled: busy, title: switching },
+    { id: "new", icon: "add", label: "New project", hint: SHORTCUTS.new, disabled: busy, title: switchingTitle },
+    { id: "open", icon: "folder", label: "Open project…", hint: SHORTCUTS.open, disabled: busy, title: switchingTitle },
     ...(recents.length ? [
       { heading: "Open recent" },
       ...recents.map((entry) => ({
@@ -42,10 +48,12 @@ export function fileMenuModel({ project = null, recent = [], busy = false } = {}
     ] : []),
     "-",
     { id: "save", icon: "export", label: "Save", hint: SHORTCUTS.save, disabled: !open },
-    { id: "save-as", icon: "copy", label: "Save as…", hint: SHORTCUTS["save-as"], disabled: !open || busy, title: open && busy ? switching : "" },
+    { id: "save-as", icon: "copy", label: "Save as…", hint: SHORTCUTS["save-as"], disabled: !open || busy, title: open && busy ? switchingTitle : "" },
+    { id: "rename", icon: "page", label: "Rename project…", disabled: !saved || busy, title: savedOnly },
     "-",
     { id: "reveal", icon: "folder", label: "Show project folder", disabled: !open },
-    { id: "close", icon: "close", label: "Close project", disabled: !open || busy, title: open && busy ? switching : "" },
+    { id: "close", icon: "close", label: "Close project", disabled: !open || busy, title: open && busy ? switchingTitle : "" },
+    { id: "delete", icon: "trash", label: "Delete project…", disabled: !saved || busy, title: savedOnly },
   ];
 }
 

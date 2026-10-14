@@ -2,7 +2,8 @@
 // the renderer shows (a verdict, rows grouped required / optional, the status-bar versions) and whether Run is allowed.
 // The renderer only draws what comes out of here.
 
-export const ROUTE_LABELS = { splat: "Gaussian splat", blender: "Blender", export: "Export", godot: "Godot" };
+export const ROUTE_LABELS = { splat: "Gaussian splat", splat_text: "Gaussian splat from words", blender: "Blender", export: "Export", godot: "Godot" };
+const DEFAULT_AGENT = { id: "claude", name: "Claude Code" };
 
 const PROBLEM_STATES = new Set(["missing", "signed_out", "degraded"]);
 const STATE_WORDS = { ready: "Ready", missing: "Missing", signed_out: "Signed out", degraded: "Needs attention", optional_missing: "Not set up" };
@@ -13,10 +14,11 @@ export function stateWord(state) {
 }
 
 // Which route the run settings commit to. Only an explicit choice commits: the default Target is a file format
-// and says nothing about the route, and Auto lets Codex choose, so those return null.
-export function routeForSettings(settings = {}) {
+// and says nothing about the route, and Auto lets the agent choose, so those return null. A splat with no image
+// attached is "splat_text": the agent has to make the reference image, which only Codex can.
+export function routeForSettings(settings = {}, { hasImage = true } = {}) {
   const { workflow = "auto", tool = "auto" } = settings;
-  if (workflow === "gaussian-splat" || tool === "triposplat") return "splat";
+  if (workflow === "gaussian-splat" || tool === "triposplat") return hasImage ? "splat" : "splat_text";
   if (workflow === "authored-blender" || tool === "blender") return "blender";
   return null;
 }
@@ -35,7 +37,7 @@ export function toolVersionsFromReport(report) {
   const versions = report?.versions || {};
   const pick = (value) => (typeof value === "string" && value.trim() ? value.trim() : undefined);
   const result = {
-    codex: pick(versions.codex),
+    agent: pick(versions.agent),
     blender: pick(versions.blender),
     godot: pick(versions.godot),
     wsl: pick(versions.wsl_distro),
@@ -78,11 +80,14 @@ function verdictForRoute(report, routeId) {
 }
 
 // capabilities: null while the first check runs, { ok: true, ...report } or { ok: false, error, fix }.
-export function deriveReadiness({ capabilities = null, settings = {}, appServerError = "" } = {}) {
-  const route = routeForSettings(settings);
-  const base = { route, routeLabel: route ? ROUTE_LABELS[route] : "", required: [], optional: [], versions: {}, unavailableRoutes: [], culprits: [], culpritIds: [], reason: "", fix: "", error: "", checked: false };
+// agent: the chosen agent ({ id, name }). hasImage: an image is attached to the prompt.
+export function deriveReadiness({ capabilities = null, settings = {}, appServerError = "", agent = DEFAULT_AGENT, hasImage = false } = {}) {
+  const agentName = capabilities?.agent?.name || agent?.name || DEFAULT_AGENT.name;
+  let route = routeForSettings(settings, { hasImage });
+  if (route === "splat_text" && capabilities?.ok && !capabilities.routes?.splat_text) route = "splat"; // a report from before splat_text
+  const base = { route, routeLabel: route ? ROUTE_LABELS[route] : "", agentName, required: [], optional: [], versions: {}, unavailableRoutes: [], culprits: [], culpritIds: [], reason: "", fix: "", error: "", checked: false };
 
-  if (!capabilities) return { ...base, phase: "checking", reason: "Checking this machine for Codex, Blender and the splat stack." };
+  if (!capabilities) return { ...base, phase: "checking", reason: `Checking this machine for ${agentName}, Blender and the splat stack.` };
   if (!capabilities.ok) {
     return { ...base, phase: "error", error: capabilities.error || "The capability check did not run.", fix: capabilities.fix || "", reason: "Forge3D could not check this machine, so it cannot say whether a run will work." };
   }
@@ -104,46 +109,50 @@ export function deriveReadiness({ capabilities = null, settings = {}, appServerE
   if (route) {
     verdict = verdictForRoute(report, route);
   } else {
-    // Auto (or a tool with no route of its own): Codex drives every route, and at least one generating route must work.
-    const codex = report.capabilities?.codex;
-    const generating = ["splat", "blender"].filter((id) => report.routes?.[id]);
+    // Auto (or a tool with no route of its own): the agent drives every route, and at least one generating route
+    // must work. Without an attached image a splat has to start from words.
+    const agentItem = report.capabilities?.agent;
+    const splatRoute = !hasImage && report.routes?.splat_text ? "splat_text" : "splat";
+    const generating = [splatRoute, "blender"].filter((id) => report.routes?.[id]);
     const blocked = generating.filter((id) => report.routes[id].state === "blocked");
     result.unavailableRoutes = blocked.map((id) => ROUTE_LABELS[id]);
-    if (codex && (codex.state === "missing" || codex.state === "signed_out")) {
-      verdict = { phase: "blocked", reason: codex.reason || "Codex is not ready.", fix: codex.fix || "", culprits: [codex.label || "Codex"], culpritIds: ["codex"] };
+    if (agentItem && (agentItem.state === "missing" || agentItem.state === "signed_out")) {
+      verdict = { phase: "blocked", reason: agentItem.reason || `${agentName} is not ready.`, fix: agentItem.fix || "", culprits: [agentItem.label || agentName], culpritIds: ["agent"] };
     } else if (generating.length && blocked.length === generating.length) {
       const first = report.routes[blocked[0]];
       const item = report.capabilities[first.blocked_by?.[0]];
       verdict = { phase: "blocked", reason: "No generating route is ready on this machine.", fix: item?.fix || "", culprits: culpritLabels(report, generating.flatMap((id) => report.routes[id].blocked_by || [])), culpritIds: generating.flatMap((id) => report.routes[id].blocked_by || []) };
-    } else if (codex?.state === "degraded") {
-      verdict = { phase: "degraded", reason: codex.reason || "Codex needs attention.", fix: codex.fix || "", culprits: [codex.label || "Codex"], culpritIds: ["codex"] };
+    } else if (agentItem?.state === "degraded") {
+      verdict = { phase: "degraded", reason: agentItem.reason || `${agentName} needs attention.`, fix: agentItem.fix || "", culprits: [agentItem.label || agentName], culpritIds: ["agent"] };
     } else {
       verdict = { phase: "ready", reason: "", fix: "", culprits: [], culpritIds: [] };
     }
   }
 
   const merged = { ...result, ...verdict };
-  // A Codex session that ended is not a verdict on the machine, and Run starts a new one, so it warns and never blocks.
+  // An agent session that ended is not a verdict on the machine, and Run starts a new one, so it warns and never blocks.
   if (appServerError && merged.phase !== "blocked") {
-    return { ...merged, phase: "degraded", offline: true, reason: `The last Codex session ended: ${appServerError}`, fix: "Run starts a new session. If it fails again, use Check again after fixing Codex." };
+    return { ...merged, phase: "degraded", offline: true, reason: `The last ${agentName} session ended: ${appServerError}`, fix: `Run starts a new session. If it fails again, use Check again after fixing ${agentName}.` };
   }
   return merged;
 }
 
-// What the Run button may do. blocked disables it (steering a live job is never gated); degraded and error only warn.
+// What the Run button may do. Run waits for the setup check, and stays off when it is blocked or could not be done:
+// a run started then would make a run folder for an agent that may not be there. Steering a live job is never gated.
+// degraded only warns.
 export function runGate(readiness) {
   switch (readiness.phase) {
     case "blocked": return { allowed: false, level: "blocked", chip: readiness.culprits.length === 1 ? `Needs ${readiness.culprits[0]}` : "Setup needed", message: `Run is off: ${readiness.reason}${readiness.fix ? ` ${readiness.fix.replaceAll("`", "")}` : ""}` };
     case "degraded": return { allowed: true, level: "warn", chip: "Check setup", message: readiness.reason };
-    case "error": return { allowed: true, level: "warn", chip: "Setup unchecked", message: `Setup could not be checked. ${readiness.error}` };
-    case "checking": return { allowed: true, level: "info", chip: "Checking setup", message: readiness.reason };
+    case "error": return { allowed: false, level: "blocked", chip: "Setup unchecked", message: `Run is off: setup could not be checked. ${readiness.error}${readiness.fix ? ` ${readiness.fix.replaceAll("`", "")}` : ""}` };
+    case "checking": return { allowed: false, level: "info", chip: "Checking setup", message: "Run is off until the setup check finishes." };
     default: return { allowed: true, level: "ok", chip: "", message: "" };
   }
 }
 
-// The status bar: one entry per tool the person cares about, with a real version or none.
+// The status bar: one entry per tool the person cares about, with a real version or none. The first is the agent.
 export function statusEntries(readiness, tools = {}) {
-  const ids = [["Codex", "codex"], ["Blender", "blender"], ["Godot", "godot"], ["WSL", "wsl"]];
+  const ids = [[readiness.agentName || DEFAULT_AGENT.name, "agent"], ["Blender", "blender"], ["Godot", "godot"], ["WSL", "wsl"]];
   return ids.map(([name, id]) => {
     const item = [...readiness.required, ...readiness.optional].find((candidate) => candidate.id === id);
     let state;
@@ -176,18 +185,42 @@ export function setupHeadline(readiness, { firstRun = false } = {}) {
     case "error":
       return { title: "Setup could not be checked", lead: readiness.reason };
     case "blocked": {
-      const codex = readiness.culpritIds?.includes("codex") ? readiness.required.find((row) => row.id === "codex") : null;
-      const title = codex ? (codex.state === "signed_out" ? "Codex isn't signed in" : "Codex isn't reachable")
+      const agent = readiness.culpritIds?.includes("agent") ? readiness.required.find((row) => row.id === "agent") : null;
+      const title = agent ? `${agent.label} isn't ${agent.state === "signed_out" ? "signed in" : "installed"}`
         : readiness.routeLabel ? `${readiness.routeLabel} isn't ready` : "No route is ready yet";
       return { title, lead: `${readiness.reason} Run stays off until this is fixed.` };
     }
     case "degraded":
       return readiness.offline
-        ? { title: "The Codex session ended", lead: readiness.reason }
+        ? { title: `The ${readiness.agentName || DEFAULT_AGENT.name} session ended`, lead: readiness.reason }
         : { title: "Ready, with a caveat", lead: `${readiness.reason} Run is still available.` };
     default:
       return firstRun
         ? { title: "What shall we forge?", lead: "Everything Forge3D needs is ready. Describe an asset in the prompt bar." }
         : { title: "Everything is ready", lead: "Every dependency Forge3D checked is in place." };
   }
+}
+
+// The agent choice on the setup card, from window.forge3d.agentStatus(): one row per agent with its state, what it
+// can do that matters here, and the install or sign-in fix when it is not ready.
+export function agentChoices(result) {
+  const statuses = result?.statuses || {};
+  return Object.values(statuses).map((status) => {
+    const state = !status.installed ? "missing" : !status.signedIn ? "signed_out" : "ready";
+    return {
+      id: status.id,
+      name: status.name || status.id,
+      chosen: status.id === result.agent,
+      state,
+      stateWord: state === "missing" ? "Not installed" : stateWord(state),
+      version: typeof status.version === "string" ? status.version : "",
+      reason: state === "ready" ? "" : String(status.reason || ""),
+      fix: state === "ready" ? "" : String(status.fix || ""),
+      images: status.imageGeneration ? "Makes the reference image for a splat from words." : "Cannot make images, so a splat needs an attached reference image.",
+    };
+  });
+}
+
+export function isImagePath(file) {
+  return /\.(png|jpe?g|webp|gif)$/i.test(String(file || ""));
 }

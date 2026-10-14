@@ -51,3 +51,14 @@ test("rejects an unknown schema or state", async () => {
   const result = await createCapabilitiesService({ command: "f", execFileImpl: impl }).get();
   assert.equal(result.ok, false);
 });
+
+test("the probe asks about the agent chosen at the time, and invalidate drops the old answer", async () => {
+  const { impl, calls } = fake([{ stdout: JSON.stringify(report) }, { stdout: JSON.stringify(report) }]);
+  let agent = "claude";
+  const service = createCapabilitiesService({ command: "forge3d", execFileImpl: impl, args: () => ["capabilities", "--json", "--agent", agent] });
+  await service.get();
+  agent = "codex";
+  service.invalidate();
+  await service.get();
+  assert.deepEqual(calls.map((call) => call.args.at(-1)), ["claude", "codex"]);
+});
