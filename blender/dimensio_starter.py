@@ -26,6 +26,7 @@ import bpy
 from mathutils import Euler, Vector
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+sys.dont_write_bytecode = True  # the toolkit folder may be read-only once installed
 sys.path.insert(0, HERE)
 
 from dimensio_common import (  # noqa: E402

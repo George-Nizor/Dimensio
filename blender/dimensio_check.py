@@ -66,6 +66,7 @@ import bpy
 import numpy as np
 from mathutils import Matrix, Vector
 
+sys.dont_write_bytecode = True  # the toolkit folder may be read-only once installed
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from dimensio_common import (  # noqa: E402
