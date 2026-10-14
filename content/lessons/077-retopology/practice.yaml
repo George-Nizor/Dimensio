@@ -1,0 +1,29 @@
+# Practice for lesson 77. The item marked main is the lesson's exercise.
+
+- id: retopo-stone
+  main: true
+  title: Retopologise a stone
+  kind: drill
+  minutes: 25
+  text: "Open the exercise. Build a low-poly stone over the sculpt: a cube cut three times, shrinkwrapped onto the sculpt and applied. Then slide vertices with Face Project snapping so edges follow the stone's ridges. Keep it under 300 triangles, with no holes."
+  steps: [Start from a cube, Wrap it onto the stone, See both at once, Slide vertices along the surface, Patch with Poly Build]
+  starter: sculpted-stone
+  timer: { minutes: 25 }
+  reference: { diagram: example }
+  measure:
+    - { metric: tris, max: 300, label: "Under 300 triangles" }
+    - { metric: ngons, max: 0, label: "No n-gons" }
+    - { metric: nonManifoldEdges, max: 0, label: "No holes or loose edges" }
+    - { metric: height, min: 0.45, label: "At least 0.45 m tall, like the sculpt" }
+    - { metric: width, max: 0.9, label: "No wider than 0.9 m" }
+
+- id: decimate-stone
+  title: A stone with Decimate
+  kind: drill
+  minutes: 10
+  text: Open the exercise. Select Stone sculpt, add a Decimate modifier and lower Ratio until the modifier's face count reads about 300. Turn on the Wireframe overlay and compare its triangles with your retopology.
+  starter: bake-stone
+  timer: { minutes: 10 }
+  check:
+    - The decimated sculpt keeps the stone's outline.
+    - Its triangles point every way, unlike your even quads.

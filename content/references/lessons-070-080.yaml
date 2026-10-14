@@ -1,0 +1,15 @@
+# Reference pictures for lessons 70 to 80. These are the existing renders of two example models in
+# models.yaml (made by desktop/scripts/reference-models.py from Kenney's CC0 kits), listed as
+# pictures so lesson 79's project can show the rock and the tree side by side.
+
+- file: models/kenney-survival-rock/persp.png
+  credit: "Kenney, Survival Kit, rendered for Dimensio"
+  alt: "A tall grey rock made of large flat faces, with two smaller rocks at its base and a few pebbles beside them."
+  source: "https://kenney.nl/assets/survival-kit"
+  licence: CC0
+
+- file: models/kenney-nature-tree/persp.png
+  credit: "Kenney, Nature Kit, rendered for Dimensio"
+  alt: "A simple tree with a thin light brown trunk, two stubby side branches, and a tall rounded canopy of flat teal-green faces."
+  source: "https://kenney.nl/assets/nature-kit"
+  licence: CC0

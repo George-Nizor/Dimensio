@@ -1,0 +1,21 @@
+# Practice for lesson 74. The item marked main is the lesson's exercise.
+
+- id: portfolio-sheet
+  main: true
+  title: Three pictures of your assets
+  kind: project
+  minutes: 45
+  text: "Append your crate, barrel, sword, chest, table and chair into one new file and arrange them on a floor. Light them and frame them with the camera. Save three 1920 by 1080 PNGs: an EEVEE colour render, a clay render and a clay render with the wireframe."
+  steps: [Gather your props, Arrange and light them, Render in colour, Render clay, Add the wireframe]
+  timer: { minutes: 45 }
+  reference: { diagram: example }
+
+- id: portfolio-retest
+  title: Portfolio pictures from memory
+  kind: retest
+  minutes: 30
+  text: A week after this lesson, pick any three of your assets and make the same three pictures without opening the lesson.
+  timer: { minutes: 30 }
+  check:
+    - You made all three pictures without looking anything up.
+    - No grid, axes or cursor shows in the clay pictures.

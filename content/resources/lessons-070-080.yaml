@@ -1,0 +1,41 @@
+# Resources added for lessons 70 to 80 (cameras to Bézier curves), beyond catalogue.yaml.
+# Each YouTube video was checked on 2026-10-15 through oEmbed (title and channel match, HTTP 200)
+# and on its watch page (length, upload date, playable in embeds, description and chapters).
+# "blender" is the release that was current on the upload date, for videos made before 5.0.
+
+# 74. A portfolio render
+
+- id: blender-forge-clay-renders
+  title: Make Clay Renders in Blender
+  teacher: Blender Forge
+  url: https://www.youtube.com/watch?v=rRKOj2ikcRM
+  kind: video
+  minutes: 2
+  youtube: rRKOj2ikcRM
+  blender: "4.3"
+  cost: free
+  checked: 2026-10-15
+
+# 79. A rock and a tree
+
+- id: grant-abbitt-low-poly-rocks
+  title: "Low Poly Rocks: Quick and Easy"
+  teacher: Grant Abbitt
+  url: https://www.youtube.com/watch?v=1H2YaRPfpdM
+  kind: video
+  minutes: 3
+  youtube: 1H2YaRPfpdM
+  blender: "3.4"
+  cost: free
+  checked: 2026-10-15
+
+- id: joel-nantel-low-poly-trees
+  title: How to Make Low Poly Trees in Blender
+  teacher: Joel Nantel
+  url: https://www.youtube.com/watch?v=3JXjDPZm05U
+  kind: video
+  minutes: 23
+  youtube: 3JXjDPZm05U
+  blender: "4.3"
+  cost: free
+  checked: 2026-10-15

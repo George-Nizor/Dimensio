@@ -1,0 +1,56 @@
+# Practice for lesson 79. The item marked main is the lesson's exercise.
+
+- id: rock-and-tree
+  main: true
+  title: A rock and a tree
+  kind: project
+  minutes: 45
+  text: "Make a low-poly rock under 300 triangles and a tree under 400, with Kenney's rock and tree as a guide to size and style. Give each palette colours, apply their scale and export both to Godot."
+  steps: [Sculpt a rough rock, Cut it down with Decimate, Model the trunk, Make the leaves, "Colour, apply and join", Export both]
+  timer: { minutes: 45 }
+  reference: { images: [models/kenney-survival-rock/persp.png, models/kenney-nature-tree/persp.png] }
+  measure:
+    - { metric: tris, max: 700, label: "Under 700 triangles in all" }
+    - { metric: nonManifoldEdges, max: 0, label: "No holes or loose edges" }
+    - { metric: materials, min: 1, label: "Every mesh has a material" }
+    - { metric: scaleApplied, equals: true, label: "Scale applied" }
+
+- id: copy-the-rocks
+  title: Copy Kenney's rocks
+  kind: copy
+  minutes: 20
+  text: Copy the example rocks, one tall rock with two smaller ones and pebbles at its base, under 300 triangles in all.
+  starter: copy-reference
+  timer: { minutes: 20 }
+  reference: { model: kenney-survival-rock }
+  measure:
+    - { metric: tris, max: 300, label: "Under 300 triangles" }
+    - { metric: outline, min: 0.75, label: "Outline close to the example's" }
+  check:
+    - Your rocks match the example's outline from the front.
+    - The rocks show flat facets.
+
+- id: copy-the-pine
+  title: Copy Kenney's pine
+  kind: copy
+  minutes: 20
+  text: Copy the example pine tree, stacked tiers that narrow to a point on a short trunk, under 450 triangles.
+  starter: copy-reference
+  timer: { minutes: 20 }
+  reference: { model: kenney-survival-pine }
+  measure:
+    - { metric: tris, max: 450, label: "Under 450 triangles" }
+    - { metric: outline, min: 0.75, label: "Outline close to the example's" }
+  check:
+    - Each tier is narrower than the one below it.
+    - The tree matches the example's height.
+
+- id: rock-tree-retest
+  title: Rock and tree from memory
+  kind: retest
+  minutes: 30
+  text: A week after this lesson, make a new rock and a new tree within the same budgets, without opening the lesson.
+  timer: { minutes: 30 }
+  check:
+    - The rock is under 300 triangles and the tree under 400.
+    - You worked without looking anything up.

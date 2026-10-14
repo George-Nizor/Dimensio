@@ -1,0 +1,23 @@
+# Practice for lesson 76. The item marked main is the lesson's exercise.
+
+- id: join-and-remesh
+  main: true
+  title: Join, remesh and add detail
+  kind: drill
+  minutes: 15
+  text: "Open the exercise. Join the cap and the stem with Ctrl+J. In Sculpt Mode, set the voxel size to 0.03 m and press Ctrl+R, then smooth the join with Shift. Turn on Dyntopo and add gills under the cap and a few raised spots on top."
+  steps: [Join the parts, Set the voxel size, Remesh, Add detail with Dyntopo, Sculpt in levels]
+  starter: mushroom-parts
+  timer: { minutes: 15 }
+  reference: { diagram: example }
+
+- id: multires-levels
+  title: Sculpting at Multiresolution levels
+  kind: drill
+  minutes: 10
+  text: Open the exercise. Add a Multiresolution modifier to the ball and click Subdivide twice. At the top level, press small dents into it with Draw and Ctrl. Step down with Alt+1, pull the ball into an egg with Grab, then step back up with Alt+2.
+  starter: sculpt-ball
+  timer: { minutes: 10 }
+  check:
+    - The small dents are still there after reshaping.
+    - Alt+1 and Alt+2 changed the level the ball shows.

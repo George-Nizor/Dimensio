@@ -1,0 +1,23 @@
+# Practice for lesson 72. The item marked main is the lesson's exercise.
+
+- id: noise-and-time
+  main: true
+  title: Noise threshold and render time
+  kind: drill
+  minutes: 15
+  text: "Open the exercise and switch to Cycles on your graphics card. Render three times: Noise Threshold 0.1 with Denoise off, 0.1 with Denoise on, and 0.01 with Denoise on. Save each render as a PNG and note its render time, shown in the render window's header."
+  steps: [Turn on your graphics card, Switch to Cycles, Set the noise threshold, Keep Denoise on, Check the bounces, Pick the engine]
+  starter: render-stage
+  timer: { minutes: 15 }
+  reference: { diagram: example }
+
+- id: count-the-bounces
+  title: Count the bounces
+  kind: drill
+  minutes: 10
+  text: Open the exercise in Cycles at Noise Threshold 0.1. Render with Max Bounces Total set to 0, then 4, then 12, and save each one. Compare the barrel's metal hoops and the shadows.
+  starter: render-stage
+  timer: { minutes: 10 }
+  check:
+    - At 0 bounces, the barrel's hoops render black.
+    - At 4 and 12 bounces, the renders look almost the same.

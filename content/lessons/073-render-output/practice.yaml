@@ -1,0 +1,23 @@
+# Practice for lesson 73. The item marked main is the lesson's exercise.
+
+- id: turntable-frames
+  main: true
+  title: A turntable in 48 frames
+  kind: drill
+  minutes: 15
+  text: "Open the exercise. Set Resolution % to 50, Frame End to 48 and the output path to //turntable/ with PNG files. Save the .blend file, render the animation with Ctrl+F12, then play it with Render > View Animation."
+  steps: [Set the size, Set the frames, Say where the frames go, Check the colour view, Render the animation, Save a video instead]
+  starter: turntable
+  timer: { minutes: 15 }
+  reference: { diagram: example }
+
+- id: two-views
+  title: AgX and Standard
+  kind: drill
+  minutes: 5
+  text: Open the render-stage exercise and render frame 1 with View Transform set to AgX, then to Standard. Save both and compare the brightest part of the backdrop.
+  starter: render-stage
+  timer: { minutes: 5 }
+  check:
+    - With Standard, the backdrop's brightest area turns flat white.
+    - With AgX, the same area keeps some grey.

@@ -1,0 +1,23 @@
+# Practice for lesson 71. The item marked main is the lesson's exercise.
+
+- id: render-the-stage
+  main: true
+  title: Render the stage
+  kind: drill
+  minutes: 15
+  text: "Open the exercise and look through the camera. Turn on Raytracing, then add a Bloom glow with a Glare node in the Compositing workspace. Render at the default 1920 by 1080 with F12 and save the picture as a PNG next to your .blend file."
+  steps: [Preview the render, Set the samples, Turn on ray tracing, Render and save, Add a glow]
+  starter: render-stage
+  timer: { minutes: 15 }
+  reference: { diagram: example }
+
+- id: one-sample
+  title: Render Samples at 1 and 64
+  kind: drill
+  minutes: 5
+  text: Open the exercise, set Render Samples to 1 and render with F12. Save the picture, then set Render Samples back to 64, render and save again. Compare the crate's edges and the shadows in the two files.
+  starter: render-stage
+  timer: { minutes: 5 }
+  check:
+    - At 1 sample, the crate's edges step like stairs.
+    - At 64 samples, the same edges look smooth.

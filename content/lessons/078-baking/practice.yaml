@@ -1,0 +1,26 @@
+# Practice for lesson 78. The item marked main is the lesson's exercise.
+
+- id: bake-the-stone
+  main: true
+  title: Bake the stone
+  kind: drill
+  minutes: 25
+  text: "Open the exercise. Unwrap Stone low and give it a material. Bake the sculpt's detail into a Non-Color normal map and its colour into a second image, both 1024 by 1024. Connect both to the material and save both images as PNG files."
+  steps: [Unwrap the low-poly stone, Add an image to bake into, Set up the bake, Select in order and bake, Use the normal map, Bake the colour too]
+  starter: bake-stone
+  timer: { minutes: 25 }
+  reference: { diagram: example }
+  measure:
+    - { metric: uvLayers, min: 1, label: "Every mesh has a UV map" }
+    - { metric: materials, min: 1, label: "Every mesh has a material" }
+
+- id: bake-the-plank
+  title: Bake a plank's wood
+  kind: drill
+  minutes: 10
+  text: In the same file, untick Selected to Active and select only the Plank. Add an Image Texture node with a new image to its Wood material, select the node and bake Diffuse with only Color ticked. Connect the image to Base Color in place of the wood pattern.
+  starter: bake-stone
+  timer: { minutes: 10 }
+  check:
+    - The plank looks the same with the baked image.
+    - The saved image shows the wood's stripes.

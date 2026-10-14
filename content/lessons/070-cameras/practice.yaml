@@ -1,0 +1,32 @@
+# Practice for lesson 70. The item marked main is the lesson's exercise.
+
+- id: three-shots
+  main: true
+  title: Three shots of the stage
+  kind: drill
+  minutes: 10
+  text: "Open the exercise. Rename the camera Wide and frame all three props with it. Add two cameras with Add > Camera and name them Close and Front. Close is the lantern at 85 mm. Front is orthographic, straight from the front. Make each camera active with Ctrl+Numpad 0 before you frame it."
+  steps: [Look through the camera, Move the camera to your view, Steer the camera, Choose a lens, Make an orthographic shot, Compose with a guide]
+  starter: render-stage
+  timer: { minutes: 10 }
+  reference: { diagram: example }
+
+- id: blur-background
+  title: Blur the background
+  kind: drill
+  minutes: 5
+  text: "Open the exercise again and frame the lantern close up at 85 mm. In the camera's properties, tick Depth of Field, set Focus Object to Lantern and F-Stop to 1.4. Press Z and choose Rendered to see the result."
+  starter: render-stage
+  timer: { minutes: 5 }
+  check:
+    - The lantern stays sharp in Rendered shading.
+    - The backdrop behind the lantern looks soft.
+
+- id: camera-follows-view
+  title: Camera to the view, five times
+  kind: warm-up
+  minutes: 3
+  text: In a new General file, orbit to five different views of the cube. After each one, press Ctrl+Alt+Numpad 0, then orbit away and press Numpad 0 to check the camera kept the view.
+  timer: { minutes: 3 }
+  check:
+    - Each time, Numpad 0 showed the view you had chosen.

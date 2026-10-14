@@ -1,0 +1,23 @@
+# Practice for lesson 75. The item marked main is the lesson's exercise.
+
+- id: stone-and-cap
+  main: true
+  title: A stone and a mushroom cap
+  kind: drill
+  minutes: 20
+  text: "Open the exercise. In Object Mode, press Shift+D and move the copy of the ball to one side. Sculpt one ball into a lumpy stone with Draw and Clay Strips. Turn on X mirror and shape the other into a mushroom cap with Grab. Smooth both with Shift."
+  steps: [Open the Sculpting workspace, Raise and lower the surface, Set the size and strength, "Build up, then smooth", Move whole areas with Grab, Mirror your strokes]
+  starter: sculpt-ball
+  timer: { minutes: 20 }
+  reference: { diagram: example }
+
+- id: five-dents
+  title: Dents of five sizes
+  kind: warm-up
+  minutes: 5
+  text: Open the exercise. With Draw and Ctrl held, press five dents into the ball, each a different size set with F. Then smooth all five away with Shift.
+  starter: sculpt-ball
+  timer: { minutes: 5 }
+  check:
+    - You made five dents of clearly different sizes.
+    - Shift smoothed the ball back to an even curve.

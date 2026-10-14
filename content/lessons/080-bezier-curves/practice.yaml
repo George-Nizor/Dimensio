@@ -1,0 +1,32 @@
+# Practice for lesson 80. The item marked main is the lesson's exercise.
+
+- id: trace-road-and-hook
+  main: true
+  title: Trace a road and a hook
+  kind: drill
+  minutes: 15
+  text: "Open the exercise, which opens in the top view. Trace the middle of the road with one Bézier curve and the hook with another, using as few control points as you can. Give the top of the hook's shaft a Vector handle so the shaft stays straight."
+  steps: [Add a curve, Shape it with the handles, Add points, Choose handle types, Join and close, Draw freehand]
+  starter: curve-trace
+  timer: { minutes: 15 }
+  reference: { diagram: example }
+
+- id: closed-leaf
+  title: A closed leaf shape
+  kind: drill
+  minutes: 10
+  text: In a new file, from the top view, draw a leaf outline with four control points. Close it with Alt+C, then give the tip a Vector handle so it comes to a point.
+  timer: { minutes: 10 }
+  check:
+    - The outline closes with no gap.
+    - The tip is sharp and the sides are smooth.
+
+- id: freehand-road
+  title: A road drawn freehand
+  kind: warm-up
+  minutes: 5
+  text: Open the exercise again and trace the road with the Draw tool in one stroke. Try Tolerance at 5 and at 20, and compare how many points each gives.
+  starter: curve-trace
+  timer: { minutes: 5 }
+  check:
+    - The higher Tolerance gave fewer control points.
