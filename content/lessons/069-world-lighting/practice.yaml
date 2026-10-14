@@ -1,0 +1,23 @@
+# Practice for lesson 69. The item marked main is the lesson's exercise.
+
+- id: two-hdris
+  main: true
+  title: A sky and a room
+  kind: drill
+  minutes: 10
+  text: "Open the exercise. Download two HDRIs from Poly Haven: Kloofendal 48d Partly Cloudy (Pure Sky) and Small Empty Room 1. Light the props with each in turn. With the sky, turn Mapping's Rotation Z until the shadows fall towards the camera's left."
+  steps: [Get an HDRI, Load it into the World, Turn the sky, Try a room]
+  starter: light-stage
+  timer: { minutes: 10 }
+  reference: { diagram: rotate }
+
+- id: plain-world-colour
+  title: Light from a plain colour
+  kind: warm-up
+  minutes: 5
+  text: Open the exercise and light the props from the World alone, with no lights. Try a light grey at Strength 1, then a pale blue at Strength 2.
+  starter: light-stage
+  timer: { minutes: 5 }
+  check:
+    - The props are lit softly from every side.
+    - The pale blue World tints their shaded sides.

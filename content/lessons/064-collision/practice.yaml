@@ -1,0 +1,31 @@
+# Practice for lesson 64. The item marked main is the lesson's exercise.
+
+- id: collide-three-props
+  main: true
+  title: Collision for three props
+  kind: project
+  minutes: 15
+  text: "Give your crate, barrel and chest collision meshes: a box for the crate, an 8-sided cylinder for the barrel and a box for the chest. Draw them as wire, apply their scale and name them with -convcolonly. Export all six objects and check the StaticBody3D nodes in an inherited scene in Godot."
+  steps: [Wrap the prop in a simple shape, Draw it as a wire, Name it with a suffix, Keep its scale at 1]
+  timer: { minutes: 15 }
+  reference: { diagram: example }
+
+- id: rock-convex-hull
+  title: A convex hull for a rock
+  kind: drill
+  minutes: 10
+  text: "Open the exercise. Duplicate the rock, select all in Edit Mode and choose Mesh > Convex Hull. Name the copy RockCollision-convcolonly and draw it as wire."
+  starter: dense-rock
+  timer: { minutes: 10 }
+  check:
+    - The hull wraps the rock with no dents.
+    - Its name ends in -convcolonly.
+
+- id: generate-box-shape
+  title: Let Godot make a box
+  kind: drill
+  minutes: 5
+  text: Import your chest without a collision mesh. In Advanced Import Settings, tick Generate > Physics on its node and set Shape Type to Box, then click Reimport.
+  timer: { minutes: 5 }
+  check:
+    - The chest's node gets a StaticBody3D with a box shape.

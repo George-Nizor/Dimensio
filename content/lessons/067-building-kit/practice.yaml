@@ -1,0 +1,27 @@
+# Practice for lesson 67. The item marked main is the lesson's exercise.
+
+- id: small-building-kit
+  main: true
+  title: A small building kit
+  kind: project
+  minutes: 60
+  text: "Build a kit of eight to ten pieces on a 2 m grid, each under 200 triangles, coloured from one palette material and named with -col. Export them in one .glb and make a MeshLibrary in Godot. Then lay out a small building with a GridMap: floors, walls, a door, a window and a roof."
+  steps: [Build the pieces, Colour them from one palette, Name them for collision, Make the MeshLibrary, Set up a GridMap, Lay out the building]
+  timer: { minutes: 60 }
+  reference: { model: kenney-town-wall }
+  measure:
+    - { metric: meshes, min: 8, label: "At least eight pieces" }
+    - { metric: tris, max: 2000, label: "Under 2,000 triangles for the kit" }
+    - { metric: materials, equals: 1, label: "One material" }
+    - { metric: scaleApplied, equals: true, label: "Scale applied" }
+    - { metric: nonManifoldEdges, max: 0, label: "No holes in any piece" }
+
+- id: building-kit-retest
+  title: A kit from memory
+  kind: retest
+  minutes: 45
+  text: A week after the lesson, build a six-piece kit from memory on a 2 m grid, with one palette material and -col names. Lay out a different building with it in Godot.
+  timer: { minutes: 45 }
+  check:
+    - Every piece fits its cell with no gaps.
+    - The building stands on the ground, not above it.

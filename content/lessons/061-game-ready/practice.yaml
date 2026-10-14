@@ -1,0 +1,28 @@
+# Practice for lesson 61. The item marked main is the lesson's exercise.
+
+- id: make-it-game-ready
+  main: true
+  title: Make three props game-ready
+  kind: fix
+  minutes: 15
+  text: "Open the exercise. A crate, a barrel and a chair break five rules between them: the triangle budget, the origin, the facing, applied transforms and outward normals. Fix each one, name them Crate, Barrel and Chair, and keep all three under 300 triangles together."
+  steps: [Count the triangles, Stand it on its origin, "Face -Y, then apply", Point every face outward, Name it and keep materials few]
+  starter: not-game-ready
+  timer: { minutes: 15 }
+  reference: { diagram: example }
+  measure:
+    - { metric: tris, max: 300, label: "Under 300 triangles for all three" }
+    - { metric: scaleApplied, equals: true, label: "Scale applied" }
+    - { metric: rotationApplied, equals: true, label: "Rotation applied" }
+    - { metric: flippedFaces, max: 0, label: "No faces pointing inwards" }
+    - { metric: height, max: 1.05, label: "Nothing taller than 1 m" }
+
+- id: own-barrel-game-ready
+  title: Your barrel through the checks
+  kind: drill
+  minutes: 10
+  text: Open your barrel from lesson 36 and take it through the five checks in order. Fix anything that fails, then export it again.
+  timer: { minutes: 10 }
+  check:
+    - The barrel stands on its origin at the base centre.
+    - Face Orientation shows no red outside.

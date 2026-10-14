@@ -1,0 +1,21 @@
+# Practice for lesson 62. The item marked main is the lesson's exercise.
+
+- id: import-three-props
+  main: true
+  title: Import three props
+  kind: drill
+  minutes: 15
+  text: "Copy your crate, barrel and chest .glb files into a Godot 4 project. Open each one in Advanced Import Settings and look through its nodes, meshes and materials. Then make an inherited scene for each, add an OmniLight3D, and save it as a .tscn."
+  steps: [Add the model to the project, Read the Import dock, Open Advanced Import Settings, Make an inherited scene]
+  timer: { minutes: 15 }
+  reference: { diagram: inherited }
+
+- id: import-a-blend
+  title: Import a .blend file
+  kind: drill
+  minutes: 10
+  text: Set Blender Path in Godot's Editor Settings, then copy the .blend of your crate into the project. Open it in Advanced Import Settings and compare it with the crate's .glb.
+  timer: { minutes: 10 }
+  check:
+    - The .blend imports and shows a preview.
+    - Its nodes match the ones in the .glb.

@@ -1,0 +1,36 @@
+# Practice for lesson 59. The item marked main is the lesson's exercise.
+
+- id: paint-the-tree
+  main: true
+  title: Paint the grey tree
+  kind: drill
+  minutes: 15
+  text: "Open the exercise. Colour the grey tree with vertex paint only: the trunk brown, the lower canopy green and the top canopy a lighter green. Fill each part through the face mask with L and Ctrl+X. Then connect a Color Attribute node to Base Color and save."
+  steps: [Enter Vertex Paint, Turn on the face mask, Fill the selection, Use the colours in the material]
+  starter: tree-grey
+  timer: { minutes: 15 }
+  reference: { diagram: example }
+  measure:
+    - { metric: materials, equals: 1, label: "One material" }
+    - { metric: uvLayers, max: 0, label: "No UV map" }
+
+- id: autumn-tree
+  title: The tree in autumn
+  kind: warm-up
+  minutes: 5
+  text: Open the tree exercise again and repaint the canopy in autumn colours, orange below and red on top, using only L and Ctrl+X.
+  starter: tree-grey
+  timer: { minutes: 5 }
+  check:
+    - Both canopy parts are one flat colour each.
+    - The trunk kept its own colour.
+
+- id: three-coloured-cube
+  title: A cube in three colours
+  kind: drill
+  minutes: 5
+  text: "In a new General file, enter Vertex Paint on the cube and turn on the face mask. Pick the Tweak tool in the Toolbar, click the top face and fill it red with Ctrl+X. Fill the front green and the right side blue the same way."
+  timer: { minutes: 5 }
+  check:
+    - Three faces each show one colour.
+    - The other three faces are still white.

@@ -1,0 +1,27 @@
+# Practice for lesson 66. The item marked main is the lesson's exercise.
+
+- id: four-kit-pieces
+  main: true
+  title: Four kit pieces
+  kind: drill
+  minutes: 20
+  text: "Build floor_2m, 2 by 2 m and 0.1 m thick, and wall_2m, 2 m long, 2.5 m tall and 0.2 m thick. Add wall_corner, and wall_door with a 1 by 2.1 m opening. Put each origin at its cell's centre on the ground, then test the fit with a small room of copies."
+  steps: [Choose one grid, "Put the origin at the cell's centre", Move and turn by whole cells, Name each piece, Test the fit]
+  timer: { minutes: 20 }
+  reference: { model: kenney-town-wall }
+  measure:
+    - { metric: meshes, min: 4, label: "At least four pieces" }
+    - { metric: scaleApplied, equals: true, label: "Scale applied" }
+    - { metric: nonManifoldEdges, max: 0, label: "No holes in any piece" }
+    - { metric: height, min: 2.45, label: "Walls at least 2.45 m tall" }
+    - { metric: height, max: 2.55, label: "Walls at most 2.55 m tall" }
+
+- id: half-wall
+  title: A half wall
+  kind: drill
+  minutes: 10
+  text: Add wall_1m, half as long as wall_2m, with its origin at the centre of a 1 m cell on the ground. Place two copies side by side on top of one wall_2m.
+  timer: { minutes: 10 }
+  check:
+    - Two half walls cover exactly one wall_2m.
+    - Neither half sticks out past the full wall's ends.

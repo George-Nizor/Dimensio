@@ -1,0 +1,61 @@
+# Resources for lessons 59 to 69 (vertex painting to world lighting) that catalogue.yaml does not
+# have. Each was opened on 2026-10-15. YouTube videos were checked through oEmbed (title and
+# channel match) and their watch page (length, upload date, playable in an embed). blender is the
+# Blender release that was current on the upload date when the video doesn't name one.
+
+- id: imphenzia-interior-assets
+  title: Modeling Low Poly Interior Assets
+  teacher: Imphenzia
+  url: https://www.youtube.com/watch?v=rJb4_v0a3ds
+  kind: video
+  minutes: 26
+  youtube: rJb4_v0a3ds
+  blender: "3.6"
+  cost: free
+  checked: 2026-10-15
+
+- id: grant-abbitt-game-asset-tips
+  title: Top Tips for Making Game Assets and Packs
+  teacher: Grant Abbitt
+  url: https://www.youtube.com/watch?v=Cdh2IZmW5ZQ
+  kind: video
+  minutes: 7
+  youtube: Cdh2IZmW5ZQ
+  blender: "3.6"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-three-point-lighting
+  title: Three Point Lighting
+  teacher: Blender Foundation
+  url: https://www.youtube.com/watch?v=RDbrOpnIY7Q
+  kind: video
+  minutes: 7
+  youtube: RDbrOpnIY7Q
+  blender: "2.80"
+  cost: free
+  checked: 2026-10-15
+
+- id: godot-docs-standard-material-3d
+  title: Standard Material 3D and ORM Material 3D
+  teacher: Godot Docs
+  url: https://docs.godotengine.org/en/stable/tutorials/3d/standard_material_3d.html
+  kind: documentation
+  cost: free
+  checked: 2026-10-15
+
+- id: godot-docs-collision-shapes-3d
+  title: Collision shapes (3D)
+  teacher: Godot Docs
+  url: https://docs.godotengine.org/en/stable/tutorials/physics/collision_shapes_3d.html
+  kind: documentation
+  cost: free
+  checked: 2026-10-15
+
+- id: godot-docs-using-gridmaps
+  title: Using GridMaps
+  teacher: Godot Docs
+  url: https://docs.godotengine.org/en/stable/tutorials/3d/using_gridmaps.html
+  kind: documentation
+  cost: free
+  checked: 2026-10-15

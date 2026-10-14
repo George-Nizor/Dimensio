@@ -1,0 +1,23 @@
+# Practice for lesson 68. The item marked main is the lesson's exercise.
+
+- id: light-three-ways
+  main: true
+  title: Light a scene three ways
+  kind: drill
+  minutes: 15
+  text: "Open the exercise and save a copy of the file for each setup. Light the crate and barrel with one Sun, then with a key, fill and rim made of Area lights. Last, light them at night with one warm Point lamp and the World's Color set near black."
+  steps: [Look in Rendered view, Add a light, Know the four kinds, Set up three lights, Aim the sun]
+  starter: light-stage
+  timer: { minutes: 15 }
+  reference: { diagram: three-point }
+
+- id: spot-on-the-barrel
+  title: A spot on the barrel
+  kind: warm-up
+  minutes: 5
+  text: Open the exercise again and add a Spot light above the barrel. Change Angle and Blend under Beam Shape until a soft-edged pool of light covers the barrel.
+  starter: light-stage
+  timer: { minutes: 5 }
+  check:
+    - The pool of light covers the barrel and little else.
+    - Its edge fades instead of cutting off sharply.

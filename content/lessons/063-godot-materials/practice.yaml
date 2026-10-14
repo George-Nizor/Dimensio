@@ -1,0 +1,24 @@
+# Practice for lesson 63. The item marked main is the lesson's exercise.
+
+- id: fix-godot-materials
+  main: true
+  title: Fix three materials for Godot
+  kind: fix
+  minutes: 15
+  text: "Open the exercise. In Blender, sharpen the blurred sign, make the see-through crate solid and wire the bush's colours into its material. Export all three as one .glb and import it into Godot. Extract the materials, and tick Use as Albedo on the bush's if it still shows grey."
+  steps: [Know what crosses over, Keep palette pixels sharp, Let vertex colours through, Fix the faces Godot hides, Extract materials to change them]
+  starter: godot-material-faults
+  timer: { minutes: 15 }
+  reference: { diagram: example }
+  measure:
+    - { metric: flippedFaces, max: 0, label: "No faces pointing inwards" }
+
+- id: palette-barrel-in-godot
+  title: Your palette barrel in Godot
+  kind: drill
+  minutes: 10
+  text: Export your palette-coloured barrel from lesson 57 and import it into Godot. Extract its material and read its Sampling > Filter and Cull Mode.
+  timer: { minutes: 10 }
+  check:
+    - Filter reads Nearest Mipmap and every face is one flat colour.
+    - Cull Mode reads Back.

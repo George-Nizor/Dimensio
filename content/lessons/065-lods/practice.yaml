@@ -1,0 +1,35 @@
+# Practice for lesson 65. The item marked main is the lesson's exercise.
+
+- id: rock-lods
+  main: true
+  title: Two lighter rocks
+  kind: drill
+  minutes: 15
+  text: "Open the exercise. Make Rock_LOD1 and Rock_LOD2 on top of Rock_LOD0, with Decimate set to Collapse at Ratio 0.5 and 0.25. Export all three, then give them visibility ranges in Godot: 0 to 10 m, 10 to 25 m and 25 m on."
+  steps: [Copy the rock in place, Add a Decimate modifier, Use your own LODs with visibility ranges]
+  starter: dense-rock
+  timer: { minutes: 15 }
+  reference: { diagram: example }
+  measure:
+    - { metric: meshes, equals: 3, label: "Three versions of the rock" }
+    - { metric: tris, max: 3600, label: "Under 3,600 triangles for all three" }
+    - { metric: modifier, equals: DECIMATE, label: "A Decimate modifier on the copies" }
+
+- id: godot-lod-wireframe
+  title: Watch Godot's LODs
+  kind: drill
+  minutes: 5
+  text: Import the rock into Godot with Generate LODs on. Set the viewport to Display Wireframe in its top-left menu and move the camera away. Then set LOD Bias to 2 and move away again.
+  timer: { minutes: 5 }
+  check:
+    - Far away, the wireframe shows fewer, larger triangles.
+    - With LOD Bias 2, the change happens further away.
+
+- id: planar-grid
+  title: Planar on a flat grid
+  kind: warm-up
+  minutes: 3
+  text: In a new file, choose Add > Mesh > Grid, then add a Decimate modifier and pick Planar. Read its Face Count before and after.
+  timer: { minutes: 3 }
+  check:
+    - Face Count drops from 100 to 1.

@@ -1,0 +1,41 @@
+# Practice for lesson 60. The item marked main is the lesson's exercise.
+
+- id: table-and-chair
+  main: true
+  title: A table and a chair
+  kind: copy
+  minutes: 40
+  text: "Copy the shapes of Kenney's chair and table at real size. Make the table top 1.4 by 0.8 m and 0.75 m high, and the chair's seat 0.45 m high with its back up to 0.9 m. Mirror the legs, colour both from one palette material, and export both in one .glb."
+  steps: [Block out at real size, "Model one leg, mirror the rest", Share one palette material, Export both together]
+  timer: { minutes: 40 }
+  reference: { model: kenney-furniture-chair }
+  measure:
+    - { metric: tris, max: 600, label: "Under 600 triangles for both" }
+    - { metric: materials, equals: 1, label: "One material" }
+    - { metric: uvLayers, min: 1, label: "A UV map on each piece" }
+    - { metric: scaleApplied, equals: true, label: "Scale applied" }
+    - { metric: ngons, max: 0, label: "No n-gons" }
+    - { metric: modifier, equals: MIRROR, label: "Legs made by a Mirror modifier" }
+    - { metric: height, min: 0.85, label: "At least 0.85 m tall" }
+    - { metric: height, max: 0.95, label: "At most 0.95 m tall" }
+
+- id: kenney-table-copy
+  title: Kenney's table at real size
+  kind: copy
+  minutes: 20
+  text: Copy Kenney's table with its rails, scaled up so the top is 0.75 m high. Build one corner and let the Mirror modifier make the rest.
+  timer: { minutes: 20 }
+  reference: { model: kenney-furniture-table }
+  check:
+    - The top's upper face is 0.75 m above the floor.
+    - You modelled one corner and Mirror made the others.
+
+- id: furniture-retest
+  title: Furniture from memory
+  kind: retest
+  minutes: 30
+  text: A few days after the lesson, model a table and two chairs from memory, at real size, sharing one palette material. Then compare them with Kenney's pieces.
+  timer: { minutes: 30 }
+  check:
+    - Each piece is under 300 triangles.
+    - All three share one material.
