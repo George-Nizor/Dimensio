@@ -76,9 +76,9 @@ def main() -> None:
     # Match the OpenCV-to-OpenGL flip used by the verified Spark viewer.
     splat.rotation_mode = "XYZ"
     splat.rotation_euler = (math.pi, 0.0, 0.0)
-    splat["forge3d_source"] = str(source)
-    splat["forge3d_representation"] = "gaussian_splat_not_polygon_mesh"
-    splat["forge3d_splat_count"] = splat_count
+    splat["dimensio_source"] = str(source)
+    splat["dimensio_representation"] = "gaussian_splat_not_polygon_mesh"
+    splat["dimensio_splat_count"] = splat_count
 
     camera_data = bpy.data.cameras.new("Review_Camera")
     camera = bpy.data.objects.new("Review_Camera", camera_data)
@@ -109,7 +109,7 @@ def main() -> None:
         "kiri_module": module_name,
     }
     report_path.write_text(json.dumps(report, indent=2), encoding="utf-8")
-    print("FORGE3D_KIRI_IMPORT=" + json.dumps(report))
+    print("DIMENSIO_KIRI_IMPORT=" + json.dumps(report))
 
 
 if __name__ == "__main__":

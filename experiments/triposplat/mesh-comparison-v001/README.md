@@ -16,7 +16,7 @@ The deterministic scripts are:
 
 Pinned experiment dependencies are SplatTransform 2.1.0 and PyMeshLab 2025.7.
 They are isolated under `tooling/` and `.venv/`; neither changes Blender's
-embedded Python or Forge3D's host environment.
+embedded Python or Dimensio's host environment.
 
 The generated comparison outputs remain local under
 `output/triposplat-mesh-comparison-v001/` and are intentionally ignored by

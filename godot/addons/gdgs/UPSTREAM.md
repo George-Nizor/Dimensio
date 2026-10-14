@@ -6,5 +6,5 @@
 - License: MIT (`LICENSE` is bundled in this directory)
 - Source: https://github.com/ReconWorldLab/godot-gaussian-splatting
 
-Forge3D uses the add-on's Gaussian importers and rendering backends. Controller
+Dimensio uses the add-on's Gaussian importers and rendering backends. Controller
 physics remains a small authored `BoxShape3D` proxy in `splat_review.gd`.

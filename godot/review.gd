@@ -1,7 +1,7 @@
 extends Node3D
 
 const REPORT_SCHEMA_VERSION := 1
-const DEFAULT_REPORT_PATH := "user://forge3d-review.json"
+const DEFAULT_REPORT_PATH := "user://dimensio-review.json"
 
 var _asset_root: Node3D
 var _camera: Camera3D
@@ -34,14 +34,20 @@ var _asset_path := ""
 var _report_path := ""
 
 
+# DIMENSIO_<name>, else FORGE3D_<name>: the variable Forge3D, Dimensio's earlier name, read.
+func _setting(name: String) -> String:
+	var value := OS.get_environment("DIMENSIO_" + name)
+	return value if not value.is_empty() else OS.get_environment("FORGE3D_" + name)
+
+
 func _ready() -> void:
 	_options = _parse_options(OS.get_cmdline_user_args())
 	_create_review_environment()
 	_asset_path = _normalize_path(
-		str(_options.get("asset", OS.get_environment("FORGE3D_ASSET")))
+		str(_options.get("asset", _setting("ASSET")))
 	)
 	_report_path = _normalize_path(
-		str(_options.get("report", OS.get_environment("FORGE3D_REPORT")))
+		str(_options.get("report", _setting("REPORT")))
 	)
 	if _report_path.is_empty():
 		_report_path = ProjectSettings.globalize_path(DEFAULT_REPORT_PATH)
@@ -167,7 +173,7 @@ func _create_review_environment() -> void:
 	_status_label.add_theme_color_override("font_shadow_color", Color(0.0, 0.0, 0.0, 0.9))
 	_status_label.add_theme_constant_override("shadow_offset_x", 1)
 	_status_label.add_theme_constant_override("shadow_offset_y", 1)
-	_status_label.text = "Forge3D Review\nWaiting for asset..."
+	_status_label.text = "Dimensio Review\nWaiting for asset..."
 	canvas.add_child(_status_label)
 
 
@@ -463,8 +469,8 @@ func _finish_review() -> void:
 	_update_overlay()
 	var report := _build_report()
 	_write_report(report)
-	print("FORGE3D_REVIEW_REPORT=%s" % _report_path)
-	print("FORGE3D_REVIEW_JSON=%s" % JSON.stringify(report))
+	print("DIMENSIO_REVIEW_REPORT=%s" % _report_path)
+	print("DIMENSIO_REVIEW_JSON=%s" % JSON.stringify(report))
 
 	if bool(_options.get("quit-after-report", false)):
 		var exit_code := 2 if not _errors.is_empty() else 0
@@ -571,7 +577,7 @@ func _update_overlay() -> void:
 	if _current_animation >= 0:
 		animation_name = str(_animation_targets[_current_animation]["name"])
 	_status_label.text = (
-		"Forge3D Review — %s\n"
+		"Dimensio Review: %s\n"
 		+ "%s\n"
 		+ "Meshes: %d  Vertices: %d  Triangles: %d  Bones: %d\n"
 		+ "Animation: %s  (Left/Right: change, Enter: pause)\n"
