@@ -184,7 +184,8 @@ function YourModel({ result, model }: { result: Result; model: ReferenceModel | 
   return (
     <div className="your-model">
       <h2>Your model</h2>
-      {Object.keys(renders).length ? <RenderGrid sources={renders} alt="Your model," /> : <p className="reference-note">Blender sent back no pictures of this model.</p>}
+      {(result.report?.warnings ?? []).map((warning) => <p key={warning} className="reference-note">{warning}</p>)}
+      {Object.keys(renders).length ? <RenderGrid sources={renders} alt="Your model," /> : result.report?.warnings?.length ? null : <p className="reference-note">Blender sent back no pictures of this model.</p>}
       {hasOverlays && model ? (
         <>
           <h2>The example's outline over yours</h2>

@@ -123,6 +123,7 @@ export function ModelDetail({ id }: { id: number }) {
       ) : null}
       {problem ? <p className="error" role="alert">{problem}</p> : null}
 
+      {(attempt.report?.warnings ?? []).map((warning) => <p key={warning} className="note">{warning}</p>)}
       {Object.keys(renders).length ? <div className="model-renders"><RenderGrid sources={renders} alt="Your model," /></div> : <p className="note">You saved this model without renders.</p>}
       {Object.keys(overlays).length ? (
         <section className="model-section" aria-labelledby="outline-title">

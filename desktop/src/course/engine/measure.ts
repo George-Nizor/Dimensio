@@ -37,6 +37,9 @@ export interface MeasureReport {
   totals?: Counts & { objects?: number; meshes?: number; base?: Counts };
   renders?: Partial<Record<View, string>>;
   silhouette?: Partial<Record<View, { match?: number; overlay?: string }>>;
+  // Sentences from the check about the file, such as "Nothing was rendered: the scene has no
+  // visible solid geometry."
+  warnings?: string[];
 }
 
 interface MetricDefinition {

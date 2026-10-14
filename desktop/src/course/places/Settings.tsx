@@ -118,7 +118,7 @@ function BlenderSetting() {
         </dl>
       ) : problem ? null : <p className="meta">Looking for Blender.</p>}
       {status && (!status.ok || tooOld) ? (
-        <p className="fix">{[status.reason, status.fix || 'Install Blender 5.2 LTS from blender.org, or choose blender.exe below. The course is written for 5.2.'].filter(Boolean).join(' ')}</p>
+        <p className="fix">{[status.reason, status.fix].filter(Boolean).join(' ') || 'Install Blender 5.2 LTS from blender.org or Steam, or choose blender.exe below.'}</p>
       ) : null}
       {problem ? <p className="error" role="alert">{problem}</p> : null}
       <div className="actions">
