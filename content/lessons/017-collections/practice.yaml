@@ -1,0 +1,32 @@
+# Practice for lesson 17. The item marked main is the lesson's exercise.
+
+- id: sort-the-market
+  main: true
+  title: Sort the market
+  kind: drill
+  minutes: 10
+  text: "Open the exercise, where every object has its default name. Make three collections, Props, Lights and Reference, and move every object except the camera into one of them with M. Rename each prop for what it is, such as Crate 1. Hide Reference with its eye. Then look at one barrel alone in local view and come back."
+  steps: [Rename objects, Make a collection, Hide and show, Exclude a collection, Work on one object alone]
+  starter: messy-scene
+  timer: { minutes: 10 }
+  reference: { diagram: example }
+
+- id: hide-and-show
+  title: Hide and show
+  kind: warm-up
+  minutes: 3
+  text: In the market, select the crates and hide them with H. Select one barrel and hide everything else with Shift+H. Then show everything again with Alt+H.
+  starter: messy-scene
+  timer: { minutes: 3 }
+  check:
+    - H hid only the crates.
+    - Alt+H brought every hidden object back.
+
+- id: exclude-and-render
+  title: Exclude the lights
+  kind: drill
+  minutes: 3
+  text: In your sorted market, untick the Lights collection's checkbox, then press Z and choose Rendered. Tick it again and compare.
+  timer: { minutes: 3 }
+  check:
+    - With Lights excluded, the lights vanished from the Outliner's list and the render.

@@ -1,0 +1,33 @@
+# Practice for lesson 23. The item marked main is the lesson's exercise.
+
+- id: three-planks
+  main: true
+  title: Three planks with even gaps
+  kind: drill
+  minutes: 10
+  text: "Cut the default cube's sides into three planks: Ctrl+R over a vertical edge, scroll to 2 cuts, click and right click. Add a loop under each new line and slide it up to leave a 10 cm strip. Select both strips in Face select mode and push them in 5 cm with Alt+E > Extrude Faces Along Normals."
+  steps: [Start a loop cut, Choose how many, Slide or centre, Slide an existing loop, Use the Loop Cut tool]
+  timer: { minutes: 10 }
+  reference: { diagram: example }
+  measure:
+    - { metric: ngons, max: 0, label: "No n-gons" }
+    - { metric: doubles, max: 0, label: "No doubled vertices" }
+
+- id: even-and-flip
+  title: Even and flipped
+  kind: drill
+  minutes: 5
+  text: Make a ramp by moving the cube's top front edge down 1.5 m. Loop cut once round it, across its upright edges. Slide the loop with G G, press E for Even, then F to flip it from the slope to the base.
+  timer: { minutes: 5 }
+  check:
+    - With Even on, the loop runs parallel to the slope.
+    - After F it runs parallel to the base instead.
+
+- id: loop-cut-tool
+  title: Cut with the tool
+  kind: warm-up
+  minutes: 3
+  text: Pick the Loop Cut tool in the Toolbar, set Number of Cuts to 3 in the tool settings, and click a vertical edge of the cube. Then set it back to 1.
+  timer: { minutes: 3 }
+  check:
+    - One click made three evenly spaced loops.

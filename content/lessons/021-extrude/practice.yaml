@@ -1,0 +1,34 @@
+# Practice for lesson 21. The item marked main is the lesson's exercise.
+
+- id: steps-and-wall
+  main: true
+  title: Steps and an L-shaped wall
+  kind: drill
+  minutes: 15
+  text: "In Edit Mode, scale the cube to a block 2 by 0.5 by 0.3 m. Extrude its back face 0.5 m, then the new top 0.3 m up, and again for a third step. Scale a second cube to a post 0.2 by 0.2 by 2.5 m. Extrude two neighbouring sides 3 m and 2 m into an L-shaped wall."
+  steps: [Extrude a face, Extrude along an axis, Extrude several faces as one, Extrude faces one by one, Extrude an edge]
+  timer: { minutes: 15 }
+  reference: { diagram: example }
+  measure:
+    - { metric: doubles, max: 0, label: "No doubled vertices" }
+    - { metric: ngons, max: 0, label: "No n-gons" }
+
+- id: stepped-tower
+  title: A stepped tower
+  kind: warm-up
+  minutes: 5
+  text: From the default cube, extrude the top face up 1 m four times. After every second extrusion, scale the new top face to 0.8 with S, so the tower narrows as it rises.
+  timer: { minutes: 5 }
+  check:
+    - The tower has five stacked sections.
+    - Merge by Distance removes 0 vertices.
+
+- id: floor-wall-ledge
+  title: "Floor, wall and ledge"
+  kind: drill
+  minutes: 5
+  text: Add a plane and, in Edge select mode, extrude its back edge up 1 m with E then Z. Then extrude the new top edge 0.5 m back with E then Y, to make a ledge.
+  timer: { minutes: 5 }
+  check:
+    - The floor, the wall and the ledge are three faces in one mesh.
+    - The wall stands straight up from the floor's back edge.

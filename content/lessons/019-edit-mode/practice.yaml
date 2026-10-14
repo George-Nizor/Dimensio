@@ -1,0 +1,33 @@
+# Practice for lesson 19. The item marked main is the lesson's exercise.
+
+- id: shape-three-cubes
+  main: true
+  title: Shape three cubes
+  kind: drill
+  minutes: 10
+  text: "In a new file, copy the default cube twice with Shift+D, 3 m apart along X. In Edit Mode, make the first a ramp by moving its top front edge down 1.5 m. Make the second a tapered pillar by scaling its top face to 0.5. Make the third lean by moving its top face 1 m along X."
+  steps: [Switch to Edit Mode, Choose what to select, Select through the mesh, "Move, turn and scale", Count the parts]
+  timer: { minutes: 10 }
+  reference: { diagram: transform-face }
+  measure:
+    - { metric: ngons, max: 0, label: "No n-gons" }
+    - { metric: tris, max: 36, label: "36 triangles or fewer" }
+
+- id: one-of-each
+  title: "A vertex, an edge, a face"
+  kind: warm-up
+  minutes: 3
+  text: On the default cube in Edit Mode, select one vertex with 1, one edge with 2 and one face with 3. Then select everything with A and nothing with Alt+A.
+  timer: { minutes: 3 }
+  check:
+    - You switched modes with the keys 1, 2 and 3.
+    - Statistics showed each selection change.
+
+- id: back-corner
+  title: The hidden corner
+  kind: drill
+  minutes: 3
+  text: Without orbiting, select the cube's back bottom corner. Turn on X-Ray with Alt+Z to reach it, move it 1 m down with G Z -1, then turn X-Ray off.
+  timer: { minutes: 3 }
+  check:
+    - You selected the back corner from the front, through the mesh.

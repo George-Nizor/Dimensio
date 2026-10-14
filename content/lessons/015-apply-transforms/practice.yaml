@@ -1,0 +1,39 @@
+# Practice for lesson 15. The item marked main is the lesson's exercise.
+
+- id: apply-stretched
+  main: true
+  title: Apply the scale of three boxes
+  kind: fix
+  minutes: 10
+  text: "Open the exercise. Someone shaped a bench, a pillar and a sign by scaling them in Object Mode, and their bevels are uneven. Note each one's Scale and Dimensions in the Sidebar. Apply rotation and scale to all three with Ctrl+A > Rotation & Scale, leaving each origin at its base. Then compare the bevels and the Dimensions."
+  steps: [Read the scale, See the uneven bevel, Apply rotation and scale, Check the dimensions, Apply a mirror]
+  starter: apply-stretched
+  timer: { minutes: 10 }
+  reference: { diagram: example }
+  measure:
+    - { metric: scaleApplied, equals: true, label: "Scale applied on every box" }
+    - { metric: rotationApplied, equals: true, label: "Rotation applied on every box" }
+    - { metric: flippedFaces, max: 0, label: "No faces inside out" }
+
+- id: watch-the-numbers
+  title: Watch the numbers change
+  kind: warm-up
+  minutes: 3
+  text: In a new file, press N for the Sidebar. Scale the default cube with S Z 0.25 and read its Scale and Dimensions. Then apply its scale with Ctrl+A > Scale and read them again.
+  timer: { minutes: 3 }
+  check:
+    - Scale went back to 1 after applying.
+    - Dimensions stayed 2 m, 2 m and 0.5 m.
+
+- id: even-shelf
+  title: Even out the shelf
+  kind: fix
+  minutes: 5
+  text: Open the shelf. Its bevel is round at the ends and nearly flat along the front. Apply its scale and look at the bevel again.
+  starter: unapplied-scale
+  timer: { minutes: 5 }
+  check:
+    - The bevel looks the same on every edge.
+    - Scale reads 1, 1 and 1 in the Sidebar.
+  measure:
+    - { metric: scaleApplied, equals: true, label: "Scale applied" }

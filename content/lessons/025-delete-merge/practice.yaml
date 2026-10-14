@@ -1,0 +1,37 @@
+# Practice for lesson 25. The item marked main is the lesson's exercise.
+
+- id: clean-the-block
+  main: true
+  title: Clean up the block
+  kind: fix
+  minutes: 10
+  text: "Open the exercise. The block should be a plain box with 8 vertices and 6 faces. Dissolve the stray loop round its middle and the extra vertex on its top back edge. Delete the three loose vertices, then weld its loose end with Merge by Distance. Check Statistics after each fix."
+  steps: [Delete, Dissolve, Merge vertices, Merge by distance, Merge as you work]
+  starter: cleanup-mess
+  timer: { minutes: 10 }
+  reference: { diagram: example }
+  measure:
+    - { metric: faces, equals: 6, label: "6 faces" }
+    - { metric: doubles, max: 0, label: "No doubled vertices" }
+    - { metric: looseVerts, max: 0, label: "No loose vertices" }
+    - { metric: ngons, max: 0, label: "No n-gons" }
+    - { metric: nonManifoldEdges, max: 0, label: "No open edges" }
+
+- id: delete-or-dissolve
+  title: Delete or dissolve
+  kind: drill
+  minutes: 5
+  text: On the default cube, add two loop cuts round its sides. Remove one loop with X > Edges and look at the hole it leaves. Undo with Ctrl+Z, then remove it with Ctrl+X.
+  timer: { minutes: 5 }
+  check:
+    - X > Edges left a gap in the cube's sides.
+    - Ctrl+X removed the loop and kept the cube closed.
+
+- id: merge-a-point
+  title: Merge to a point
+  kind: warm-up
+  minutes: 3
+  text: On the default cube, select the four top vertices and press M > At Center. The cube becomes a pyramid.
+  timer: { minutes: 3 }
+  check:
+    - The top of the cube is one vertex, in the middle.

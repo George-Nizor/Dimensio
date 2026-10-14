@@ -1,0 +1,25 @@
+# Practice for lesson 22. The item marked main is the lesson's exercise.
+
+- id: panels-and-window
+  main: true
+  title: Panels and a window frame
+  kind: drill
+  minutes: 10
+  text: "Inset the cube's six faces 0.2 m each, as individual faces, then push the middles in 0.1 m with Alt+E > Extrude Faces Along Normals. Make a second cube a wall 3 by 0.2 by 2.5 m. Inset its front 0.6 m, pull it out 5 cm, inset 0.1 m and push the middle back 15 cm."
+  steps: [Inset a face, Push the middle in or out, Inset faces one by one, Change it afterwards]
+  timer: { minutes: 10 }
+  reference: { diagram: example }
+  measure:
+    - { metric: ngons, max: 0, label: "No n-gons" }
+    - { metric: doubles, max: 0, label: "No doubled vertices" }
+    - { metric: tris, max: 200, label: "200 triangles or fewer" }
+
+- id: picture-frame
+  title: A picture frame
+  kind: drill
+  minutes: 5
+  text: In Edit Mode, scale a cube to a frame 0.6 by 0.05 by 0.8 m. Inset its front face 8 cm and push the middle face back 2 cm. Then do the same on its back face.
+  timer: { minutes: 5 }
+  check:
+    - The border is 8 cm wide all round, front and back.
+    - Both middle faces sit 2 cm behind the border.

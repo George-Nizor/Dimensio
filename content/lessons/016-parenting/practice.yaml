@@ -1,0 +1,33 @@
+# Practice for lesson 16. The item marked main is the lesson's exercise.
+
+- id: parent-the-car
+  main: true
+  title: Parent the car
+  kind: drill
+  minutes: 10
+  text: "Open the exercise. Parent the cabin and the four wheels to the body. Add a Plain Axes empty on the ground under the car, rename it Car with F2, and parent the body to it. Drive the car 6 m forward by moving the empty with G Y -6. Then spin one wheel with R X 90."
+  steps: ["Select the children, then the parent", Make the parent, Turn a child on its own, Add an empty, Parent to the empty, Clear a parent]
+  starter: parent-car
+  timer: { minutes: 10 }
+  reference: { diagram: example }
+
+- id: parent-in-the-outliner
+  title: Parent in the Outliner
+  kind: drill
+  minutes: 5
+  text: Open the car again. Select the four wheels and clear their parent with Alt+P > Clear and Keep Transformation. Then parent each wheel back by dragging it onto Body in the Outliner.
+  starter: parent-car
+  timer: { minutes: 5 }
+  check:
+    - The wheels stayed where they were when you cleared the parent.
+    - All four wheels sit under Body in the Outliner again.
+
+- id: desk-lamp
+  title: A desk lamp that bends
+  kind: imagination
+  minutes: 10
+  text: Build a desk lamp from three primitives, a base, an arm and a head, each with its origin where it should pivot. Parent the head to the arm and the arm to the base. Then turn the arm and watch the head follow.
+  timer: { minutes: 10 }
+  check:
+    - Turning the arm moves the head with it.
+    - Turning the base moves the whole lamp.

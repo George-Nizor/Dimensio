@@ -1,0 +1,72 @@
+# Resources for lessons 15 to 25 (Applying transforms to Delete, dissolve and merge) that were not
+# in catalogue.yaml. Each video was checked on 2026-10-15: the oEmbed endpoint answered with the
+# same title and channel, the watch page said it plays and can be embedded, and its title,
+# description and chapters cover the lesson's subject. Minutes is the length rounded. The Blender
+# version is the release that was current on the upload date, since none of these videos names one.
+
+# 15. Applying transforms
+
+- id: joey-carlino-apply-scale
+  title: "Apply scale? What does that mean?"
+  teacher: Joey Carlino
+  url: https://www.youtube.com/watch?v=DK0_FH7miEQ
+  kind: video
+  minutes: 7
+  youtube: DK0_FH7miEQ
+  blender: "2.92"
+  cost: free
+  checked: 2026-10-15
+
+# 16. Parenting and empties
+
+- id: ryan-king-parenting
+  title: Understanding Parenting in Blender
+  teacher: Ryan King Art
+  url: https://www.youtube.com/watch?v=5oclP4hQndc
+  kind: video
+  minutes: 5
+  youtube: 5oclP4hQndc
+  blender: "4.0"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-scene-layout-object-editing-parent
+  title: Parenting Objects
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/scene_layout/object/editing/parent.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+# 18. A house block-out
+
+- id: sean-oskea-blockouts
+  title: Blockouts in Blender for Absolute Beginners
+  teacher: Sean O'Skea
+  url: https://www.youtube.com/watch?v=Voev2rv4DOs
+  kind: video
+  minutes: 21
+  youtube: Voev2rv4DOs
+  blender: "4.1"
+  cost: free
+  checked: 2026-10-15
+
+# 20. Selecting loops
+
+- id: blender-manual-modeling-meshes-selecting-linked
+  title: Select Linked
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/modeling/meshes/selecting/linked.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+# 23. Loop cuts
+
+- id: blender-manual-modeling-meshes-editing-edge-edge-slide
+  title: Edge Slide
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/modeling/meshes/editing/edge/edge_slide.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15

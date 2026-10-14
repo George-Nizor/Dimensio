@@ -1,0 +1,36 @@
+# Practice for lesson 24. The item marked main is the lesson's exercise.
+
+- id: chamfer-crate
+  main: true
+  title: Chamfer a crate
+  kind: drill
+  minutes: 10
+  text: "Scale the default cube to 1 m with S 0.5 in Object Mode and apply the scale. In Edit Mode, select every edge, press Ctrl+B, type 0.02 and keep one segment. Then look at the crate in Solid view from a few sides and compare the edges with a plain cube."
+  steps: [Bevel edges, Add segments, Bevel the corners only, Change it afterwards]
+  timer: { minutes: 10 }
+  reference: { diagram: example }
+  measure:
+    - { metric: scaleApplied, equals: true, label: "Scale applied" }
+    - { metric: ngons, max: 0, label: "No n-gons" }
+    - { metric: tris, max: 44, label: "44 triangles or fewer" }
+    - { metric: width, min: 0.99, label: "At least 0.99 m wide" }
+    - { metric: width, max: 1.01, label: "At most 1.01 m wide" }
+
+- id: rounded-pillar
+  title: A rounded pillar
+  kind: drill
+  minutes: 5
+  text: Scale a cube in Edit Mode to a pillar 0.6 by 0.6 by 3 m. Select only its four upright edges and bevel them 0.15 m with 4 segments.
+  timer: { minutes: 5 }
+  check:
+    - The four upright edges have round corners.
+    - The top and bottom edges are still sharp.
+
+- id: cut-corners
+  title: Cut the corners
+  kind: warm-up
+  minutes: 3
+  text: On the default cube, select the four top vertices and bevel them with Shift+Ctrl+B, 0.3 m wide, one segment.
+  timer: { minutes: 3 }
+  check:
+    - Each top corner has a triangle cut off it.

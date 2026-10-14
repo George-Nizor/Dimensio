@@ -1,0 +1,33 @@
+# Practice for lesson 20. The item marked main is the lesson's exercise.
+
+- id: select-the-targets
+  main: true
+  title: Select the coloured targets
+  kind: drill
+  minutes: 10
+  text: "Open the exercise and select each coloured target in as few clicks as you can. Take the red band on the Pipe with Alt+click, the loop where blue meets white on the Ball, and the path between the Floor's dark squares with Ctrl+click. Pick one bolt with L. Then grow the Floor's path twice with Ctrl+Numpad +."
+  steps: [Select an edge loop, Select a face loop, Select an edge ring, Select a path, Select linked parts, Grow and shrink]
+  starter: loop-shapes
+  timer: { minutes: 10 }
+  reference: { diagram: example }
+
+- id: ring-to-band
+  title: From a ring to a band
+  kind: drill
+  minutes: 5
+  text: On the Pipe, select the ring of vertical edges inside the red band with Ctrl+Alt+click in Edge select mode. Then hold Ctrl and press 3, which turns the ring into the band of faces.
+  starter: loop-shapes
+  timer: { minutes: 5 }
+  check:
+    - The ring had 12 edges, one for each side of the pipe.
+    - Ctrl+3 turned the ring into the whole red band.
+
+- id: similar-faces
+  title: Every red face at once
+  kind: warm-up
+  minutes: 3
+  text: On the Pipe, select one red face. Press Shift+G and choose Material to select every face with the same material.
+  starter: loop-shapes
+  timer: { minutes: 3 }
+  check:
+    - Select Similar picked the whole red band from one face.

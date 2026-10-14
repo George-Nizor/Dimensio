@@ -1,0 +1,43 @@
+# Practice for lesson 18. The item marked main is the lesson's exercise.
+
+- id: house-blockout
+  main: true
+  title: Block out a house
+  kind: project
+  minutes: 30
+  text: "Open the exercise and block out a one-room house on the 6 m plot from boxes in Object Mode. Give it a floor, walls 2.5 m high and 0.2 m thick, a doorway 0.9 by 2.1 m facing the path, and a roof. Snap the parts together, apply their scale and put them in a collection called House."
+  steps: [Lay the floor, Raise the walls, Snap them together, Leave a door gap, Put a roof on, Tidy up]
+  starter: house-plot
+  timer: { minutes: 30 }
+  reference: { model: kenney-suburban-house }
+  measure:
+    - { metric: scaleApplied, equals: true, label: "Scale applied on every part" }
+    - { metric: ngons, max: 0, label: "No n-gons" }
+    - { metric: tris, max: 300, label: "300 triangles or fewer" }
+    - { metric: width, max: 6, label: "At most 6 m wide" }
+    - { metric: depth, max: 6, label: "At most 6 m deep" }
+    - { metric: height, min: 2.7, label: "At least 2.7 m tall" }
+
+- id: market-stall
+  title: A market stall
+  kind: imagination
+  minutes: 20
+  text: In a new file, block out a market stall at real size from boxes in Object Mode. Give it a counter 0.9 m high, four posts and a sloping roof. Apply the scale of every part and put them in one collection.
+  timer: { minutes: 20 }
+  check:
+    - The counter is 0.9 m high, and the posts stand on its corners.
+    - Every part reads Scale 1.
+
+- id: house-retest
+  title: The house from memory
+  kind: retest
+  minutes: 30
+  text: A few days after the lesson, block out the house again on a new plot without opening the lesson. Use the same sizes, snap the parts together and apply their scale. Then compare it with your first house in Models.
+  starter: house-plot
+  timer: { minutes: 30 }
+  check:
+    - The walls are 2.5 m high and the doorway 2.1 m.
+    - Every part reads Scale 1 and sits in one collection.
+  measure:
+    - { metric: scaleApplied, equals: true, label: "Scale applied on every part" }
+    - { metric: tris, max: 300, label: "300 triangles or fewer" }
