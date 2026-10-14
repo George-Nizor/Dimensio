@@ -152,7 +152,11 @@ def _append_blend_model(path: str):
     appended = target.scenes[0]
     if appended is None:
         raise DimensioError(f"Blender could not read a scene from {os.path.basename(path)}.")
-    return model_objects(appended), appended
+    objects = [
+        obj for obj in model_objects(appended)
+        if obj.type in GEOMETRY_TYPES or (obj.type == "EMPTY" and obj.instance_type == "COLLECTION")
+    ]
+    return objects, appended
 
 
 def import_reference(path: str, scene, collection) -> list:
