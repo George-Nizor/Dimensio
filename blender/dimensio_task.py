@@ -28,7 +28,7 @@ import bpy
 from mathutils import Matrix, Vector
 
 
-TOOL_VERSION = "0.3.0"
+TOOL_VERSION = "0.4.0"
 REPORT_PREFIX = "DIMENSIO_RESULT="
 GENERATED_BY_KEY = "dimensio_generated_by"
 # Forge3D, Dimensio's earlier name, marked what it made with forge3d_* properties, FORGE3D_RETARGET_

@@ -1,6 +1,6 @@
 {
   "name": "dimensio",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Prompt-first local workflows for creating game-ready 3D assets with Blender and Godot.",
   "author": {
     "name": "George Nizor"

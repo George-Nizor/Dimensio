@@ -147,9 +147,9 @@ srv.listen(0, "127.0.0.1", async () => {
         ...(over.capabilities || {}),
       };
       const route = (label, state, blocked_by = [], degraded_by = [], optional = false) => ({ label, state, optional, reason: state === "ready" ? "" : (capabilities[(blocked_by[0] || degraded_by[0])] || {}).reason || "", requires: [], soft: [], blocked_by, degraded_by });
-      return { ok: true, schema: 1, dimensio_version: "0.3.0", generated_at: new Date().toISOString(), platform: { system: "windows" }, agent: { id: "claude", name: "Claude Code" }, capabilities,
+      return { ok: true, schema: 1, dimensio_version: "0.4.0", generated_at: new Date().toISOString(), platform: { system: "windows" }, agent: { id: "claude", name: "Claude Code" }, capabilities,
         routes: over.routes || { splat: route("Gaussian splat", "ready"), blender: route("Blender", "ready"), export: route("Export", "ready"), godot: route("Godot", "ready", [], [], true) },
-        versions: { dimensio: "0.3.0", agent: "2.1.299", blender: "5.0.1", godot: "4.6.2", uv: "0.8.3", node: "22.1.0", cuda: "12.9", wsl_distro: "Ubuntu-24.04", ...(over.versions || {}) } };
+        versions: { dimensio: "0.4.0", agent: "2.1.299", blender: "5.0.1", godot: "4.6.2", uv: "0.8.3", node: "22.1.0", cuda: "12.9", wsl_distro: "Ubuntu-24.04", ...(over.versions || {}) } };
     };
     const route = (label, state, blocked_by = [], degraded_by = [], reason = "", optional = false) => ({ label, state, optional, reason, requires: [], soft: [], blocked_by, degraded_by });
     let capsResult = report();

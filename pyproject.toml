@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "dimensio"
-version = "0.3.0"
+version = "0.4.0"
 description = "Dimensio's command-line tool: the Blender, Godot and local model steps the Workshop's agent runs"
 requires-python = ">=3.11"
 license = { text = "MIT" }

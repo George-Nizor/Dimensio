@@ -54,7 +54,7 @@ async function addRun(folder, prompt = "A water bottle") {
 test("a project manifest round-trips its settings and view and rejects foreign JSON", (t) => {
   const root = temporaryDirectory(t);
   const file = path.join(root, "Bottle.dimensio");
-  const manifest = newManifest({ settings: { workflow: "gaussian-splat", quality: "draft", bogus: "x" }, appVersion: "0.3.0" });
+  const manifest = newManifest({ settings: { workflow: "gaussian-splat", quality: "draft", bogus: "x" }, appVersion: "0.4.0" });
   writeProject(file, { ...manifest, view: { selected_run_id: "11111111-2222-3333-4444-555555555555", selected_artifact: "out/model.glb" } });
   const read = readProject(file);
   assert.equal(read.format, PROJECT_FORMAT);
@@ -141,7 +141,7 @@ test("the earlier run library becomes a project once, in place", async (t) => {
   const library = path.join(temporaryDirectory(t), "Forge3D");
   assert.equal(adoptLegacyLibrary(library), null);
   await addRun(library, "Water bottle");
-  const file = adoptLegacyLibrary(library, { appVersion: "0.3.0" });
+  const file = adoptLegacyLibrary(library, { appVersion: "0.4.0" });
   assert.equal(path.basename(file), "Earlier runs.dimensio");
   assert.equal(readProject(file).runs_directory, "runs");
   assert.equal(new RunStore(runsRoot(library)).list()[0].prompt, "Water bottle");
