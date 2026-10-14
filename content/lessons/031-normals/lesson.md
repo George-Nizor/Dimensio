@@ -5,7 +5,7 @@ watch: [cgcookie-normals-smoothing, blender-manual-modeling-meshes-editing-mesh-
 sources:
   - Blender 5.2 Manual, "Mesh Structure", Normals (https://docs.blender.org/manual/en/5.2/modeling/meshes/structure.html), read 2026-10-15
   - Blender 5.2 Manual, "Viewport Overlays", Face Orientation (https://docs.blender.org/manual/en/5.2/editors/3dview/display/overlays.html), read 2026-10-15
-  - Blender 5.2 Manual, "Editing Normals": Flip, Recalculate with Shift+N, the Alt+N menu (https://docs.blender.org/manual/en/5.2/modeling/meshes/editing/mesh/normals.html), read 2026-10-15
+  - 'Blender 5.2 Manual, "Editing Normals": Flip, Recalculate with Shift+N, the Alt+N menu (https://docs.blender.org/manual/en/5.2/modeling/meshes/editing/mesh/normals.html), read 2026-10-15'
   - Blender 5.2 Manual, "Viewport Shading", Backface Culling (https://docs.blender.org/manual/en/5.2/editors/3dview/display/shading.html), read 2026-10-15
   - Blender 5.2 Manual, "EEVEE Materials", Settings > Surface > Backface Culling (https://docs.blender.org/manual/en/5.2/render/eevee/material_settings.html), read 2026-10-15
   - Blender 5.2 Manual, "glTF 2.0", Double-Sided / Backface Culling (https://docs.blender.org/manual/en/5.2/addons/scene_gltf2.html), read 2026-10-15

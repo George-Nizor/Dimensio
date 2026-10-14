@@ -4,7 +4,7 @@ exercise: ripple-plane
 watch: [richard-yot-fields, blender-manual-modeling-geometry-nodes-fields]
 sources:
   - Blender 5.2 Manual, "Fields", field nodes and dashed links (https://docs.blender.org/manual/en/5.2/modeling/geometry_nodes/fields.html), read 2026-10-15
-  - Blender 5.2 Manual, "Node Parts", socket shapes: diamond for fields (https://docs.blender.org/manual/en/5.2/interface/controls/nodes/parts.html), read 2026-10-15
+  - 'Blender 5.2 Manual, "Node Parts", socket shapes: diamond for fields (https://docs.blender.org/manual/en/5.2/interface/controls/nodes/parts.html), read 2026-10-15'
   - Blender 5.2 Manual, "Attributes" (https://docs.blender.org/manual/en/5.2/modeling/geometry_nodes/attributes_reference.html), read 2026-10-15
   - Blender 5.2 Manual, "Set Position Node", Position and Offset (https://docs.blender.org/manual/en/5.2/modeling/geometry_nodes/geometry/write/set_position.html), read 2026-10-15
   - Blender 5.2 Manual, "Position Node", "Normal Node" and "Index Node" (https://docs.blender.org/manual/en/5.2/modeling/geometry_nodes/geometry/read/position.html), read 2026-10-15
@@ -12,7 +12,7 @@ sources:
   - Blender 5.2 Manual, "Separate XYZ Node" and "Combine XYZ Node" (https://docs.blender.org/manual/en/5.2/modeling/geometry_nodes/utilities/vector/combine_xyz.html), read 2026-10-15
   - Blender 5.2 Manual, "Spreadsheet" (https://docs.blender.org/manual/en/5.2/editors/spreadsheet.html), read 2026-10-15
   - Blender 5.2 Manual, "Mesh Primitives", Grid (https://docs.blender.org/manual/en/5.2/modeling/meshes/primitives.html), read 2026-10-15
-  - Blender 5.2.2, checked 2026-10-15 in a script: the node tree in this lesson on a 4 m grid with 40 subdivisions gives 1,681 vertices whose Z follows 0.2 x sin(3 x X), 0.4 m from trough to crest; the same wave linked into Position instead of Offset puts every point at X 0 and Y 0
+  - 'Blender 5.2.2, checked 2026-10-15 in a script: the node tree in this lesson on a 4 m grid with 40 subdivisions gives 1,681 vertices whose Z follows 0.2 x sin(3 x X), 0.4 m from trough to crest; the same wave linked into Position instead of Offset puts every point at X 0 and Y 0'
 ---
 
 # Attributes and fields

@@ -3,14 +3,14 @@ needs: [keyframes]
 exercise: retime-the-bounce
 watch: [skill-brew-dope-sheet, blender-dope-sheet]
 sources:
-  - Blender 5.2 Manual, "Dope Sheet: Introduction", channels and keyframes (https://docs.blender.org/manual/en/5.2/editors/dope_sheet/introduction.html), read 2026-10-15
+  - 'Blender 5.2 Manual, "Dope Sheet: Introduction", channels and keyframes (https://docs.blender.org/manual/en/5.2/editors/dope_sheet/introduction.html), read 2026-10-15'
   - Blender 5.2 Manual, "Editing Dopesheet Data", Select menu, scaling only moves keys in time from the playhead, Keyframe Type R (https://docs.blender.org/manual/en/5.2/editors/dope_sheet/editing.html), read 2026-10-15
   - Blender 5.2 Manual, "Editing F-Curves", Move, Scale, Copy and Paste, Duplicate (https://docs.blender.org/manual/en/5.2/editors/graph_editor/fcurves/editing.html), read 2026-10-15
   - Blender 5.2 Manual, "Timeline", S scales keys in relation to the playhead (https://docs.blender.org/manual/en/5.2/editors/timeline.html), read 2026-10-15
   - Blender 5.2 Manual, "Markers", Add Marker M and Rename Marker F2 (https://docs.blender.org/manual/en/5.2/animation/markers.html), read 2026-10-15
   - Blender 5.2 Manual, "Animation Editors", Playback popover, Loop (https://docs.blender.org/manual/en/5.2/animation/animation_editors.html), read 2026-10-15
-  - Blender 5.2 Manual, "Keyframes: Introduction", Keyframe Types (https://docs.blender.org/manual/en/5.2/animation/keyframes/introduction.html), read 2026-10-15
-  - Blender 5.2.2, checked 2026-10-15: the Animation workspace has a Dope Sheet; pasted keys land with the first on the current frame by default; Loop is Infinite by default
+  - 'Blender 5.2 Manual, "Keyframes: Introduction", Keyframe Types (https://docs.blender.org/manual/en/5.2/animation/keyframes/introduction.html), read 2026-10-15'
+  - 'Blender 5.2.2, checked 2026-10-15: the Animation workspace has a Dope Sheet; pasted keys land with the first on the current frame by default; Loop is Infinite by default'
 ---
 
 # The Dope Sheet

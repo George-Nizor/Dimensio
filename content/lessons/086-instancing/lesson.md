@@ -10,7 +10,7 @@ sources:
   - Blender 5.2 Manual, "Random Value Node" (https://docs.blender.org/manual/en/5.2/modeling/geometry_nodes/utilities/random_value.html), read 2026-10-15
   - Blender 5.2 Manual, "Realize Instances Node" (https://docs.blender.org/manual/en/5.2/modeling/geometry_nodes/instances/realize_instances.html), read 2026-10-15
   - Blender 5.2 Manual, "Scatter on Surface Modifier" (https://docs.blender.org/manual/en/5.2/modeling/modifiers/generate/scatter_on_surface.html), read 2026-10-15
-  - Blender 5.2.2, checked 2026-10-15 in a script on the scatter-hill starter: the tree in this lesson gives 2,132 triangles at Density 0.4 with Realize Instances and the hill joined back, and 512, the hill alone, when the copies stay instances; Scatter on Surface has Align Rotation on and Randomize off by default, and its Randomize Rotation is shown in degrees
+  - 'Blender 5.2.2, checked 2026-10-15 in a script on the scatter-hill starter: the tree in this lesson gives 2,132 triangles at Density 0.4 with Realize Instances and the hill joined back, and 512, the hill alone, when the copies stay instances; Scatter on Surface has Align Rotation on and Randomize off by default, and its Randomize Rotation is shown in degrees'
 ---
 
 # Instancing on points

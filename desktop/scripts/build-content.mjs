@@ -278,6 +278,9 @@ async function readLesson(folder, entry, diagrams) {
   if (!lesson.exercise) fail(where, 'front matter needs "exercise:", the id of the main practice item');
   if (lesson.watch.length < 1 || lesson.watch.length > 2) fail(where, 'front matter "watch:" lists one or two resources');
   if (!Array.isArray(meta.sources) || !meta.sources.length) fail(where, 'front matter "sources:" must name where the method comes from');
+  for (const source of Array.isArray(meta.sources) ? meta.sources : []) {
+    if (typeof source !== 'string') fail(where, `a "sources:" line is not plain text, usually because it holds ": ". Quote the whole line: ${JSON.stringify(source).slice(0, 80)}`);
+  }
   return { lesson, prose };
 }
 

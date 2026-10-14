@@ -3,7 +3,7 @@ needs: [delete-merge, normals, topology]
 exercise: fix-the-crate
 watch: [jbdtube-non-manifold, blender-manual-modeling-meshes-editing-mesh-cleanup]
 sources:
-  - Blender 5.2 Manual, "Clean Up": Merge by Distance, Delete Loose, Fill Holes (https://docs.blender.org/manual/en/5.2/modeling/meshes/editing/mesh/cleanup.html), read 2026-10-15
+  - 'Blender 5.2 Manual, "Clean Up": Merge by Distance, Delete Loose, Fill Holes (https://docs.blender.org/manual/en/5.2/modeling/meshes/editing/mesh/cleanup.html), read 2026-10-15'
   - Blender 5.2 Manual, "Duplicate", a copy left in place by a right click (https://docs.blender.org/manual/en/5.2/modeling/meshes/editing/mesh/duplicate.html), read 2026-10-15
   - Blender 5.2 Manual, "Select All by Trait", Non Manifold, only in vertex and edge select (https://docs.blender.org/manual/en/5.2/modeling/meshes/selecting/all_by_trait.html), read 2026-10-15
   - Blender 5.2 Manual, "Glossary", Non-manifold (https://docs.blender.org/manual/en/5.2/glossary/index.html), read 2026-10-15

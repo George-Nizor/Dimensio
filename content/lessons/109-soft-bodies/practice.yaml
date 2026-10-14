@@ -1,0 +1,24 @@
+# Practice for lesson 109. The item marked main is the lesson's exercise.
+
+- id: jelly-on-a-plate
+  main: true
+  title: A jelly on a plate
+  kind: drill
+  minutes: 15
+  text: "Cut a 0.8 m cube with 4 cuts and lift it 1 m above a plate made from a filled circle. Give the plate Collision and the cube Soft Body with Goal off. Tune Pull, Push and Bending until it lands, squashes and wobbles but keeps its shape, then bake 100 frames."
+  steps: [Give it vertices, Add Soft Body and turn off Goal, Make the plate collide, Keep its shape, Bake it]
+  timer: { minutes: 15 }
+  reference: { diagram: shape }
+  measure:
+    - { metric: modifier, equals: SOFT_BODY, label: Soft Body on the cube }
+    - { metric: modifier, equals: COLLISION, label: Collision on the plate }
+
+- id: bouncing-ball
+  title: A rubber ball
+  kind: drill
+  minutes: 10
+  text: Drop a UV sphere with Soft Body onto a plane with Collision, Goal off. Raise Push to 0.9 so it keeps its round shape, then change Pull until it bounces twice before it rests.
+  timer: { minutes: 10 }
+  check:
+    - The ball squashes on each bounce and comes back round.
+    - It bounces twice and then rests on the plane.

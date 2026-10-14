@@ -1,0 +1,24 @@
+# Practice for lesson 111. The item marked main is the lesson's exercise.
+
+- id: falling-leaves
+  main: true
+  title: Leaves in the wind
+  kind: drill
+  minutes: 15
+  text: "Give a tree's canopy a particle system that drops 150 leaves between frames 1 and 100, shown as a 10 cm leaf object with random rotation. Blow them sideways with a Wind field of Strength 3, let them land on a ground with Collision, and bake."
+  steps: [Add a particle system, Set how many and how long, Show leaves, Add wind, Let them land and bake]
+  timer: { minutes: 15 }
+  reference: { diagram: example }
+  measure:
+    - { metric: modifier, equals: PARTICLE_SYSTEM, label: A particle system on the canopy }
+    - { metric: modifier, equals: COLLISION, label: Collision on the ground }
+
+- id: scatter-rocks
+  title: Scatter rocks with particles
+  kind: drill
+  minutes: 10
+  text: Make a collection of three small rocks. On a 10 m ground plane, add a particle system with Number 60, Frame Start and End both 1, Lifetime 250 and Physics set to None. Render it as the collection so rocks lie scattered over the ground.
+  timer: { minutes: 10 }
+  check:
+    - Sixty rocks lie on the ground from frame 1, none moving.
+    - All three rock shapes appear.

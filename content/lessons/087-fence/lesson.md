@@ -11,7 +11,7 @@ sources:
   - Blender 5.2 Manual, "Node Groups", new inputs from the hollow socket and renaming them in the Group panel (https://docs.blender.org/manual/en/5.2/interface/controls/nodes/groups.html), read 2026-10-15
   - Blender 5.2 Manual, "Realize Instances Node" (https://docs.blender.org/manual/en/5.2/modeling/geometry_nodes/instances/realize_instances.html), read 2026-10-15
   - Blender 5.2 Manual, "Convert", Mesh (https://docs.blender.org/manual/en/5.2/scene_layout/object/editing/convert.html), read 2026-10-15
-  - Blender 5.2.2, checked 2026-10-15 in a script: this node tree on an 8.5 m curve gives 6, 9 and 5 posts at Spacing 1.5, 1 and 2 m with a post at each end; a new group input starts at 0; Curve to Mesh with this Quadrilateral stands the rail upright on a flat curve; the converted fence is one mesh with no n-gons and no doubled vertices, 160 triangles at Spacing 1.5 m
+  - 'Blender 5.2.2, checked 2026-10-15 in a script: this node tree on an 8.5 m curve gives 6, 9 and 5 posts at Spacing 1.5, 1 and 2 m with a post at each end; a new group input starts at 0; Curve to Mesh with this Quadrilateral stands the rail upright on a flat curve; the converted fence is one mesh with no n-gons and no doubled vertices, 160 triangles at Spacing 1.5 m'
 ---
 
 # A fence generator

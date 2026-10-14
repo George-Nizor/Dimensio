@@ -4,9 +4,9 @@ exercise: copy-the-barrel
 watch: [imphenzia-fantasy-props, octodemy-godot-export]
 sources:
   - Kenney, Pirate Kit, the barrel model, CC0 (https://kenney.nl/assets/pirate-kit), read 2026-10-15
-  - Blender 5.2 Manual, "Primitives", Cylinder: Vertices, Radius, Depth (https://docs.blender.org/manual/en/5.2/modeling/meshes/primitives.html), read 2026-10-15
-  - Blender 5.2 Manual, "Loop Cut and Slide": the wheel for Number of Cuts, right click to leave the cuts in the middle (https://docs.blender.org/manual/en/5.2/modeling/meshes/editing/edge/loopcut_slide.html), read 2026-10-15
-  - Blender 5.2 Manual, "Select Loops": edge loops and face loops with Alt and a click (https://docs.blender.org/manual/en/5.2/modeling/meshes/selecting/loops.html), read 2026-10-15
+  - 'Blender 5.2 Manual, "Primitives", Cylinder: Vertices, Radius, Depth (https://docs.blender.org/manual/en/5.2/modeling/meshes/primitives.html), read 2026-10-15'
+  - 'Blender 5.2 Manual, "Loop Cut and Slide": the wheel for Number of Cuts, right click to leave the cuts in the middle (https://docs.blender.org/manual/en/5.2/modeling/meshes/editing/edge/loopcut_slide.html), read 2026-10-15'
+  - 'Blender 5.2 Manual, "Select Loops": edge loops and face loops with Alt and a click (https://docs.blender.org/manual/en/5.2/modeling/meshes/selecting/loops.html), read 2026-10-15'
   - Blender 5.2 Manual, "Axis Locking", plane locking with Shift+Z (https://docs.blender.org/manual/en/5.2/scene_layout/object/editing/transform/control/axis_locking.html), read 2026-10-15
   - Blender 5.2 Manual, "Extrude Faces Along Normals" (https://docs.blender.org/manual/en/5.2/modeling/meshes/editing/face/extrude_faces_normal.html), read 2026-10-15
   - Blender 5.2 Manual, "Extrude Faces", cancelling leaves the new faces behind (https://docs.blender.org/manual/en/5.2/modeling/meshes/editing/face/extrude_faces.html), read 2026-10-15

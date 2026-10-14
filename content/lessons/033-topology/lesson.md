@@ -3,14 +3,14 @@ needs: [filling-faces]
 exercise: rebuild-the-shade
 watch: [grant-abbitt-quads-ngons, blender-manual-modeling-meshes-structure]
 sources:
-  - Blender 5.2 Manual, "Mesh Structure": faces, triangles, quads and n-gons, and loops stopping at poles (https://docs.blender.org/manual/en/5.2/modeling/meshes/structure.html), read 2026-10-15
+  - 'Blender 5.2 Manual, "Mesh Structure": faces, triangles, quads and n-gons, and loops stopping at poles (https://docs.blender.org/manual/en/5.2/modeling/meshes/structure.html), read 2026-10-15'
   - Blender 5.2 Manual, "Viewport Overlays", Statistics (https://docs.blender.org/manual/en/5.2/editors/3dview/display/overlays.html), read 2026-10-15
   - Blender 5.2 Manual, "Select All by Trait", Faces by Sides (https://docs.blender.org/manual/en/5.2/modeling/meshes/selecting/all_by_trait.html), read 2026-10-15
   - Blender 5.2 Manual, "Connect Vertex Path" (https://docs.blender.org/manual/en/5.2/modeling/meshes/editing/vertex/connect_vertex_path.html), read 2026-10-15
   - Blender 5.2 Manual, "Triangulate Faces" (https://docs.blender.org/manual/en/5.2/modeling/meshes/editing/face/triangulate_faces.html), read 2026-10-15
   - Blender 5.2 Manual, "Triangles to Quads" (https://docs.blender.org/manual/en/5.2/modeling/meshes/editing/face/triangles_quads.html), read 2026-10-15
-  - Blender 5.2 Manual, "Mesh Analysis", Distortion: the triangulation of a distorted n-gon is undefined (https://docs.blender.org/manual/en/5.2/modeling/meshes/mesh_analysis.html), read 2026-10-15
-  - Blender 5.2 Manual, "glTF 2.0", Meshes: quads and n-gons become triangles on export (https://docs.blender.org/manual/en/5.2/addons/scene_gltf2.html), read 2026-10-15
+  - 'Blender 5.2 Manual, "Mesh Analysis", Distortion: the triangulation of a distorted n-gon is undefined (https://docs.blender.org/manual/en/5.2/modeling/meshes/mesh_analysis.html), read 2026-10-15'
+  - 'Blender 5.2 Manual, "glTF 2.0", Meshes: quads and n-gons become triangles on export (https://docs.blender.org/manual/en/5.2/addons/scene_gltf2.html), read 2026-10-15'
   - Godot Docs, "Model export considerations", triangulation (https://docs.godotengine.org/en/stable/tutorials/assets_pipeline/importing_3d_scenes/model_export_considerations.html), read 2026-10-15
 ---
 

@@ -1,0 +1,24 @@
+# Practice for lesson 113. The item marked main is the lesson's exercise.
+
+- id: coins-from-a-chest
+  main: true
+  title: Coins pouring from a chest
+  kind: drill
+  minutes: 20
+  text: "Open the exercise: a chest, a floor and a small spout plane. Give the spout a simulation zone that makes points each frame, drops them at 2 m a second and stops them at the floor. Put a coin on every point and bake 120 frames."
+  steps: [Add the zone, Make points each frame, Make them fall, Stop them at the floor, Make coins, Bake the zone]
+  starter: coin-spout
+  timer: { minutes: 20 }
+  reference: { diagram: example }
+  measure:
+    - { metric: modifier, equals: NODES, label: Geometry Nodes on the spout }
+
+- id: faster-fall
+  title: Coins that speed up
+  kind: drill
+  minutes: 10
+  text: Make the coins speed up as they fall. Inside the zone, read a speed attribute with Named Attribute, add 9.8 times Delta Time to it, and save it back with Store Named Attribute. Scale the fall's Offset by that speed instead of 2.
+  timer: { minutes: 10 }
+  check:
+    - Coins fall slowly at first and faster near the floor.
+    - They still stop at the floor.

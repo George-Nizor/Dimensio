@@ -3,12 +3,12 @@ needs: [bezier-curves]
 exercise: rope-pipe-rail
 watch: [ryan-king-curves, blender-secrets-curve-to-tube]
 sources:
-  - Blender 5.2 Manual, "Curves: Geometry", Bevel (Round, Object), Depth, Resolution, Fill Caps (https://docs.blender.org/manual/en/5.2/modeling/curves/properties/geometry.html), read 2026-10-15
-  - Blender 5.2 Manual, "Curves: Shape", Resolution Preview U (https://docs.blender.org/manual/en/5.2/modeling/curves/properties/shape.html), read 2026-10-15
+  - 'Blender 5.2 Manual, "Curves: Geometry", Bevel (Round, Object), Depth, Resolution, Fill Caps (https://docs.blender.org/manual/en/5.2/modeling/curves/properties/geometry.html), read 2026-10-15'
+  - 'Blender 5.2 Manual, "Curves: Shape", Resolution Preview U (https://docs.blender.org/manual/en/5.2/modeling/curves/properties/shape.html), read 2026-10-15'
   - Blender 5.2 Manual, "Convert", Mesh (https://docs.blender.org/manual/en/5.2/scene_layout/object/editing/convert.html), read 2026-10-15
   - Blender 5.2 Manual, "Curve to Tube Modifier" (https://docs.blender.org/manual/en/5.2/modeling/modifiers/generate/curve_to_tube.html), read 2026-10-15
   - Blender 5.2 Manual, "Properties Editor", Object Data tab (https://docs.blender.org/manual/en/5.2/editors/properties_editor.html), read 2026-10-15
-  - Blender 5.2.2, checked 2026-10-15 in a script: a new curve has Resolution Preview U 12 and bevel Resolution 4; a round bevel has 4 + 2 x Resolution sides; Depth is the tube's radius; the default Bézier curve at Depth 0.1 m gives 288 triangles, and 48 with Preview U 4 and Resolution 1; Curve to Tube's Scale is the radius and it makes a UV map called UVMap
+  - 'Blender 5.2.2, checked 2026-10-15 in a script: a new curve has Resolution Preview U 12 and bevel Resolution 4; a round bevel has 4 + 2 x Resolution sides; Depth is the tube''s radius; the default Bézier curve at Depth 0.1 m gives 288 triangles, and 48 with Preview U 4 and Resolution 1; Curve to Tube''s Scale is the radius and it makes a UV map called UVMap'
 ---
 
 # Curve depth and bevel

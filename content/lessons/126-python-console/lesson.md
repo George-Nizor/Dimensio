@@ -5,8 +5,8 @@ watch: [kenzocg-python-interface, blender-manual-editors-python-console]
 sources:
   - Blender 5.2 Manual, "Python Console", C and D, Tab to autocomplete, Up for history, and the bpy.context examples (https://docs.blender.org/manual/en/5.2/editors/python_console.html), read 2026-10-15
   - Blender 5.2 Manual, "Info Editor", the log of operators and Ctrl+C (https://docs.blender.org/manual/en/5.2/editors/info_editor.html), read 2026-10-15
-  - Blender 5.2 Manual, "Preferences: Interface", Python Tooltips (https://docs.blender.org/manual/en/5.2/editors/preferences/interface.html), read 2026-10-15
-  - Blender 5.2 Manual, "Scripting & Extending Blender: Introduction" (https://docs.blender.org/manual/en/5.2/advanced/scripting/introduction.html), read 2026-10-15
+  - 'Blender 5.2 Manual, "Preferences: Interface", Python Tooltips (https://docs.blender.org/manual/en/5.2/editors/preferences/interface.html), read 2026-10-15'
+  - 'Blender 5.2 Manual, "Scripting & Extending Blender: Introduction" (https://docs.blender.org/manual/en/5.2/advanced/scripting/introduction.html), read 2026-10-15'
   - Blender 5.2 Python API, "Quickstart" (https://docs.blender.org/api/5.2/info_quickstart.html), read 2026-10-15
   - Checked in Blender 5.2.2 on 2026-10-15, the Scripting workspace's areas, and every console line in this lesson run on the default scene, including the KeyError for a misspelt name
 ---

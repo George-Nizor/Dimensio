@@ -4,9 +4,9 @@ exercise: props-library
 watch: [grant-abbitt-asset-browser, ryan-king-asset-import-methods]
 sources:
   - Blender 5.2 Manual, "Asset Browser", catalogs, Import Method and refreshing with R (https://docs.blender.org/manual/en/5.2/editors/asset_browser.html), read 2026-10-15
-  - Blender 5.2 Manual, "Asset Libraries: Introduction", Mark as Asset and saving the file in the library (https://docs.blender.org/manual/en/5.2/files/asset_libraries/introduction.html), read 2026-10-15
+  - 'Blender 5.2 Manual, "Asset Libraries: Introduction", Mark as Asset and saving the file in the library (https://docs.blender.org/manual/en/5.2/files/asset_libraries/introduction.html), read 2026-10-15'
   - Blender 5.2 Manual, "Asset Catalogs" (https://docs.blender.org/manual/en/5.2/files/asset_libraries/catalogs.html), read 2026-10-15
-  - Blender 5.2 Manual, "Preferences: Asset Libraries", Import Method and Include Online Essentials (https://docs.blender.org/manual/en/5.2/editors/preferences/asset_libraries.html), read 2026-10-15
+  - 'Blender 5.2 Manual, "Preferences: Asset Libraries", Import Method and Include Online Essentials (https://docs.blender.org/manual/en/5.2/editors/preferences/asset_libraries.html), read 2026-10-15'
   - Blender 5.2 release notes, "Assets", the Asset Libraries page and online libraries (https://developer.blender.org/docs/release_notes/5.2/assets/), read 2026-10-15
   - Checked in Blender 5.2.2 on 2026-10-15, Object > Asset > Mark as Asset, the default User Library at Documents\Blender\Assets with Pack as its import method, and the five import methods
 ---

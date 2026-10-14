@@ -3,7 +3,7 @@ needs: [edit-mode]
 exercise: cut-the-wall
 watch: [ryan-king-knife-tool, blender-manual-modeling-meshes-editing-mesh-knife-topology-tool]
 sources:
-  - Blender 5.2 Manual, "Knife Topology Tool": usage, Close Loop, Stop, Confirm, Cut Through, Angle Constraint, Measure and Midpoint Snap (https://docs.blender.org/manual/en/5.2/modeling/meshes/editing/mesh/knife_topology_tool.html), read 2026-10-15
+  - 'Blender 5.2 Manual, "Knife Topology Tool": usage, Close Loop, Stop, Confirm, Cut Through, Angle Constraint, Measure and Midpoint Snap (https://docs.blender.org/manual/en/5.2/modeling/meshes/editing/mesh/knife_topology_tool.html), read 2026-10-15'
   - Blender 5.2 Manual, "Knife Project" (https://docs.blender.org/manual/en/5.2/modeling/meshes/editing/mesh/knife_project.html), read 2026-10-15
   - Blender 5.2 Manual, "Bisect" (https://docs.blender.org/manual/en/5.2/modeling/meshes/editing/mesh/bisect.html), read 2026-10-15
 ---

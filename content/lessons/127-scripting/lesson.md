@@ -9,7 +9,7 @@ sources:
   - Blender 5.2 Python API, "Export Scene Operators", bpy.ops.export_scene.gltf with use_selection and export_apply (https://docs.blender.org/api/5.2/bpy.ops.export_scene.html), read 2026-10-15
   - Blender 5.2 Python API, "bpy.path", abspath and // paths (https://docs.blender.org/api/5.2/bpy.path.html), read 2026-10-15
   - Blender 5.2 Python API, "Collection", objects (https://docs.blender.org/api/5.2/bpy.types.Collection.html), read 2026-10-15
-  - Checked in Blender 5.2.2 on 2026-10-15, the script exactly as shown, run with --python-text on the export-kit starter: four .glb files, each at the origin with its modifiers applied; in an unsaved file, // gave no folder
+  - 'Checked in Blender 5.2.2 on 2026-10-15, the script exactly as shown, run with --python-text on the export-kit starter: four .glb files, each at the origin with its modifiers applied; in an unsaved file, // gave no folder'
 ---
 
 # Writing a script

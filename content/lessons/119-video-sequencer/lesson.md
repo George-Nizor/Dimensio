@@ -4,7 +4,7 @@ exercise: asset-reel
 watch: [ryan-king-video-editing, nick-gammon-vse-trimming]
 sources:
   - Blender 5.2 Manual, "Video Editing" and "Sequencer Scene" (https://docs.blender.org/manual/en/5.2/video_editing/sequencer_scene.html), read 2026-10-15
-  - Blender 5.2 Manual, "Strips: Introduction", the Add menu and Shift+A (https://docs.blender.org/manual/en/5.2/video_editing/edit/montage/strips/introduction.html), read 2026-10-15
+  - 'Blender 5.2 Manual, "Strips: Introduction", the Add menu and Shift+A (https://docs.blender.org/manual/en/5.2/video_editing/edit/montage/strips/introduction.html), read 2026-10-15'
   - Blender 5.2 Manual, "Editing Strips", Split with K, Move with G, Delete with X (https://docs.blender.org/manual/en/5.2/video_editing/edit/montage/editing.html), read 2026-10-15
   - Blender 5.2 Manual, "Text Strip", text and style presets (https://docs.blender.org/manual/en/5.2/video_editing/edit/montage/strips/text.html), read 2026-10-15
   - Blender 5.2 Manual, "Sound Strip" (https://docs.blender.org/manual/en/5.2/video_editing/edit/montage/strips/sound.html), read 2026-10-15

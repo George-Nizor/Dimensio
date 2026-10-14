@@ -1,0 +1,21 @@
+# Practice for lesson 112. The item marked main is the lesson's exercise.
+
+- id: grass-and-beard
+  main: true
+  title: Grass tufts and a beard
+  kind: drill
+  minutes: 20
+  text: "Add Empty Hair to a 1 m ground tile and plant five tufts of grass, each about 15 cm tall, combed so they lean with the wind. Then add Empty Hair to a head (a UV sphere will do) and give it a short beard along the jaw."
+  steps: [Add empty hair, Switch to Sculpt Mode, Plant strands, Comb them, Trim them]
+  timer: { minutes: 20 }
+  reference: { diagram: example }
+
+- id: fur-ball
+  title: A furry ball
+  kind: warm-up
+  minutes: 5
+  text: Select a UV sphere and choose Add > Curves > Fur. Then comb the fur so it all lies one way, and shorten it on one side with the Grow/Shrink brush.
+  timer: { minutes: 5 }
+  check:
+    - The fur covers the whole sphere.
+    - It lies one way after combing.

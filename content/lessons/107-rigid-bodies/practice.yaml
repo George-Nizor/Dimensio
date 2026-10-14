@@ -1,0 +1,21 @@
+# Practice for lesson 107. The item marked main is the lesson's exercise.
+
+- id: knock-down-a-wall
+  main: true
+  title: Knock down a wall
+  kind: drill
+  minutes: 15
+  text: "Build a wall of 20 blocks, each 0.25 x 0.5 x 0.5 m, on a ground plane. Make the blocks active with a Box shape and the ground passive. Key a 0.7 m ball as a passive, Animated body moving through the wall from frame 10 to 30, then bake."
+  steps: [Add rigid bodies, Choose the shape, Set mass and friction, Move a body with keys, Bake it]
+  timer: { minutes: 15 }
+  reference: { diagram: animated }
+
+- id: domino-run
+  title: A domino run
+  kind: drill
+  minutes: 10
+  text: Stand 12 thin blocks, 0.1 x 0.5 x 1 m, in a curved line 0.6 m apart on a passive ground. Tip the first one over by rotating it 10° on frame 1, then play.
+  timer: { minutes: 10 }
+  check:
+    - Every domino falls, one after the other.
+    - The last domino comes to rest on the ground.

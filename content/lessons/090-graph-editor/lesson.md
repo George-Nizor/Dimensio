@@ -3,13 +3,13 @@ needs: [dope-sheet]
 exercise: door-and-lamp
 watch: [ryan-king-graph-editor, grant-abbitt-animation-graph-editor]
 sources:
-  - Blender 5.2 Manual, "Graph Editor: Introduction", keyframes and handles, Frame All, Local View (https://docs.blender.org/manual/en/5.2/editors/graph_editor/introduction.html), read 2026-10-15
-  - Blender 5.2 Manual, "F-Curves: Introduction" (https://docs.blender.org/manual/en/5.2/editors/graph_editor/fcurves/introduction.html), read 2026-10-15
+  - 'Blender 5.2 Manual, "Graph Editor: Introduction", keyframes and handles, Frame All, Local View (https://docs.blender.org/manual/en/5.2/editors/graph_editor/introduction.html), read 2026-10-15'
+  - 'Blender 5.2 Manual, "F-Curves: Introduction" (https://docs.blender.org/manual/en/5.2/editors/graph_editor/fcurves/introduction.html), read 2026-10-15'
   - Blender 5.2 Manual, "F-Curve Properties", Interpolation, Easing, Handle Types (https://docs.blender.org/manual/en/5.2/editors/graph_editor/fcurves/properties.html), read 2026-10-15
   - Blender 5.2 Manual, "Editing F-Curves", Handle Type V, Interpolation Mode T, Easing Type Ctrl+E, Copy and Paste (https://docs.blender.org/manual/en/5.2/editors/graph_editor/fcurves/editing.html), read 2026-10-15
-  - Blender 5.2 Manual, "Channels: Editing", Extrapolation Mode Shift+E and Make Cyclic (https://docs.blender.org/manual/en/5.2/editors/graph_editor/channels/editing.html), read 2026-10-15
+  - 'Blender 5.2 Manual, "Channels: Editing", Extrapolation Mode Shift+E and Make Cyclic (https://docs.blender.org/manual/en/5.2/editors/graph_editor/channels/editing.html), read 2026-10-15'
   - Blender 5.2 Manual, "F-Curve Modifiers", Cycles (https://docs.blender.org/manual/en/5.2/editors/graph_editor/fcurves/modifiers.html), read 2026-10-15
-  - Blender 5.2.2, checked 2026-10-15 in a script: new keys are Bézier with Auto Clamped handles; a Cycles modifier on two keys at -15 and 15 degrees jumps from 15 back to -15 every 24 frames, and on three keys ending back at -15 it swings smoothly
+  - 'Blender 5.2.2, checked 2026-10-15 in a script: new keys are Bézier with Auto Clamped handles; a Cycles modifier on two keys at -15 and 15 degrees jumps from 15 back to -15 every 24 frames, and on three keys ending back at -15 it swings smoothly'
 ---
 
 # The Graph Editor

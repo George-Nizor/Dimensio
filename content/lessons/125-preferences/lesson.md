@@ -3,9 +3,9 @@ needs: [interface]
 exercise: your-startup-file
 watch: [skill-brew-preferences, blender-manual-editors-preferences-introduction]
 sources:
-  - Blender 5.2 Manual, "Preferences: Introduction", Edit > Preferences, Ctrl+Comma, the search field and Auto-Save Preferences (https://docs.blender.org/manual/en/5.2/editors/preferences/introduction.html), read 2026-10-15
-  - Blender 5.2 Manual, "Preferences: Interface", Resolution Scale (https://docs.blender.org/manual/en/5.2/editors/preferences/interface.html), read 2026-10-15
-  - Blender 5.2 Manual, "Preferences: Keymap", presets including Industry Compatible (https://docs.blender.org/manual/en/5.2/editors/preferences/keymap.html), read 2026-10-15
+  - 'Blender 5.2 Manual, "Preferences: Introduction", Edit > Preferences, Ctrl+Comma, the search field and Auto-Save Preferences (https://docs.blender.org/manual/en/5.2/editors/preferences/introduction.html), read 2026-10-15'
+  - 'Blender 5.2 Manual, "Preferences: Interface", Resolution Scale (https://docs.blender.org/manual/en/5.2/editors/preferences/interface.html), read 2026-10-15'
+  - 'Blender 5.2 Manual, "Preferences: Keymap", presets including Industry Compatible (https://docs.blender.org/manual/en/5.2/editors/preferences/keymap.html), read 2026-10-15'
   - Blender 5.2 Manual, "Keymap Customization", F5 to F8 kept free (https://docs.blender.org/manual/en/5.2/advanced/keymap_editing.html), read 2026-10-15
   - Blender 5.2 Manual, "Menus", the context menu's Assign Shortcut (https://docs.blender.org/manual/en/5.2/interface/controls/buttons/menus.html), read 2026-10-15
   - Blender 5.2 Manual, "Default Keymap", Q for Quick Favorites (https://docs.blender.org/manual/en/5.2/interface/keymap/blender_default.html), read 2026-10-15

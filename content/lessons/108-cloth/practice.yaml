@@ -1,0 +1,24 @@
+# Practice for lesson 108. The item marked main is the lesson's exercise.
+
+- id: drape-a-tablecloth
+  main: true
+  title: Drape a tablecloth
+  kind: drill
+  minutes: 20
+  text: "Open the exercise: a table, a floor and a flat tablecloth above them. Cut the cloth with 30 cuts, add Cloth with Self Collisions, and give the table and floor Collision. Bake it, then apply the Cloth modifier on a settled frame to keep the drape."
+  steps: [Cut the cloth, Add Cloth, Make it collide, Pin cloth that hangs, Bake and keep the shape]
+  starter: cloth-table
+  timer: { minutes: 20 }
+  reference: { diagram: example }
+  measure:
+    - { metric: modifier, equals: COLLISION, label: Collision on the table }
+
+- id: hanging-banner
+  title: A banner in the wind
+  kind: drill
+  minutes: 15
+  text: Add a 1.2 x 1.6 m plane standing upright, cut it with 20 cuts and pin its top row. Add Cloth, then choose Add > Force Field > Wind. Rotate the wind 90° so its arrow points at the banner, set Strength to 2 and play.
+  timer: { minutes: 15 }
+  check:
+    - The top edge stays fixed while the rest sways.
+    - The banner never flies off or folds through itself.

@@ -1,0 +1,24 @@
+# Practice for lesson 103. The item marked main is the lesson's exercise.
+
+- id: fit-rigify-rig
+  main: true
+  title: Fit and generate a Rigify rig
+  kind: drill
+  minutes: 25
+  text: "Open the exercise: a 1.7 m body stands at the origin. Fit Rigify's Basic Human meta-rig to it, generate the rig and bind the body with automatic weights. Then pose it with one arm raised and one knee lifted."
+  steps: [Turn on Rigify, Add the meta-rig, Scale it to the body, Fit the joints, Generate the rig, Bind the body]
+  starter: rigify-body
+  timer: { minutes: 25 }
+  reference: { diagram: fit }
+  measure:
+    - { metric: modifier, equals: ARMATURE, label: The body is bound to the rig }
+
+- id: regenerate-rigify
+  title: Change the meta-rig and generate again
+  kind: drill
+  minutes: 10
+  text: In the same file, select the meta-rig and in Edit Mode make both arms 10 cm longer at the hands. Back in Object Mode, click Re-Generate Rig in the Rigify panel. Rigify updates the rig you made rather than adding a second one.
+  timer: { minutes: 10 }
+  check:
+    - The Outliner still shows one rig, not two.
+    - The rig's hand bones reach the new hand positions.

@@ -5,7 +5,7 @@ watch: [pixxo-3d-line-art, blender-manual-grease-pencil-modifiers-line-art]
 sources:
   - Blender 5.2 Manual, "Line Art Modifier", the active camera, Line Radius, Edge Types and Crease Threshold (https://docs.blender.org/manual/en/5.2/grease_pencil/modifiers/generate/line_art.html), read 2026-10-15
   - Blender 5.2 Manual, "Grease Pencil Primitives", Scene, Collection and Object Line Art (https://docs.blender.org/manual/en/5.2/grease_pencil/primitives.html), read 2026-10-15
-  - Blender 5.2 Manual, "Object Properties: Line Art", Usage (https://docs.blender.org/manual/en/5.2/scene_layout/object/properties/line_art.html), read 2026-10-15
+  - 'Blender 5.2 Manual, "Object Properties: Line Art", Usage (https://docs.blender.org/manual/en/5.2/scene_layout/object/properties/line_art.html), read 2026-10-15'
   - Blender 5.2 Manual, "Camera View", Set Active Object as Camera (https://docs.blender.org/manual/en/5.2/editors/3dview/navigate/camera_view.html), read 2026-10-15
   - Checked in Blender 5.2.2 on 2026-10-15, Scene Line Art on a cube and an eight-sided cylinder rendered with EEVEE, with no camera (no strokes), Line Radius 0.0025, 0.01 and 0.02, and Crease Threshold 140 and 130 degrees
 ---

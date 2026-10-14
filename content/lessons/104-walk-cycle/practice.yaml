@@ -1,0 +1,32 @@
+# Practice for lesson 104. The item marked main is the lesson's exercise.
+
+- id: walk-24-frames
+  main: true
+  title: A 24-frame walk in place
+  kind: drill
+  minutes: 40
+  text: "Animate a walk in place for your rigged character from lesson 102. Pose contact, down, passing and up on frames 1, 4, 7 and 10, paste them flipped on 13 to 22, and close the loop on 25. Add a Cycles modifier, set End to 24 and name the action walk."
+  steps: [Set the length, Pose the contact, "Add down, passing and up", Paste them flipped, Make it loop, Check the arcs]
+  timer: { minutes: 40 }
+  reference: { diagram: example }
+
+- id: walk-from-photographs
+  title: Pose a walk from photographs
+  kind: copy
+  minutes: 15
+  text: Eadweard Muybridge photographed a man walking in 1887, eight frames for one step. Find the contact, passing and up frames among them. Then pose your character on frames 1, 7 and 10 to match the photographs and compare them with your walk.
+  timer: { minutes: 15 }
+  reference: { images: [104-walk-cycle/muybridge-walking-plate-8.jpg] }
+  check:
+    - You found one contact, one passing and one up frame.
+    - Your three poses match the photographs from the side.
+
+- id: slower-walk
+  title: Slow the walk down
+  kind: drill
+  minutes: 10
+  text: In the Dope Sheet, put the playhead on frame 1 and select every key. Press S and type 1.5, so the cycle runs from 1 to 37. Set End to 36 and play it.
+  timer: { minutes: 10 }
+  check:
+    - The contact poses now sit on frames 1, 19 and 37.
+    - Playback loops from frame 36 into frame 1 without a pause.

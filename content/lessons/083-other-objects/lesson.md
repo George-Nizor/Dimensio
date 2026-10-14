@@ -4,16 +4,16 @@ exercise: slime-and-dome
 watch: [cg-essentials-metaballs, blender-secrets-nurbs-surfaces]
 sources:
   - Blender 5.2 Manual, "Object Types" (https://docs.blender.org/manual/en/5.2/scene_layout/object/types.html), read 2026-10-15
-  - Blender 5.2 Manual, "Surfaces: Introduction" and "Surface Primitives", NURBS Surface as a 4 by 4 grid (https://docs.blender.org/manual/en/5.2/modeling/surfaces/primitives.html), read 2026-10-15
+  - 'Blender 5.2 Manual, "Surfaces: Introduction" and "Surface Primitives", NURBS Surface as a 4 by 4 grid (https://docs.blender.org/manual/en/5.2/modeling/surfaces/primitives.html), read 2026-10-15'
   - Blender 5.2 Manual, "Surface Structure", compared with a Subdivision Surface mesh (https://docs.blender.org/manual/en/5.2/modeling/surfaces/structure.html), read 2026-10-15
-  - Blender 5.2 Manual, "Surfaces: Shape", Resolution Preview U and V (https://docs.blender.org/manual/en/5.2/modeling/surfaces/properties/shape.html), read 2026-10-15
-  - Blender 5.2 Manual, "Metaball: Introduction" (https://docs.blender.org/manual/en/5.2/modeling/metas/introduction.html), read 2026-10-15
+  - 'Blender 5.2 Manual, "Surfaces: Shape", Resolution Preview U and V (https://docs.blender.org/manual/en/5.2/modeling/surfaces/properties/shape.html), read 2026-10-15'
+  - 'Blender 5.2 Manual, "Metaball: Introduction" (https://docs.blender.org/manual/en/5.2/modeling/metas/introduction.html), read 2026-10-15'
   - Blender 5.2 Manual, "Metaball Properties", Resolution Viewport (https://docs.blender.org/manual/en/5.2/modeling/metas/properties.html), read 2026-10-15
   - Blender 5.2 Manual, "Editing Meta Objects", Object Families and Conversion (https://docs.blender.org/manual/en/5.2/modeling/metas/editing.html), read 2026-10-15
-  - Blender 5.2 Manual, "Volumes: Introduction" (https://docs.blender.org/manual/en/5.2/modeling/volumes/introduction.html), read 2026-10-15
+  - 'Blender 5.2 Manual, "Volumes: Introduction" (https://docs.blender.org/manual/en/5.2/modeling/volumes/introduction.html), read 2026-10-15'
   - Blender 5.2 Manual, "Point Cloud" (https://docs.blender.org/manual/en/5.2/modeling/point_cloud/index.html), read 2026-10-15
   - Blender 5.2 Manual, "Convert", Mesh (https://docs.blender.org/manual/en/5.2/scene_layout/object/editing/convert.html), read 2026-10-15
-  - Blender 5.2.2, checked 2026-10-15 in a script: a NURBS Surface converts to 98, 242 and 450 triangles at resolution 2, 3 and 4; two Ball metaballs give 1,948 triangles at Resolution Viewport 0.2 and 460 at 0.4, the default, and convert into one mesh; Add > Point Cloud adds 400 points, which convert to 400 loose vertices
+  - 'Blender 5.2.2, checked 2026-10-15 in a script: a NURBS Surface converts to 98, 242 and 450 triangles at resolution 2, 3 and 4; two Ball metaballs give 1,948 triangles at Resolution Viewport 0.2 and 460 at 0.4, the default, and convert into one mesh; Add > Point Cloud adds 400 points, which convert to 400 loose vertices'
 ---
 
 # Other object types

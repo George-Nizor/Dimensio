@@ -3,9 +3,9 @@ needs: [normals]
 exercise: shade-two-ways
 watch: [ryan-king-auto-smooth, blender-manual-scene-layout-object-editing-shading]
 sources:
-  - Blender 5.2 Manual, "Shading": Shade Smooth with Keep Sharp Edges, Shade Auto Smooth, Shade Flat (https://docs.blender.org/manual/en/5.2/scene_layout/object/editing/shading.html), read 2026-10-15
+  - 'Blender 5.2 Manual, "Shading": Shade Smooth with Keep Sharp Edges, Shade Auto Smooth, Shade Flat (https://docs.blender.org/manual/en/5.2/scene_layout/object/editing/shading.html), read 2026-10-15'
   - Blender 5.2 Manual, "Smooth By Angle Modifier" (https://docs.blender.org/manual/en/5.2/modeling/modifiers/normals/smooth_by_angle.html), read 2026-10-15
-  - Blender 5.2 Manual, "Edge Data": Mark Sharp and Set Sharpness by Angle (https://docs.blender.org/manual/en/5.2/modeling/meshes/editing/edge/edge_data.html), read 2026-10-15
+  - 'Blender 5.2 Manual, "Edge Data": Mark Sharp and Set Sharpness by Angle (https://docs.blender.org/manual/en/5.2/modeling/meshes/editing/edge/edge_data.html), read 2026-10-15'
   - Blender 5.2 Manual, "glTF 2.0", Data > Mesh > Apply Modifiers (https://docs.blender.org/manual/en/5.2/addons/scene_gltf2.html), read 2026-10-15
   - Blender 4.1 release notes, Modeling, Auto Smooth replaced by a modifier (https://developer.blender.org/docs/release_notes/4.1/modeling/), read 2026-10-15
 ---

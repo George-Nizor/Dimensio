@@ -3,11 +3,11 @@ needs: [grease-pencil, dope-sheet]
 exercise: flickering-flame
 watch: [micah-buzan-grease-pencil, blender-manual-grease-pencil-animation-introduction]
 sources:
-  - Blender 5.2 Manual, "Grease Pencil: Introduction", 2D Animation Template (https://docs.blender.org/manual/en/5.2/grease_pencil/introduction.html), read 2026-10-15
-  - Blender 5.2 Manual, "Grease Pencil Animation: Introduction", keyframes and Auto Keying (https://docs.blender.org/manual/en/5.2/grease_pencil/animation/introduction.html), read 2026-10-15
+  - 'Blender 5.2 Manual, "Grease Pencil: Introduction", 2D Animation Template (https://docs.blender.org/manual/en/5.2/grease_pencil/introduction.html), read 2026-10-15'
+  - 'Blender 5.2 Manual, "Grease Pencil Animation: Introduction", keyframes and Auto Keying (https://docs.blender.org/manual/en/5.2/grease_pencil/animation/introduction.html), read 2026-10-15'
   - Blender 5.2 Manual, "Animation Tools", Insert Blank Keyframe and Interpolate Sequence (https://docs.blender.org/manual/en/5.2/grease_pencil/animation/tools.html), read 2026-10-15
   - Blender 5.2 Manual, "Onion Skinning" (https://docs.blender.org/manual/en/5.2/grease_pencil/properties/onion_skinning.html), read 2026-10-15
-  - Blender 5.2 Manual, "Dope Sheet: Grease Pencil" (https://docs.blender.org/manual/en/5.2/editors/dope_sheet/modes/grease_pencil.html), read 2026-10-15
+  - 'Blender 5.2 Manual, "Dope Sheet: Grease Pencil" (https://docs.blender.org/manual/en/5.2/editors/dope_sheet/modes/grease_pencil.html), read 2026-10-15'
   - Blender 5.2 Manual, "Default Keymap", frame keys (https://docs.blender.org/manual/en/5.2/interface/keymap/blender_default.html), read 2026-10-15
   - Checked in Blender 5.2.2 on 2026-10-15, the 2D Animation template's layers, Auto Keying and onion skin colours, and the Left, Right and Shift+Ctrl+E keys in the shipped keymap
 ---

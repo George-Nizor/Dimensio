@@ -3,7 +3,7 @@ needs: [eevee, shader-editor]
 exercise: grade-the-portfolio
 watch: [grant-abbitt-compositing, ryan-king-compositing-5]
 sources:
-  - Blender 5.2 Manual, "Compositing: Introduction", the New button and the Compositing option (https://docs.blender.org/manual/en/5.2/compositing/introduction.html), read 2026-10-15
+  - 'Blender 5.2 Manual, "Compositing: Introduction", the New button and the Compositing option (https://docs.blender.org/manual/en/5.2/compositing/introduction.html), read 2026-10-15'
   - Blender 5.2 Manual, "Compositor" editor, the Asset Shelf (https://docs.blender.org/manual/en/5.2/editors/compositor.html), read 2026-10-15
   - Blender 5.2 Manual, "Group Output", the first image input is the render result (https://docs.blender.org/manual/en/5.2/compositing/types/output/group_output.html), read 2026-10-15
   - Blender 5.2 Manual, "Viewer Node", Shift+Ctrl and left click (https://docs.blender.org/manual/en/5.2/compositing/types/output/viewer.html), read 2026-10-15

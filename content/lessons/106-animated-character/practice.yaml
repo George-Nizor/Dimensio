@@ -1,0 +1,27 @@
+# Practice for lesson 106. The item marked main is the lesson's exercise.
+
+- id: character-in-godot
+  main: true
+  title: Your character, walking in Godot
+  kind: project
+  minutes: 90
+  text: "Take your character from lesson 97 into Godot: one palette material, 15 bones, clean weights, a 48-frame idle and a 24-frame walk. Export it as a .glb, open it as an inherited scene and set idle to play on load. Hand in the .blend."
+  steps: [Get the mesh ready, Colour it with one material, Build 15 bones, Clean up the weights, Animate the idle and the walk, Export and play it]
+  timer: { minutes: 90 }
+  reference: { model: kenney-mini-character }
+  measure:
+    - { metric: tris, max: 2000, label: "Under 2,000 triangles" }
+    - { metric: materials, min: 1, label: Every mesh has a material }
+    - { metric: scaleApplied, equals: true, label: Scale applied }
+    - { metric: rotationApplied, equals: true, label: Rotation applied }
+    - { metric: modifier, equals: ARMATURE, label: Bound with an Armature modifier }
+
+- id: character-retest
+  title: The animated character again
+  kind: retest
+  minutes: 90
+  text: A few days after the project, rig and animate a new low-poly character from memory. Give it the same 15 bones, an idle and a walk, and play it in Godot. Compare it with your first attempt in Models.
+  timer: { minutes: 90 }
+  check:
+    - Both animations loop in Godot without a pause.
+    - You opened no lesson while you worked.

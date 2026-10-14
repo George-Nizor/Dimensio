@@ -3,7 +3,7 @@ needs: [edit-mode]
 exercise: hill-and-pond
 watch: [ryan-king-proportional-editing, blender-manual-editors-3dview-controls-proportional-editing]
 sources:
-  - Blender 5.2 Manual, "Proportional Editing": the O key, Proportional Size with the wheel, the Shift+O falloff pie, Connected Only with Alt+O (https://docs.blender.org/manual/en/5.2/editors/3dview/controls/proportional_editing.html), read 2026-10-15
+  - 'Blender 5.2 Manual, "Proportional Editing": the O key, Proportional Size with the wheel, the Shift+O falloff pie, Connected Only with Alt+O (https://docs.blender.org/manual/en/5.2/editors/3dview/controls/proportional_editing.html), read 2026-10-15'
   - Blender 5.2 Manual, "Axis Locking", for G then Z (https://docs.blender.org/manual/en/5.2/scene_layout/object/editing/transform/control/axis_locking.html), read 2026-10-15
 ---
 

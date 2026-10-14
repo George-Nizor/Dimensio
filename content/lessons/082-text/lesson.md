@@ -3,12 +3,12 @@ needs: [curve-geometry]
 exercise: inn-sign
 watch: [ryan-king-text, blender-manual-modeling-texts-properties]
 sources:
-  - Blender 5.2 Manual, "Text: Introduction" (https://docs.blender.org/manual/en/5.2/modeling/texts/introduction.html), read 2026-10-15
+  - 'Blender 5.2 Manual, "Text: Introduction" (https://docs.blender.org/manual/en/5.2/modeling/texts/introduction.html), read 2026-10-15'
   - Blender 5.2 Manual, "Editing Text Objects", Tab to leave Edit Mode, converting to a mesh (https://docs.blender.org/manual/en/5.2/modeling/texts/editing.html), read 2026-10-15
   - Blender 5.2 Manual, "Text Properties", Font (Bfont, loading a font, Size), Paragraph (Alignment Center), Geometry (Extrude, Bevel follows the letters' outlines) (https://docs.blender.org/manual/en/5.2/modeling/texts/properties.html), read 2026-10-15
   - Blender 5.2 Manual, "Convert", Mesh (https://docs.blender.org/manual/en/5.2/scene_layout/object/editing/convert.html), read 2026-10-15
   - Blender 5.2 Manual, "Merge", By Distance (https://docs.blender.org/manual/en/5.2/modeling/meshes/editing/mesh/merge.html), read 2026-10-15
-  - Blender 5.2.2, checked 2026-10-15 in a script: a new text object reads "Text" and lies flat; Extrude 0.05 m makes letters 10 cm thick; a 0.02 m bevel widens a letter by 4 cm; the word INN converted with Extrude has 96 vertices and Merge by Distance removes 48 of them, leaving 84 triangles and no n-gons
+  - 'Blender 5.2.2, checked 2026-10-15 in a script: a new text object reads "Text" and lies flat; Extrude 0.05 m makes letters 10 cm thick; a 0.02 m bevel widens a letter by 4 cm; the word INN converted with Extrude has 96 vertices and Merge by Distance removes 48 of them, leaving 84 triangles and no n-gons'
 ---
 
 # 3D text

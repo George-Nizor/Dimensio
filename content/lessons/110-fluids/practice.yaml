@@ -1,0 +1,23 @@
+# Practice for lesson 110. The item marked main is the lesson's exercise.
+
+- id: torch-and-tub
+  main: true
+  title: A torch and a tub
+  kind: drill
+  minutes: 20
+  text: "Model a torch, a 0.8 m handle with a small cube on top, and set it alight with Quick Smoke on Fire. Then drop a sphere of water into a tub 1.2 m across with walls 10 cm thick. Keep both domains at Resolution Divisions 32 and bake 120 frames."
+  steps: [Light the torch, Learn the three types, Keep the resolution low, Drop water into a tub, Bake it]
+  timer: { minutes: 20 }
+  reference: { diagram: example }
+  measure:
+    - { metric: modifier, equals: FLUID, label: Fluid physics on a part }
+
+- id: smoke-round-a-wall
+  title: Smoke round a wall
+  kind: drill
+  minutes: 10
+  text: Make smoke rise from a cube with Quick Smoke, then put a flat box above it inside the domain and set its Fluid Type to Effector. Play it and watch the smoke spread round the box.
+  timer: { minutes: 10 }
+  check:
+    - The smoke goes round the box, not through it.
+    - The box sits wholly inside the domain.

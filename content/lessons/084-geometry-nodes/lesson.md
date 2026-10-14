@@ -3,7 +3,7 @@ needs: [modifiers, shader-editor]
 exercise: node-tower
 watch: [ryan-king-geometry-nodes, joey-carlino-geometry-nodes-start]
 sources:
-  - Blender 5.2 Manual, "Geometry Nodes: Introduction", Group Input and Group Output (https://docs.blender.org/manual/en/5.2/modeling/geometry_nodes/introduction.html), read 2026-10-15
+  - 'Blender 5.2 Manual, "Geometry Nodes: Introduction", Group Input and Group Output (https://docs.blender.org/manual/en/5.2/modeling/geometry_nodes/introduction.html), read 2026-10-15'
   - Blender 5.2 Manual, "Geometry Nodes Modifier", Inputs (https://docs.blender.org/manual/en/5.2/modeling/modifiers/geometry_nodes.html), read 2026-10-15
   - Blender 5.2 Manual, "Geometry Node Editor" (https://docs.blender.org/manual/en/5.2/editors/geometry_node.html), read 2026-10-15
   - Blender 5.2 Manual, "Editing Nodes", dropping a node on a link, Duplicate Shift+D (https://docs.blender.org/manual/en/5.2/interface/controls/nodes/editing.html), read 2026-10-15
@@ -12,7 +12,7 @@ sources:
   - Blender 5.2 Manual, "Join Geometry Node" (https://docs.blender.org/manual/en/5.2/modeling/geometry_nodes/geometry/join_geometry.html), read 2026-10-15
   - Blender 5.2 Manual, "Viewer Node", Shift+Ctrl and left click (https://docs.blender.org/manual/en/5.2/modeling/geometry_nodes/output/viewer.html), read 2026-10-15
   - Blender 5.2 Manual, "Node Groups", making a new input from the hollow socket (https://docs.blender.org/manual/en/5.2/interface/controls/nodes/groups.html), read 2026-10-15
-  - Blender 5.2.2, checked 2026-10-15 in a script: New in the Geometry Node Editor adds a modifier called GeometryNodes with Group Input linked to Group Output; the Add menu path Geometry > Operations > Transform Geometry; three copies of the default cube give 36 triangles; with nothing linked to Group Output the object has no vertices
+  - 'Blender 5.2.2, checked 2026-10-15 in a script: New in the Geometry Node Editor adds a modifier called GeometryNodes with Group Input linked to Group Output; the Add menu path Geometry > Operations > Transform Geometry; three copies of the default cube give 36 triangles; with nothing linked to Group Output the object has no vertices'
 ---
 
 # Geometry Nodes

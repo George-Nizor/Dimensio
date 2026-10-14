@@ -3,9 +3,9 @@ needs: [parenting, keyframes]
 exercise: camera-and-turret
 watch: [ryan-king-object-constraints, blender-tracking-constraints]
 sources:
-  - Blender 5.2 Manual, "Constraints: Introduction", adding constraints and the visual transform (https://docs.blender.org/manual/en/5.2/animation/constraints/introduction.html), read 2026-10-15
+  - 'Blender 5.2 Manual, "Constraints: Introduction", adding constraints and the visual transform (https://docs.blender.org/manual/en/5.2/animation/constraints/introduction.html), read 2026-10-15'
   - Blender 5.2 Manual, "Constraint Stack" (https://docs.blender.org/manual/en/5.2/animation/constraints/interface/stack.html), read 2026-10-15
-  - Blender 5.2 Manual, "Constraints: Common", Target and the red icon, Influence (https://docs.blender.org/manual/en/5.2/animation/constraints/interface/common.html), read 2026-10-15
+  - 'Blender 5.2 Manual, "Constraints: Common", Target and the red icon, Influence (https://docs.blender.org/manual/en/5.2/animation/constraints/interface/common.html), read 2026-10-15'
   - Blender 5.2 Manual, "Track To Constraint" (https://docs.blender.org/manual/en/5.2/animation/constraints/tracking/track_to.html), read 2026-10-15
   - Blender 5.2 Manual, "Damped Track Constraint" (https://docs.blender.org/manual/en/5.2/animation/constraints/tracking/damped_track.html), read 2026-10-15
   - Blender 5.2 Manual, "Copy Location Constraint", Offset (https://docs.blender.org/manual/en/5.2/animation/constraints/transform/copy_location.html), read 2026-10-15
@@ -13,7 +13,7 @@ sources:
   - Blender 5.2 Manual, "Limit Rotation Constraint", Affect Transform (https://docs.blender.org/manual/en/5.2/animation/constraints/transform/limit_rotation.html), read 2026-10-15
   - Blender 5.2 Manual, "Track", Object > Track > Track To Constraint with the active object as target (https://docs.blender.org/manual/en/5.2/scene_layout/object/editing/track.html), read 2026-10-15
   - Blender 5.2 Manual, "Properties Editor", the Object Constraints tab (https://docs.blender.org/manual/en/5.2/editors/properties_editor.html), read 2026-10-15
-  - Blender 5.2.2, checked 2026-10-15 in a script on the cart-turret starter: Track To defaults to Track Axis -Z and Up Y, which suits a camera; Copy Location with Offset above Track To keeps the camera with the cart and aimed at it, and with Track To above, the aim is 32 degrees off at frames 1 and 120; Damped Track with Track Axis Y aims the turret head's barrel at the target; rotating a camera that has Track To changes nothing on screen
+  - 'Blender 5.2.2, checked 2026-10-15 in a script on the cart-turret starter: Track To defaults to Track Axis -Z and Up Y, which suits a camera; Copy Location with Offset above Track To keeps the camera with the cart and aimed at it, and with Track To above, the aim is 32 degrees off at frames 1 and 120; Damped Track with Track Axis Y aims the turret head''s barrel at the target; rotating a camera that has Track To changes nothing on screen'
 ---
 
 # Constraints

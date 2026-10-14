@@ -3,14 +3,14 @@ needs: [transform]
 exercise: spinning-coin
 watch: [cgcookie-keyframes, grant-abbitt-animation-keyframes]
 sources:
-  - Blender 5.2 Manual, "Keyframes: Introduction", the object's name turning yellow on a keyframe (https://docs.blender.org/manual/en/5.2/animation/keyframes/introduction.html), read 2026-10-15
+  - 'Blender 5.2 Manual, "Keyframes: Introduction", the object''s name turning yellow on a keyframe (https://docs.blender.org/manual/en/5.2/animation/keyframes/introduction.html), read 2026-10-15'
   - Blender 5.2 Manual, "Editing Keyframes", I, hovering over a property, Alt+I, Auto Keyframe (https://docs.blender.org/manual/en/5.2/animation/keyframes/editing.html), read 2026-10-15
   - Blender 5.2 Manual, "Timeline", Frame Range and keyframes of selected items (https://docs.blender.org/manual/en/5.2/editors/timeline.html), read 2026-10-15
   - Blender 5.2 Manual, "Animation Editors", Playhead, Left and Right, Space, Up and Down to jump between keyframes, Auto Keying (https://docs.blender.org/manual/en/5.2/animation/animation_editors.html), read 2026-10-15
-  - Blender 5.2 Manual, "Animation: Introduction", State Colors (https://docs.blender.org/manual/en/5.2/animation/introduction.html), read 2026-10-15
-  - Blender 5.2 Manual, "Preferences: Animation", Default Key Channels (https://docs.blender.org/manual/en/5.2/editors/preferences/animation.html), read 2026-10-15
+  - 'Blender 5.2 Manual, "Animation: Introduction", State Colors (https://docs.blender.org/manual/en/5.2/animation/introduction.html), read 2026-10-15'
+  - 'Blender 5.2 Manual, "Preferences: Animation", Default Key Channels (https://docs.blender.org/manual/en/5.2/editors/preferences/animation.html), read 2026-10-15'
   - Blender release notes 4.1, I keys at once with no menu (https://developer.blender.org/docs/release_notes/4.1/animation_rigging/), and 5.0, Up and Down swapped (https://developer.blender.org/docs/release_notes/5.0/user_interface/), read 2026-10-15
-  - Blender 5.2.2, checked 2026-10-15: the default key channels are Location, Rotation, Scale and Custom Properties; the scene runs at 24 frames a second; a keyed object moved without pressing I goes back to its keyed place when the frame changes
+  - 'Blender 5.2.2, checked 2026-10-15: the default key channels are Location, Rotation, Scale and Custom Properties; the scene runs at 24 frames a second; a keyed object moved without pressing I goes back to its keyed place when the frame changes'
 ---
 
 # Keyframes

@@ -10,7 +10,7 @@
   timer: { minutes: 25 }
   reference: { diagram: example }
 
-- id: bouncing-ball
+- id: drawn-bouncing-ball
   title: A bouncing ball
   kind: warm-up
   minutes: 10

@@ -4,7 +4,7 @@ exercise: lamp-and-rocks
 watch: [ryan-king-join-separate, blender-manual-modeling-meshes-editing-mesh-separate]
 sources:
   - Blender 5.2 Manual, "Select Linked", L under the mouse (https://docs.blender.org/manual/en/5.2/modeling/meshes/selecting/linked.html), read 2026-10-15
-  - Blender 5.2 Manual, "Separate": Selection, By Material, By Loose Parts (https://docs.blender.org/manual/en/5.2/modeling/meshes/editing/mesh/separate.html), read 2026-10-15
+  - 'Blender 5.2 Manual, "Separate": Selection, By Material, By Loose Parts (https://docs.blender.org/manual/en/5.2/modeling/meshes/editing/mesh/separate.html), read 2026-10-15'
   - Blender 5.2 Manual, "Split", Split Selection with Y (https://docs.blender.org/manual/en/5.2/modeling/meshes/editing/mesh/split.html), read 2026-10-15
   - Blender 5.2 Manual, "Join" (https://docs.blender.org/manual/en/5.2/scene_layout/object/editing/join.html), read 2026-10-15
   - Blender 5.2 Manual, "Common Shortcuts", F2 to rename the active item (https://docs.blender.org/manual/en/5.2/interface/keymap/blender_default.html), read 2026-10-15

@@ -3,18 +3,18 @@ needs: [origins, apply-transforms, crate, checking-model]
 exercise: crates-in-godot
 watch: [octodemy-godot-export, tomgrave-blender-godot]
 sources:
-  - Blender 5.2 Manual, "glTF 2.0": Format, Include > Selected Objects, Transform > +Y Up, Data > Mesh > Apply Modifiers, Double-Sided / Backface Culling (https://docs.blender.org/manual/en/5.2/addons/scene_gltf2.html), read 2026-10-15
+  - 'Blender 5.2 Manual, "glTF 2.0": Format, Include > Selected Objects, Transform > +Y Up, Data > Mesh > Apply Modifiers, Double-Sided / Backface Culling (https://docs.blender.org/manual/en/5.2/addons/scene_gltf2.html), read 2026-10-15'
   - Blender 5.2 Manual, "Apply", Object > Apply > Scale (https://docs.blender.org/manual/en/5.2/scene_layout/object/editing/apply.html), read 2026-10-15
   - Blender 5.2 Manual, "EEVEE Materials", Settings > Surface > Backface Culling (https://docs.blender.org/manual/en/5.2/render/eevee/material_settings.html), read 2026-10-15
-  - Godot Docs, "Model export considerations": -Y is the front of an asset in Blender, and apply transforms before export (https://docs.godotengine.org/en/stable/tutorials/assets_pipeline/importing_3d_scenes/model_export_considerations.html), read 2026-10-15
-  - Godot Docs, "Available 3D formats": glTF binary files and Backface Culling (https://docs.godotengine.org/en/stable/tutorials/assets_pipeline/importing_3d_scenes/available_formats.html), read 2026-10-15
-  - Godot, "Download for Windows": Godot 4.7.2, extract and run, no installation (https://godotengine.org/download/windows/), read 2026-10-15
+  - 'Godot Docs, "Model export considerations": -Y is the front of an asset in Blender, and apply transforms before export (https://docs.godotengine.org/en/stable/tutorials/assets_pipeline/importing_3d_scenes/model_export_considerations.html), read 2026-10-15'
+  - 'Godot Docs, "Available 3D formats": glTF binary files and Backface Culling (https://docs.godotengine.org/en/stable/tutorials/assets_pipeline/importing_3d_scenes/available_formats.html), read 2026-10-15'
+  - 'Godot, "Download for Windows": Godot 4.7.2, extract and run, no installation (https://godotengine.org/download/windows/), read 2026-10-15'
   - Godot Docs, "Using the Project Manager", Create (https://docs.godotengine.org/en/stable/tutorials/editor/project_manager.html), read 2026-10-15
-  - Godot Docs, "Import process": dragging files onto the FileSystem dock, and automatic reimport (https://docs.godotengine.org/en/stable/tutorials/assets_pipeline/import_process.html), read 2026-10-15
+  - 'Godot Docs, "Import process": dragging files onto the FileSystem dock, and automatic reimport (https://docs.godotengine.org/en/stable/tutorials/assets_pipeline/import_process.html), read 2026-10-15'
   - Godot Docs, "Nodes and Scenes", the 3D Scene button (https://docs.godotengine.org/en/stable/getting_started/step_by_step/nodes_and_scenes.html), read 2026-10-15
-  - Godot Docs, "Player scene and input actions": dragging a .glb from the FileSystem dock onto a node (https://docs.godotengine.org/en/stable/getting_started/first_3d_game/02.player_input.html), read 2026-10-15
+  - 'Godot Docs, "Player scene and input actions": dragging a .glb from the FileSystem dock onto a node (https://docs.godotengine.org/en/stable/getting_started/first_3d_game/02.player_input.html), read 2026-10-15'
   - Godot Docs, "Creating instances", Ctrl+D to duplicate (https://docs.godotengine.org/en/stable/getting_started/step_by_step/instancing.html), read 2026-10-15
-  - Godot Docs, "Introduction to 3D": 1 unit is 1 metre, and the grid is 1 by 1 metre (https://docs.godotengine.org/en/stable/tutorials/3d/introduction_to_3d.html), read 2026-10-15
+  - 'Godot Docs, "Introduction to 3D": 1 unit is 1 metre, and the grid is 1 by 1 metre (https://docs.godotengine.org/en/stable/tutorials/3d/introduction_to_3d.html), read 2026-10-15'
 ---
 
 # Exporting to Godot

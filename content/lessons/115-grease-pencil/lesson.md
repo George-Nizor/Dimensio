@@ -3,9 +3,9 @@ needs: [navigation]
 exercise: sketch-a-prop
 watch: [grant-abbitt-grease-pencil, janice-journal-grease-pencil]
 sources:
-  - Blender 5.2 Manual, "Grease Pencil: Introduction", Quick Start (https://docs.blender.org/manual/en/5.2/grease_pencil/introduction.html), read 2026-10-15
+  - 'Blender 5.2 Manual, "Grease Pencil: Introduction", Quick Start (https://docs.blender.org/manual/en/5.2/grease_pencil/introduction.html), read 2026-10-15'
   - Blender 5.2 Manual, "Grease Pencil Primitives", Add > Grease Pencil > Blank (https://docs.blender.org/manual/en/5.2/grease_pencil/primitives.html), read 2026-10-15
-  - Blender 5.2 Manual, "Draw Mode: Introduction" (https://docs.blender.org/manual/en/5.2/grease_pencil/modes/draw/introduction.html), read 2026-10-15
+  - 'Blender 5.2 Manual, "Draw Mode: Introduction" (https://docs.blender.org/manual/en/5.2/grease_pencil/modes/draw/introduction.html), read 2026-10-15'
   - Blender 5.2 Manual, "Brush Tool", Ctrl to erase (https://docs.blender.org/manual/en/5.2/grease_pencil/modes/draw/tools/brush.html), read 2026-10-15
   - Blender 5.2 Manual, "Draw Brushes", Size with F and Stroke Mode (https://docs.blender.org/manual/en/5.2/grease_pencil/modes/draw/brushes/draw.html), read 2026-10-15
   - Blender 5.2 Manual, "Drawing Plane" (https://docs.blender.org/manual/en/5.2/grease_pencil/modes/draw/drawing_planes.html), read 2026-10-15
