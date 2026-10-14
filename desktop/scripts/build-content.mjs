@@ -39,7 +39,16 @@ const SECTIONS = ['Steps', 'Common mistake', 'Checking your model', 'Checking yo
 const VIEWS = ['persp', 'front', 'right', 'top'];
 const ID = /^[a-z0-9-]+$/;
 
-const readYaml = (file) => YAML.parse(fs.readFileSync(file, 'utf8'));
+// A file that is not valid YAML is reported against its own path, so one broken file does not stop
+// the check of everything else.
+const readYaml = (file) => {
+  try {
+    return YAML.parse(fs.readFileSync(file, 'utf8'));
+  } catch (error) {
+    fail(path.relative(path.join(root, '..'), file), `not valid YAML: ${String(error.message).split('\n')[0]}`);
+    return null;
+  }
+};
 const yamlFiles = (dir) => (fs.existsSync(dir) ? fs.readdirSync(dir).filter((name) => name.endsWith('.yaml')).sort().map((name) => path.join(dir, name)) : []);
 
 // ---- Inline text ------------------------------------------------------------------------------
@@ -141,7 +150,13 @@ function splitFrontMatter(source, where) {
     fail(where, 'missing front matter between --- lines');
     return { meta: {}, body: source };
   }
-  return { meta: YAML.parse(match[1]) || {}, body: match[2] };
+  let meta = {};
+  try {
+    meta = YAML.parse(match[1]) || {};
+  } catch (error) {
+    fail(where, `front matter is not valid YAML: ${String(error.message).split('\n')[0]}`);
+  }
+  return { meta, body: match[2] };
 }
 
 // The first strong run of a list item is its title ("**Orbit.** Hold the middle mouse button"),
@@ -527,7 +542,11 @@ for (const [index, part] of (course.parts || []).entries()) {
     checkProse(`${at}, summary`, raw.summary || '', BUDGET.summary);
     const found = folders.get(raw.slug);
     const folder = found?.folder;
-    if (found) {
+    // A folder without both files is a lesson still being written: it is reported, and the rest of
+    // the course is checked as usual.
+    const missing = found ? ['lesson.md', 'practice.yaml'].filter((name) => !fs.existsSync(path.join(folder, name))) : [];
+    if (found && missing.length) fail(`content/lessons/${path.basename(folder)}`, `has no ${missing.join(' or ')} yet`);
+    if (found && !missing.length) {
       const expectedFolder = `${String(number).padStart(3, '0')}-${raw.slug}`;
       if (found.number !== number) fail(`content/lessons/${path.basename(folder)}`, `this is lesson ${number} in course.yaml, so the folder is ${expectedFolder}`);
       const { lesson, prose } = await readLesson(folder, entry, diagrams);
@@ -537,7 +556,7 @@ for (const [index, part] of (course.parts || []).entries()) {
       lesson.prose = total;
       lessons[raw.slug] = lesson;
     }
-    entries.push({ ...entry, written: Boolean(folder) });
+    entries.push({ ...entry, written: Boolean(lessons[raw.slug]) });
   }
   parts.push({ number: index + 1, title: part.title, lessons: entries });
 }
