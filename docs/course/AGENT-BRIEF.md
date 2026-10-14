@@ -51,7 +51,9 @@ content/lessons/NNN-slug/diagrams/*.mjs one script per picture
 5. **`## Common mistake`:** the most common mistake, why it happens and what to do instead, in at
    most 50 words, with a wrong-and-right diagram pair.
 6. **`## Checking your model`:** one line of introduction, then 3 to 5 things to look for (at most 15
-   words each) that a learner can see in Blender, then at most one short note.
+   words each) that a learner can see in Blender, then at most one short note. A lesson whose
+   exercise makes no model (installing, the interface, preferences, the Video Sequencer) calls it
+   `## Checking your work` instead, as lessons 1 to 3 do.
 
 No other sections.
 
@@ -99,13 +101,25 @@ What the mesh kit has:
   `arrow`, `axes` (in Blender's red, green and blue), `dimension` (a measurement line), `keycap`,
   and `blenderWindow` (a schematic of the Layout workspace with areas highlighted).
 
-Read the comments in `content/diagrams/mesh.mjs`. Build everything from real geometry: a loop cut
+Read the comments in `content/diagrams/mesh.mjs`; it also has `mouse`, `numpad`, `navGizmo` and
+`cursor`, and `view({ distance })` for a perspective view. Colours come from
+`content/diagrams/theme.css`; use only the classes it styles. Look at lessons 1 to 3's diagrams for
+how the window schematic, keys and wrong-and-right pairs are drawn. Build everything from real geometry: a loop cut
 diagram shows a box that really has that loop. Keep labels short and lower case. Use only the theme
 classes. Put any helper you need in your own lesson's `diagrams/` folder; don't edit `lib.mjs` or
-`mesh.mjs`. Render a lesson's diagrams with `node desktop/scripts/diagram-sheet.mjs <lesson folder>`
-and look at the light and dark PNGs it writes. Fix anything wrong, cramped or unclear. A diagram that
+`mesh.mjs`. Render a lesson's diagrams with
+`LD_LIBRARY_PATH=/tmp/claude-1000/-workspace-dev-projects-master--PersonalProjects-Instrumenta/54c3a000-a42b-4363-95b0-474b4d41f231/scratchpad/libs/usr/lib/x86_64-linux-gnu node desktop/scripts/diagram-sheet.mjs <lesson folder>`
+and open the light and dark PNGs it writes to `desktop/test-results/diagrams/` with the Read tool. Fix anything wrong, cramped or unclear. A diagram that
 teaches nothing is worse than none, so cut it. Every image line needs alt text that says what the
 picture shows.
+
+## Starter scenes
+
+When an exercise starts from a prepared file, write a starter: `blender/starters/<id>.py`, following
+`blender/starters/README.md` and `navigation-letters.py` (lesson 3) as the model. Build it and look at
+it in Blender 5.2 before you use it: render the views that matter, as lesson 3's letters were
+checked. Only add new files. Do not edit the README's table or the integration test; list each
+starter you add, with its docstring's numbers, in your report, and they will be added after.
 
 ## Example models and reference pictures
 
