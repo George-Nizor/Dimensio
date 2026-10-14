@@ -19,7 +19,7 @@ import { Icon, type IconName } from './ui/Icons';
 import { Mark } from './ui/Mark';
 import { Splash } from './ui/Splash';
 
-// The tabs. The Workshop is a page of its own (workshop.html), Forge3D's renderer, with the same
+// The tabs. The Workshop is a page of its own (workshop.html, src/renderer/), with the same
 // tabs along its top.
 const TABS: { route: string; label: string; icon: IconName }[] = [
   { route: '', label: 'Home', icon: 'home' },

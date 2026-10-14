@@ -69,7 +69,7 @@ const { APP_ORIGIN, APP_PRIVILEGES, isAppUrl, openHttps, registerAppProtocol } =
 const { registerCourseIpc } = require("./lib/course-ipc.cjs");
 const { carryForge3DSettings, envSetting, legacyFolders } = require("./lib/forge3d-compat.cjs");
 
-// One Forge3D at a time. A second launch hands its command line to this one, which comes to the front and opens a
+// One Dimensio at a time. A second launch hands its command line to this one, which comes to the front and opens a
 // project named there.
 const singleInstance = app.requestSingleInstanceLock();
 if (!singleInstance) app.quit();
@@ -236,7 +236,7 @@ async function leaveSession({ discard = false } = {}) {
       if (hasRuns(leaving.folder)) await shell.trashItem(leaving.folder);
       else fs.rmSync(leaving.folder, { recursive: true, force: true });
     } catch (error) {
-      send("dimensio:error", `Forge3D could not remove the unsaved project folder: ${error.message}`);
+      send("dimensio:error", `Dimensio could not remove the unsaved project folder: ${error.message}`);
     }
   }
   refreshRecoverable();
@@ -416,7 +416,7 @@ async function deleteOpenProject() {
       await shell.trashItem(target);
     } catch (error) {
       sendState();
-      throw new Error(`Forge3D could not move ${target} to the Recycle Bin: ${error.message}`);
+      throw new Error(`Dimensio could not move ${target} to the Recycle Bin: ${error.message}`);
     }
   }
   recentProjects.remove(file);
@@ -432,7 +432,7 @@ function onSecondInstance(argv = []) {
   mainWindow.show();
   mainWindow.focus();
   const file = projectFromArgv(argv.slice(1));
-  if (file) openProject({ path: file }).catch((error) => send("dimensio:error", `Forge3D could not open ${path.basename(file)}: ${error.message}`));
+  if (file) openProject({ path: file }).catch((error) => send("dimensio:error", `Dimensio could not open ${path.basename(file)}: ${error.message}`));
 }
 
 async function closeProject() {
@@ -457,10 +457,10 @@ function onWindowClose(event) {
   event.preventDefault();
   (async () => {
     if (running) {
-      if (!(await confirmStopRun("closing Forge3D"))) return;
-      await stopActiveRun("Stopped because Forge3D was closed during the run.");
+      if (!(await confirmStopRun("closing Dimensio"))) return;
+      await stopActiveRun("Stopped because Dimensio was closed during the run.");
     }
-    const { proceed, discard } = await confirmLeave("closing Forge3D");
+    const { proceed, discard } = await confirmLeave("closing Dimensio");
     if (!proceed) return;
     await leaveSession({ discard });
     allowWindowClose = true;
@@ -520,7 +520,7 @@ function flushRunEvents() {
 }
 
 function failActiveJob(error) {
-  const message = `Forge3D could not process the agent's activity: ${error.message}`;
+  const message = `Dimensio could not process the agent's activity: ${error.message}`;
   appServerError = message;
   send("dimensio:error", message);
   try { flushRunEvents(); } catch {}
@@ -684,13 +684,13 @@ function promptWithPolicy(manifest) {
   const gaussianDensity = quality === "draft" ? 65536 : quality === "balanced" ? 131072 : 262144;
   return [
     manifest.prompt,
-    "Work only inside this Forge3D run directory. Never overwrite an existing artifact; create a numbered version.",
+    "Work only inside this run directory. Never overwrite an existing artifact; create a numbered version.",
     "This desktop is local-only. Never use a cloud provider, upload a user file, or request cloud approval.",
     `Workflow: ${manifest.workflow_route}; quality: ${quality}; target: ${manifest.settings?.target_format}; tool/model: ${manifest.settings?.tool}.`,
     "The desktop host has already detected local Blender, Godot, WSL, and the model directory and provided their paths in environment variables. Start production immediately. Do not rerun dimensio doctor, inspect CLI help, rediscover tools, reinstall packages, inspect plugin source, or launch review applications unless the first production command fails.",
     `Use one production pass and at most one targeted correction. For a splat, create one clean reference, then invoke exactly: dimensio models run triposplat <reference-image> --output-dir <versioned-output> --gaussians ${gaussianDensity} --json. Do not try local-run or alternate model commands. Preserve the PLY and SPLAT outputs and create only the minimum interaction proxy.`,
     "Perform one consolidated validation pass. Do not make redundant screenshots, orbit renders, duplicate reports, or optional integration probes.",
-    "The Forge3D host exclusively owns run.json. Do not create, edit, replace, rename, or delete it. Write validation evidence to separate files and return artifact paths relative to this run directory.",
+    "The Dimensio Workshop exclusively owns run.json. Do not create, edit, replace, rename, or delete it. Write validation evidence to separate files and return artifact paths relative to this run directory.",
   ].join("\n\n");
 }
 
@@ -706,7 +706,7 @@ function runAttachments(manifest, directory) {
 // the chosen agent; otherwise (a run from the other agent, or a copy that never ran) a new session gets the whole
 // brief followed by the note.
 async function beginRun(manifest, { model = "auto", effort = "auto", continuation = null } = {}) {
-  if (activeJob) throw new Error("Forge3D already has an active job");
+  if (activeJob) throw new Error("A run is already in progress. Wait for it to finish, or stop it.");
   const driver = currentAgent();
   await ensureAgentReady(driver);
   if (!currentSkill) await refreshSkill(false);
@@ -817,7 +817,7 @@ function createWindow() {
     minWidth: 1100,
     minHeight: 720,
     backgroundColor: chromeColors().bar,
-    title: "Forge3D",
+    title: "Dimensio",
     show: false,
     ...titleBarOptions(),
     webPreferences: {
@@ -835,7 +835,7 @@ function createWindow() {
     if (!rendererUrlAllowed(url)) { event.preventDefault(); openHttps(shell, url); }
   });
   mainWindow.once("ready-to-show", () => mainWindow.show());
-  // The window title belongs to the project ("● Name — Forge3D"), so the page's own <title> never replaces it.
+  // The window title belongs to the project ("● Name — Dimensio"), so the page's own <title> never replaces it.
   mainWindow.on("page-title-updated", (event) => event.preventDefault());
   mainWindow.on("close", onWindowClose);
   updateWindowTitle();
@@ -857,10 +857,10 @@ function registerIpc() {
 
   handle("dimensio:pick-attachments", async () => {
     const result = await dialog.showOpenDialog(mainWindow, {
-      title: "Add Forge3D attachments",
+      title: "Add attachments",
       properties: ["openFile", "multiSelections"],
       filters: [
-        { name: "Forge3D inputs", extensions: ["png", "jpg", "jpeg", "webp", "gif", "glb", "gltf", "blend", "fbx", "obj", "ply", "splat", "sog", "spz", "ksplat", "json", "txt", "md"] },
+        { name: "Pictures, models and notes", extensions: ["png", "jpg", "jpeg", "webp", "gif", "glb", "gltf", "blend", "fbx", "obj", "ply", "splat", "sog", "spz", "ksplat", "json", "txt", "md"] },
         { name: "All files", extensions: ["*"] },
       ],
     });
@@ -871,7 +871,7 @@ function registerIpc() {
   // no run behind that never started.
   handle("dimensio:start-run", async (payload = {}) => {
     store();
-    if (activeJob) throw new Error("Forge3D already has an active job");
+    if (activeJob) throw new Error("A run is already in progress. Wait for it to finish, or stop it.");
     await ensureAgentReady();
     const manifest = await store().create(payload);
     return beginRun(manifest, payload);
@@ -879,7 +879,7 @@ function registerIpc() {
 
   handle("dimensio:continue-run", async (payload = {}) => {
     const loaded = store().find(payload.runId, false).manifest;
-    const text = typeof payload.text === "string" && payload.text.trim() ? payload.text.trim() : "Continue this Forge3D run from its saved state, verify existing artifacts, and finish the requested result.";
+    const text = typeof payload.text === "string" && payload.text.trim() ? payload.text.trim() : "Continue this run from its saved state, verify existing artifacts, and finish the requested result.";
     return beginRun(loaded, { ...payload, continuation: text });
   });
 
@@ -958,7 +958,7 @@ function registerIpc() {
       message: artifact.preview_role === "gaussian-splat" ? "Create a Blender package for this Gaussian splat" : "Choose an export format",
       detail: artifact.preview_role === "gaussian-splat"
         ? "The Blend file preserves the Gaussian representation through KIRI Engine. It does not pretend the splat is a polygon mesh."
-        : "Forge3D creates a new versioned export inside this run. Existing files are never overwritten.",
+        : "Dimensio creates a new versioned export inside this run. Existing files are never overwritten.",
       buttons,
       cancelId: buttons.length - 1,
       defaultId: 0,
@@ -1026,7 +1026,7 @@ function registerIpc() {
       try {
         project.manifest = writeProjectView(project.file, project.manifest, project.view);
       } catch (error) {
-        send("dimensio:error", `Forge3D could not keep the selection in the project file: ${error.message}`);
+        send("dimensio:error", `Dimensio could not keep the selection in the project file: ${error.message}`);
       }
     }
     return null;
@@ -1101,7 +1101,7 @@ app.whenReady().then(async () => {
   registerIpc();
   registerCourseIpc({ handle, getWindow: () => mainWindow });
   createWindow();
-  if (launchError) mainWindow.webContents.once("did-finish-load", () => send("dimensio:error", `Forge3D could not reopen the project: ${launchError}`));
+  if (launchError) mainWindow.webContents.once("did-finish-load", () => send("dimensio:error", `Dimensio could not reopen the project: ${launchError}`));
   const godot = externalTools(true).godot;
   if (godot) {
     godotPrimePromise = primeGodotProject(runtimeState, godot);

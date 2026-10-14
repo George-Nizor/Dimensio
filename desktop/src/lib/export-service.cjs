@@ -47,7 +47,7 @@ function createVersionedDirectory(runDirectory, stem, format) {
       if (error.code !== "EEXIST") throw error;
     }
   }
-  throw new Error("Forge3D could not reserve a versioned export directory");
+  throw new Error("Dimensio could not reserve a versioned export folder");
 }
 
 function siblingGaussianPly(source) {

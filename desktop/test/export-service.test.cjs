@@ -20,7 +20,7 @@ test("mesh artifacts offer common interchange formats", () => {
 });
 
 test("exports use a new versioned directory and preserve prior output", async (t) => {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), "forge3d-export-"));
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "dimensio-export-"));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
   const blender = path.join(root, "blender.exe");
   const source = path.join(root, "proxy.glb");

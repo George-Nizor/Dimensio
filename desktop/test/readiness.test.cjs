@@ -242,5 +242,5 @@ test("the setup headline names the real problem", async () => {
   assert.equal(setupHeadline(offline).title, "The Claude Code session ended");
   const splat = deriveReadiness({ capabilities: report(), settings: { workflow: "gaussian-splat" } });
   assert.equal(setupHeadline(splat).title, "Gaussian splat isn't ready");
-  assert.equal(setupHeadline(deriveReadiness({ capabilities: report(), settings: {} }), { firstRun: true }).title, "What shall we forge?");
+  assert.equal(setupHeadline(deriveReadiness({ capabilities: report(), settings: {} }), { firstRun: true }).lead, "Describe a model in the prompt bar to start the first run.");
 });

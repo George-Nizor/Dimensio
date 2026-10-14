@@ -89,7 +89,7 @@ export function deriveReadiness({ capabilities = null, settings = {}, appServerE
 
   if (!capabilities) return { ...base, phase: "checking", reason: `Checking this machine for ${agentName}, Blender and the splat stack.` };
   if (!capabilities.ok) {
-    return { ...base, phase: "error", error: capabilities.error || "The capability check did not run.", fix: capabilities.fix || "", reason: "Forge3D could not check this machine, so it cannot say whether a run will work." };
+    return { ...base, phase: "error", error: capabilities.error || "The capability check did not run.", fix: capabilities.fix || "", reason: "The Workshop could not check this machine, so it cannot say whether a run will work." };
   }
 
   const report = capabilities;
@@ -196,8 +196,8 @@ export function setupHeadline(readiness, { firstRun = false } = {}) {
         : { title: "Ready, with a caveat", lead: `${readiness.reason} Run is still available.` };
     default:
       return firstRun
-        ? { title: "What shall we forge?", lead: "Everything Forge3D needs is ready. Describe an asset in the prompt bar." }
-        : { title: "Everything is ready", lead: "Every dependency Forge3D checked is in place." };
+        ? { title: "Everything is ready", lead: "Describe a model in the prompt bar to start the first run." }
+        : { title: "Everything is ready", lead: "Everything the Workshop checked is in place." };
   }
 }
 

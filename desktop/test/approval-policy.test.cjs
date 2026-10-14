@@ -4,7 +4,7 @@ const assert = require("node:assert/strict");
 const test = require("node:test");
 const { automaticApproval, contained } = require("../src/lib/approval-policy.cjs");
 
-const run = "C:\\Users\\George\\Documents\\Forge3D\\runs\\spoon";
+const run = "C:\\Users\\George\\Documents\\Dimensio\\Projects\\Spoon\\runs\\spoon";
 
 test("path containment accepts the run and descendants only", () => {
   assert.equal(contained(run, run), true);
@@ -28,7 +28,7 @@ test("network, upload, and outside-write requests remain interactive", () => {
   }, run), null);
   assert.equal(automaticApproval({
     method: "item/commandExecution/requestApproval",
-    params: { cwd: run, command: "forge3d cloud-run --approve-upload" },
+    params: { cwd: run, command: "dimensio cloud-run --approve-upload" },
   }, run), null);
   assert.equal(automaticApproval({
     method: "item/commandExecution/requestApproval",
