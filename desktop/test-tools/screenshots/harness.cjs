@@ -88,7 +88,7 @@ fs.writeFileSync(path.join(work, "log.txt"), "[blender] building pedestal\n[blen
 const types = { ".js": "text/javascript", ".css": "text/css", ".html": "text/html", ".woff2": "font/woff2", ".png": "image/png", ".glb": "model/gltf-binary", ".json": "application/json", ".txt": "text/plain", ".svg": "image/svg+xml", ".map": "application/json" };
 const srv = http.createServer((q, r) => {
   let p = decodeURIComponent(q.url.split("?")[0]);
-  if (p === "/") p = "/index.html";
+  if (p === "/") p = "/workshop.html"; // the Workshop; index.html is the course app
   let f;
   if (p.startsWith("/artifacts/")) {
     const e = path.extname(p);
