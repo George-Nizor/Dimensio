@@ -6,8 +6,11 @@ const path = require("node:path");
 const { spawn, spawnSync } = require("node:child_process");
 const { atomicWriteJson } = require("./run-store.cjs");
 const { resolveContained } = require("./path-policy.cjs");
+const { envSetting } = require("./forge3d-compat.cjs");
 
 const BUNDLE_VERSION = require("../../package.json").version;
+// Written into the Godot review project copied to the local state folder, holding the version it came from.
+const GODOT_TEMPLATE_MARKER = ".dimensio-template-version";
 
 function firstWhere(command) {
   const result = spawnSync("where.exe", [command], { windowsHide: true, encoding: "utf8" });
@@ -54,7 +57,8 @@ function localGodotExecutable() {
 }
 
 function findCodexExecutable() {
-  if (process.env.FORGE3D_CODEX_EXE && fs.existsSync(process.env.FORGE3D_CODEX_EXE)) return path.resolve(process.env.FORGE3D_CODEX_EXE);
+  const configured = envSetting("CODEX_EXE");
+  if (configured && fs.existsSync(configured)) return path.resolve(configured);
   const local = localCodexExecutable();
   if (local) return local;
   const fromPath = firstWhere("codex.exe") || firstWhere("codex");
@@ -66,7 +70,7 @@ function ensureRuntimeState(localStateRoot, resourcesPath) {
   const root = path.resolve(localStateRoot);
   for (const name of ["cache", "config", "logs", "plugin"]) fs.mkdirSync(resolveContained(root, name), { recursive: true });
   const godotTarget = resolveContained(root, "godot");
-  const marker = resolveContained(godotTarget, ".forge3d-template-version");
+  const marker = resolveContained(godotTarget, GODOT_TEMPLATE_MARKER);
   const source = path.join(resourcesPath, "godot-template");
   if (fs.existsSync(source) && (!fs.existsSync(marker) || fs.readFileSync(marker, "utf8").trim() !== BUNDLE_VERSION)) {
     fs.mkdirSync(godotTarget, { recursive: true });
@@ -129,9 +133,13 @@ function detectExternalTools(localStateRoot) {
   };
 }
 
+// The local models folder in WSL: ~/.local/share/dimensio/models, or Forge3D's ~/.local/share/forge3d/models when
+// only that one exists (the models it installed stay where they are). src/dimensio/environment.py says the same.
+const WSL_MODELS_ROOT = 'root="$HOME/.local/share/dimensio/models"; [ -d "$root" ] || [ ! -d "$HOME/.local/share/forge3d/models" ] || root="$HOME/.local/share/forge3d/models"; printf %s "$root"';
+
 function detectWslModelsDirectory(wslExecutable, { spawnProcess = spawnSync } = {}) {
   if (!wslExecutable) return null;
-  const result = spawnProcess(wslExecutable, ["--exec", "sh", "-lc", "printf %s \"$HOME/.local/share/forge3d/models\""], {
+  const result = spawnProcess(wslExecutable, ["--exec", "sh", "-lc", WSL_MODELS_ROOT], {
     windowsHide: true,
     encoding: "utf8",
     timeout: 10000,
@@ -216,4 +224,4 @@ function repairForgePlugin({ bundledPlugin, runtimeState, codexExecutable = find
   }
 }
 
-module.exports = { BUNDLE_VERSION, detectExternalTools, detectWslModelsDirectory, ensureRuntimeState, findCodexExecutable, generatedMcpConfig, inspectForgeSkill, primeGodotProject, repairForgePlugin };
+module.exports = { BUNDLE_VERSION, GODOT_TEMPLATE_MARKER, WSL_MODELS_ROOT, detectExternalTools, detectWslModelsDirectory, ensureRuntimeState, findCodexExecutable, generatedMcpConfig, inspectForgeSkill, primeGodotProject, repairForgePlugin };

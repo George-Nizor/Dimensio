@@ -89,10 +89,10 @@ test("degraded warns without blocking, and an ended agent session warns without 
 
 test("a failed capability check says so, with its fix, and is never read as ready", async () => {
   const { deriveReadiness, runGate } = await load("readiness.mjs");
-  const view = deriveReadiness({ capabilities: { ok: false, error: "The capability check timed out.", fix: "Reinstall Forge3D." }, settings: {} });
+  const view = deriveReadiness({ capabilities: { ok: false, error: "The capability check timed out.", fix: "Reinstall Dimensio." }, settings: {} });
   assert.equal(view.phase, "error");
   assert.equal(view.error, "The capability check timed out.");
-  assert.equal(view.fix, "Reinstall Forge3D.");
+  assert.equal(view.fix, "Reinstall Dimensio.");
   assert.notEqual(runGate(view).level, "ok");
   assert.equal(deriveReadiness({ capabilities: null }).phase, "checking");
 });
@@ -103,9 +103,9 @@ test("Run stays off while the setup check runs and when it could not be done", a
   assert.equal(checking.allowed, false);
   assert.match(checking.message, /until the setup check finishes/);
   assert.match(deriveReadiness({ capabilities: null, agent: { id: "codex", name: "Codex" } }).reason, /for Codex, Blender/);
-  const failed = runGate(deriveReadiness({ capabilities: { ok: false, error: "The capability check timed out.", fix: "Reinstall Forge3D." } }));
+  const failed = runGate(deriveReadiness({ capabilities: { ok: false, error: "The capability check timed out.", fix: "Reinstall Dimensio." } }));
   assert.equal(failed.allowed, false);
-  assert.match(failed.message, /setup could not be checked\. The capability check timed out\. Reinstall Forge3D\./);
+  assert.match(failed.message, /setup could not be checked\. The capability check timed out\. Reinstall Dimensio\./);
 });
 
 test("a splat with no image attached needs Codex, and says so; with an image it does not", async () => {

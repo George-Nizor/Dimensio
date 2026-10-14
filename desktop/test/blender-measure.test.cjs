@@ -240,7 +240,7 @@ test("resolveToolkitDir prefers the option, then the packaged copy, then the rep
   const { root, toolkit } = workspace(t);
   assert.equal(resolveToolkitDir({ toolkitDir: toolkit }), toolkit);
   const resources = path.join(root, "resources");
-  const packaged = path.join(resources, "forge3d-toolkit", "blender");
+  const packaged = path.join(resources, "dimensio-toolkit", "blender");
   fs.mkdirSync(packaged, { recursive: true });
   fs.writeFileSync(path.join(packaged, "dimensio_check.py"), "#");
   assert.equal(resolveToolkitDir({ resourcesPath: resources }), packaged);

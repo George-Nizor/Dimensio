@@ -1,13 +1,13 @@
 {
   "schemaVersion": 2,
-  "id": "forge3d",
-  "name": "Forge3D",
-  "description": "Prompt-driven 3D modelling on the Codex App Server.",
+  "id": "dimensio",
+  "name": "Dimensio",
+  "description": "A Blender course, and a Workshop where Claude Code or Codex builds models from a prompt.",
   "version": "0.3.0",
   "repository": {
     "provider": "github",
     "owner": "George-Nizor",
-    "name": "Forge3D",
+    "name": "Dimensio",
     "channel": "stable"
   },
   "platforms": ["windows-x64"],
@@ -15,20 +15,20 @@
     "type": "managed-bundle",
     "releaseManifestAsset": "instrumenta-release.json",
     "launch": {
-      "candidates": ["desktop/dist-package/win-unpacked/Forge3D.exe"]
+      "candidates": ["desktop/dist-package/win-unpacked/Dimensio.exe"]
     }
   },
   "build": {
     "output": "desktop/dist-package"
   },
   "developer": {
-    "checkout": "../Forge3D",
+    "checkout": "../Dimensio",
     "override": "explicit"
   },
   "assets": {
     "mark": "desktop/assets/brand/forge3d-app-art.png"
   },
   "mcp": {
-    "skill": "plugins/forge3d/skills/forge3d/SKILL.md"
+    "skill": "plugins/dimensio/skills/dimensio/SKILL.md"
   }
 }

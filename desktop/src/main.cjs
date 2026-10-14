@@ -21,6 +21,7 @@ const TITLE_BAR_HEIGHT = 72;
 const { RunStore, agentSession } = require("./lib/run-store.cjs");
 const {
   BUNDLE_VERSION,
+  GODOT_TEMPLATE_MARKER,
   detectExternalTools,
   detectWslModelsDirectory,
   ensureRuntimeState,
@@ -65,6 +66,7 @@ const {
 } = require("./lib/project-store.cjs");
 const { APP_ORIGIN, APP_PRIVILEGES, isAppUrl, openHttps, registerAppProtocol } = require("./lib/app-protocol.cjs");
 const { registerCourseIpc } = require("./lib/course-ipc.cjs");
+const { envSetting } = require("./lib/forge3d-compat.cjs");
 
 // One Forge3D at a time. A second launch hands its command line to this one, which comes to the front and opens a
 // project named there.
@@ -99,15 +101,15 @@ const pendingRunEvents = new Map();
 
 const repoRoot = path.resolve(__dirname, "..", "..");
 const bundledPlugin = () => app.isPackaged
-  ? path.join(process.resourcesPath, "forge3d-plugin")
+  ? path.join(process.resourcesPath, "dimensio-plugin")
   : path.join(repoRoot, "plugins", "dimensio");
 const bundledToolkit = () => app.isPackaged
-  ? path.join(process.resourcesPath, "forge3d-toolkit")
+  ? path.join(process.resourcesPath, "dimensio-toolkit")
   : repoRoot;
 
 function rendererUrlAllowed(url) {
   if (url.startsWith("file://") || isAppUrl(url)) return true;
-  const dev = process.env.FORGE3D_DEV_SERVER_URL;
+  const dev = envSetting("DEV_SERVER_URL");
   return Boolean(dev && url.startsWith(dev));
 }
 
@@ -532,9 +534,9 @@ function capabilitiesService() {
   if (!capabilitiesServiceInstance) {
     const binDirectory = app.isPackaged ? path.join(process.resourcesPath, "bin") : path.join(repoRoot, ".venv", "Scripts");
     capabilitiesServiceInstance = createCapabilitiesService({
-      command: path.join(binDirectory, process.platform === "win32" ? "forge3d.exe" : "forge3d"),
+      command: path.join(binDirectory, process.platform === "win32" ? "dimensio.exe" : "dimensio"),
       args: () => ["capabilities", "--json", "--agent", agentSettings.agent()],
-      env: { ...process.env, FORGE3D_TOOLKIT_ROOT: bundledToolkit(), FORGE3D_PLUGIN_ROOT: bundledPlugin() },
+      env: { ...process.env, DIMENSIO_TOOLKIT_ROOT: bundledToolkit(), DIMENSIO_PLUGIN_ROOT: bundledPlugin() },
     });
   }
   return capabilitiesServiceInstance;
@@ -547,22 +549,22 @@ function agentWorkspace() {
   return runStore?.root || runtimeState.root;
 }
 
-// What every agent process gets: forge3d.exe on PATH, the toolkit and plugin roots, where runs go, and the tools
+// What every agent process gets: dimensio.exe on PATH, the toolkit and plugin roots, where runs go, and the tools
 // the host already found, so the agent never has to look for them.
 function agentEnvironment() {
   const binDirectory = app.isPackaged ? path.join(process.resourcesPath, "bin") : path.join(repoRoot, ".venv", "Scripts");
   const tools = externalTools();
-  if (wslModelsDirectory === undefined) wslModelsDirectory = process.env.FORGE3D_WSL_MODELS_DIR || detectWslModelsDirectory(tools.wsl);
+  if (wslModelsDirectory === undefined) wslModelsDirectory = envSetting("WSL_MODELS_DIR") || detectWslModelsDirectory(tools.wsl);
   return {
     ...process.env,
     PATH: `${binDirectory}${path.delimiter}${process.env.PATH || ""}`,
-    ...(runStore ? { FORGE3D_OUTPUT: runStore.root } : {}),
-    FORGE3D_TOOLKIT_ROOT: bundledToolkit(),
-    FORGE3D_PLUGIN_ROOT: bundledPlugin(),
-    FORGE3D_STATE_ROOT: runtimeState.root,
+    ...(runStore ? { DIMENSIO_OUTPUT: runStore.root } : {}),
+    DIMENSIO_TOOLKIT_ROOT: bundledToolkit(),
+    DIMENSIO_PLUGIN_ROOT: bundledPlugin(),
+    DIMENSIO_STATE_ROOT: runtimeState.root,
     ...(tools.blender ? { BLENDER_EXECUTABLE: tools.blender } : {}),
     ...(tools.godot ? { GODOT_EXECUTABLE: tools.godot } : {}),
-    ...(wslModelsDirectory ? { FORGE3D_WSL_MODELS_DIR: wslModelsDirectory } : {}),
+    ...(wslModelsDirectory ? { DIMENSIO_WSL_MODELS_DIR: wslModelsDirectory } : {}),
   };
 }
 
@@ -683,8 +685,8 @@ function promptWithPolicy(manifest) {
     "Work only inside this Forge3D run directory. Never overwrite an existing artifact; create a numbered version.",
     "This desktop is local-only. Never use a cloud provider, upload a user file, or request cloud approval.",
     `Workflow: ${manifest.workflow_route}; quality: ${quality}; target: ${manifest.settings?.target_format}; tool/model: ${manifest.settings?.tool}.`,
-    "The desktop host has already detected local Blender, Godot, WSL, and the model directory and provided their paths in environment variables. Start production immediately. Do not rerun forge3d doctor, inspect CLI help, rediscover tools, reinstall packages, inspect plugin source, or launch review applications unless the first production command fails.",
-    `Use one production pass and at most one targeted correction. For a splat, create one clean reference, then invoke exactly: forge3d models run triposplat <reference-image> --output-dir <versioned-output> --gaussians ${gaussianDensity} --json. Do not try local-run or alternate model commands. Preserve the PLY and SPLAT outputs and create only the minimum interaction proxy.`,
+    "The desktop host has already detected local Blender, Godot, WSL, and the model directory and provided their paths in environment variables. Start production immediately. Do not rerun dimensio doctor, inspect CLI help, rediscover tools, reinstall packages, inspect plugin source, or launch review applications unless the first production command fails.",
+    `Use one production pass and at most one targeted correction. For a splat, create one clean reference, then invoke exactly: dimensio models run triposplat <reference-image> --output-dir <versioned-output> --gaussians ${gaussianDensity} --json. Do not try local-run or alternate model commands. Preserve the PLY and SPLAT outputs and create only the minimum interaction proxy.`,
     "Perform one consolidated validation pass. Do not make redundant screenshots, orbit renders, duplicate reports, or optional integration probes.",
     "The Forge3D host exclusively owns run.json. Do not create, edit, replace, rename, or delete it. Write validation evidence to separate files and return artifact paths relative to this run directory.",
   ].join("\n\n");
@@ -835,7 +837,7 @@ function createWindow() {
   mainWindow.on("page-title-updated", (event) => event.preventDefault());
   mainWindow.on("close", onWindowClose);
   updateWindowTitle();
-  const dev = process.env.FORGE3D_DEV_SERVER_URL;
+  const dev = envSetting("DEV_SERVER_URL");
   if (dev) mainWindow.loadURL(dev);
   else mainWindow.loadURL(`${APP_ORIGIN}/index.html`);
 }
@@ -1055,9 +1057,9 @@ app.whenReady().then(async () => {
   const localStateRoot = path.join(process.env.LOCALAPPDATA || app.getPath("appData"), "Instrumenta", "Forge3D");
   const resourceBase = app.isPackaged ? process.resourcesPath : path.join(repoRoot, "desktop");
   runtimeState = ensureRuntimeState(localStateRoot, resourceBase);
-  if (!app.isPackaged && !fs.existsSync(path.join(runtimeState.godot, ".forge3d-template-version"))) {
+  if (!app.isPackaged && !fs.existsSync(path.join(runtimeState.godot, GODOT_TEMPLATE_MARKER))) {
     fs.cpSync(path.join(repoRoot, "godot"), runtimeState.godot, { recursive: true, force: true, filter: (item) => !item.includes(`${path.sep}.godot${path.sep}`) });
-    fs.writeFileSync(path.join(runtimeState.godot, ".forge3d-template-version"), `${BUNDLE_VERSION}\n`, "utf8");
+    fs.writeFileSync(path.join(runtimeState.godot, GODOT_TEMPLATE_MARKER), `${BUNDLE_VERSION}\n`, "utf8");
   }
   recentProjects = new RecentProjects(path.join(runtimeState.root, "config", "recent-projects.json"));
   agentSettings = new AgentSettings(path.join(runtimeState.root, "config", "settings.json"));

@@ -3,9 +3,9 @@
 const { execFile } = require("node:child_process");
 
 const STATES = new Set(["ready", "missing", "signed_out", "degraded", "optional_missing"]);
-const OFFLINE_FIX = "Reinstall Forge3D, or run `forge3d capabilities --json` in a terminal to see the error.";
+const OFFLINE_FIX = "Reinstall Dimensio, or run `dimensio capabilities --json` in a terminal to see the error.";
 
-// Wraps `forge3d capabilities --json`: asynchronous (a cold WSL boot takes seconds, so it must
+// Wraps `dimensio capabilities --json`: asynchronous (a cold WSL boot takes seconds, so it must
 // never run on the main thread), cached, and de-duplicated while a probe is in flight. A failed
 // probe never throws; it resolves to `{ ok: false, error, fix }` so the renderer can say so. `args` may be a function,
 // read at each probe, so the report can follow the chosen agent (`--agent claude`).
