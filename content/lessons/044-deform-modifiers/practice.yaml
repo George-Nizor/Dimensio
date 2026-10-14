@@ -1,0 +1,33 @@
+# Practice for lesson 44. The item marked main is the lesson's exercise.
+
+- id: twist-bend-sag
+  main: true
+  title: Twist, bend and sag
+  kind: drill
+  minutes: 15
+  text: "Make a column 3 m tall with ten loop cuts and twist it 90 degrees with Simple Deform. Make a sign 2 m long with ten loop cuts and bend it 90 degrees. Then lay a row of twelve planks along a Path with its middle pulled down, using the Curve modifier."
+  steps: [Twist with Simple Deform, Bend with Simple Deform, Lay it along a curve]
+  timer: { minutes: 15 }
+  reference: { diagram: example }
+  measure:
+    - { metric: meshes, min: 3, label: "Three models" }
+
+- id: squash-a-crate
+  title: Squash a crate with a lattice
+  kind: drill
+  minutes: 5
+  text: "Add a cube with three loop cuts each way. Choose Add > Lattice > Lattice Deform Selected, then in the lattice's Edit Mode scale the top four points to 0.5 so the crate tapers."
+  timer: { minutes: 5 }
+  check:
+    - The cube tapers towards the top.
+    - With the Lattice modifier switched off, it is a plain cube.
+
+- id: bend-without-cuts
+  title: Bend a plain box
+  kind: warm-up
+  minutes: 3
+  text: "Give a long box with no loop cuts a Simple Deform modifier set to Bend, Axis Z, 90 degrees. Then add ten loop cuts across it in Edit Mode and watch the bend appear."
+  timer: { minutes: 3 }
+  check:
+    - Without loop cuts the box barely bends.
+    - With them it bends into an arc.

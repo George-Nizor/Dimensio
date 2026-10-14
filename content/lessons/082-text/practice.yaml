@@ -1,0 +1,35 @@
+# Practice for lesson 82. The item marked main is the lesson's exercise.
+
+- id: inn-sign
+  main: true
+  title: An inn sign
+  kind: drill
+  minutes: 15
+  text: "Make a board about 1.5 m wide and 0.6 m tall. Add text that reads INN, centred, standing up in front of the board. Give the letters an Extrude of 0.03 m. Convert them to a mesh and merge by distance. Keep the sign under 400 triangles, then add your file."
+  steps: [Add text and type, Pick a font, Centre the word, Give the letters depth, Convert and merge]
+  timer: { minutes: 15 }
+  reference: { diagram: example }
+  measure:
+    - { metric: doubles, max: 0, label: "No doubled vertices" }
+    - { metric: ngons, max: 0, label: "No n-gons" }
+    - { metric: tris, max: 400, label: "Under 400 triangles" }
+
+- id: name-in-3d
+  title: Your name in 3D
+  kind: warm-up
+  minutes: 5
+  text: "In a new General file, add a text object and type your first name. Load a font from your computer, give it an Extrude of 0.1 m and stand it up so it reads from the front view."
+  timer: { minutes: 5 }
+  check:
+    - Your name reads the right way round from Numpad 1.
+    - The Font panel shows the font you loaded.
+
+- id: shop-sign
+  title: A blacksmith's sign
+  kind: imagination
+  minutes: 15
+  text: "Design a sign for a blacksmith's shop with a word of your choice. Try two fonts and keep the one that reads best from 10 m away. Convert and merge the letters, and keep the sign under 600 triangles."
+  timer: { minutes: 15 }
+  check:
+    - The letters are a mesh with no doubled vertices.
+    - The sign is under 600 triangles.

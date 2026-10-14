@@ -1,0 +1,32 @@
+# Practice for lesson 46. The item marked main is the lesson's exercise.
+
+- id: sword-references
+  main: true
+  title: Set up the sword pictures
+  kind: drill
+  minutes: 10
+  text: "Open the exercise. Add sword-front.png in the front view and sword-side.png in the right view, from the exercise's folder. Size both to 1 m and stand them on the ground. Set them behind the model, at half opacity, in their own view only. Then scale the cube to the blade in both views."
+  steps: [Add the front picture, Size it and stand it up, Add the side picture, Keep them out of the way, Block out over them]
+  starter: { id: reference-pictures, imageFront: 046-reference-images/sword-front.png, imageSide: 046-reference-images/sword-side.png }
+  timer: { minutes: 10 }
+  reference: { images: [046-reference-images/sword-front.png, 046-reference-images/sword-side.png] }
+
+- id: picture-on-a-plane
+  title: A picture on a plane
+  kind: warm-up
+  minutes: 3
+  text: "In the same file, choose Add > Image > Mesh Plane and pick sword-front.png. Switch the viewport to Material Preview and compare the plane with the reference picture."
+  timer: { minutes: 3 }
+  check:
+    - The plane shows the sword in Material Preview.
+    - The reference picture shows only in the orthographic views.
+
+- id: hide-the-pictures
+  title: Hide the pictures
+  kind: drill
+  minutes: 3
+  text: "Orbit away from the front view and watch both pictures disappear. Then in the Outliner, hide both pictures with the eye icon and show them again."
+  timer: { minutes: 3 }
+  check:
+    - Orbiting off the front and right views hides the pictures.
+    - The eye icon hides and shows them.

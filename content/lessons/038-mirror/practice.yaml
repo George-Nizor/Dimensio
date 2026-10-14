@@ -1,0 +1,33 @@
+# Practice for lesson 38. The item marked main is the lesson's exercise.
+
+- id: half-a-shield
+  main: true
+  title: Half a shield
+  kind: drill
+  minutes: 15
+  text: "In a new General file, make the cube 1 m wide, 0.1 m deep and 1.2 m tall, and apply its scale. Cut it in half, add a Mirror modifier with Clipping, and shape the right half into a shield with a point at the bottom. Leave the modifier in the stack."
+  steps: [Cut the mesh in half, Add the Mirror modifier, Turn on Clipping, Model one side]
+  timer: { minutes: 15 }
+  reference: { diagram: model }
+  measure:
+    - { metric: nonManifoldEdges, max: 0, label: "No gaps down the middle" }
+    - { metric: ngons, max: 0, label: "No n-gons" }
+
+- id: whole-monkey
+  title: Make the monkey whole again
+  kind: warm-up
+  minutes: 5
+  text: "Add Mesh > Monkey. In Edit Mode, delete every vertex left of the middle in the front view. Add a Mirror modifier with Clipping and check the face is whole. Then move one ear and watch the other."
+  timer: { minutes: 5 }
+  check:
+    - The monkey looks whole, with no seam down the nose.
+    - Moving one ear moves the other.
+
+- id: symmetrize-a-cube
+  title: Symmetrize a lopsided cube
+  kind: drill
+  minutes: 3
+  text: "In Edit Mode, move one corner vertex of the default cube out to the right. Then choose Mesh > Symmetrize with the whole mesh selected and look at the cube from the front."
+  timer: { minutes: 3 }
+  check:
+    - The left and right sides match again.

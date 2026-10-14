@@ -1,0 +1,38 @@
+# Practice for lesson 39. The item marked main is the lesson's exercise.
+
+- id: bevel-a-table
+  main: true
+  title: Bevel a table
+  kind: drill
+  minutes: 10
+  text: "Build a table from cubes: a top 1.2 m by 0.8 m and 5 cm thick, and four legs 5 cm square and 70 cm tall. Join them with Ctrl+J and apply the scale. Add a Bevel modifier with Amount 0.01 m, Segments 2 and Limit Method Angle."
+  steps: [Check the scale, Add Bevel and set Amount, Choose the segments, Limit it to sharp edges]
+  timer: { minutes: 10 }
+  reference: { diagram: example, alt: "A table with a flat top on four square legs, a narrow bevel along every edge." }
+  measure:
+    - { metric: scaleApplied, equals: true, label: "Scale applied" }
+    - { metric: tris, min: 200, label: "Bevel on every edge" }
+    - { metric: tris, max: 600, label: "Under 600 triangles" }
+
+- id: even-the-shelf
+  title: Even out the shelf's bevel
+  kind: fix
+  minutes: 5
+  text: "Open the exercise. The shelf's bevel is wide at the ends and thin along the front. Apply its scale, then set the Bevel modifier's Amount to 0.02 m so every edge has the same bevel."
+  starter: unapplied-scale
+  timer: { minutes: 5 }
+  measure:
+    - { metric: scaleApplied, equals: true, label: "Scale applied" }
+  check:
+    - The bevel is the same width on every edge.
+    - Scale reads 1, 1, 1 in the Sidebar.
+
+- id: bevel-a-cylinder
+  title: Rims only
+  kind: warm-up
+  minutes: 3
+  text: "Add a cylinder with 16 vertices and give it a Bevel modifier with Amount 0.05 m and Segments 3. Switch Limit Method between None and Angle and look at the sides each time."
+  timer: { minutes: 3 }
+  check:
+    - With None, the modifier bevels every edge down the sides.
+    - With Angle, it bevels only the two rims.

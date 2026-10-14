@@ -1,0 +1,38 @@
+# Practice for lesson 5. The item marked main is the lesson's exercise.
+
+- id: select-in-the-yard
+  main: true
+  title: Three selections in the yard
+  kind: drill
+  minutes: 10
+  text: "Open the exercise: a yard of 30 props. Turn on Statistics in the Overlays menu, then make three selections, one per round. First, all six barrels with Barrel 1 active. Second, every crate except Crate 4. Third, everything except the seven posts. Check the count after each one."
+  steps: [Click to select, Add with Shift, Drag a box, Draw a lasso, "Select all, none or the rest", Pick names in the Outliner]
+  starter: selection-yard
+  timer:
+    rounds:
+      - { label: "All six barrels, Barrel 1 active", minutes: 3 }
+      - { label: Every crate but Crate 4, minutes: 3 }
+      - { label: Everything but the posts, minutes: 4 }
+  reference: { diagram: box }
+
+- id: lasso-the-sacks
+  title: Lasso the sacks
+  kind: drill
+  minutes: 3
+  text: Open the yard again and select the five sacks using only lassos, holding Ctrl and dragging with the right mouse button. Draw round the dot at each sack's middle.
+  starter: selection-yard
+  timer: { minutes: 3 }
+  check:
+    - Statistics reads Objects 5 / 33.
+    - No other kind of prop has an orange outline.
+
+- id: outliner-only
+  title: The Outliner only
+  kind: warm-up
+  minutes: 3
+  text: "Open the yard again. Without touching the 3D Viewport, select the six barrels and the five sacks in the Outliner. Click Barrel 1 and Shift-click Barrel 6, then Ctrl-click Sack 1 and Ctrl-Shift-click Sack 5."
+  starter: selection-yard
+  timer: { minutes: 3 }
+  check:
+    - Statistics reads Objects 11 / 33.
+    - Sack 5 is the active object.

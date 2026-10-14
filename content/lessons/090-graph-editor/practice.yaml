@@ -1,0 +1,32 @@
+# Practice for lesson 90. The item marked main is the lesson's exercise.
+
+- id: door-and-lamp
+  main: true
+  title: A door and a lamp
+  kind: drill
+  minutes: 15
+  text: "Open the exercise. With interpolation and easing, make the door speed up as it opens and stop dead on frame 20. Make the lamp swing out and back, then loop it so it swings for all 96 frames."
+  steps: [Open the Graph Editor, Pick one curve, Change the interpolation, Make a hard stop, Shape it with handles, Loop it]
+  starter: door-lamp
+  timer: { minutes: 15 }
+  reference: { diagram: example }
+
+- id: interpolation-tour
+  title: Three interpolations
+  kind: warm-up
+  minutes: 5
+  text: "Open the exercise and set the door's first keyframe to Constant, then Linear, then Bézier, playing the door after each one."
+  starter: door-lamp
+  timer: { minutes: 5 }
+  check:
+    - Constant made the door snap open on frame 20.
+    - Linear opened it at one steady speed.
+
+- id: bouncy-door
+  title: A door that bounces
+  kind: drill
+  minutes: 10
+  text: "In your finished file, set the door's first keyframe to Bounce, under Dynamic Effects, with Ease Out. Then try Elastic. Keep the one that looks more like a door hitting its stop."
+  timer: { minutes: 10 }
+  check:
+    - The door overshoots or bounces back near frame 20.

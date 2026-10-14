@@ -1,0 +1,32 @@
+# Practice for lesson 91. The item marked main is the lesson's exercise.
+
+- id: camera-and-turret
+  main: true
+  title: A camera and a turret
+  kind: drill
+  minutes: 15
+  text: "Open the exercise. With Copy Location and Track To, make the camera drive along with the cart and keep it in view. With Damped Track, make the turret head aim its barrel at the moving target. Look through the camera with Numpad 0 and play the animation."
+  steps: [Add a constraint, Aim the camera, Follow the cart, Aim the turret, Carry an object, Limit a hinge]
+  starter: cart-turret
+  timer: { minutes: 15 }
+  reference: { diagram: example }
+
+- id: track-from-menu
+  title: Track To from the menu
+  kind: warm-up
+  minutes: 5
+  text: "In a new General file, select the Camera, then shift-click the Cube so it is active. Choose Object > Track > Track To Constraint. Move the cube and watch the camera turn to follow."
+  timer: { minutes: 5 }
+  check:
+    - The camera has a Track To constraint with the Cube as its target.
+    - The cube has no constraint.
+
+- id: hinged-lid
+  title: A lid on a hinge
+  kind: drill
+  minutes: 10
+  text: "Make a box and a lid with its origin on the back edge. Give the lid Limit Rotation with Limit X from 0° to 110° and Affect Transform ticked. Rotate it with R X and check it stops."
+  timer: { minutes: 10 }
+  check:
+    - The lid opens no further than 110 degrees.
+    - The lid does not swing below closed.

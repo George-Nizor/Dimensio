@@ -1,0 +1,35 @@
+# Practice for lesson 81. The item marked main is the lesson's exercise.
+
+- id: rope-pipe-rail
+  main: true
+  title: Rope, pipe and rail
+  kind: drill
+  minutes: 15
+  text: "Open the exercise. Give the Rope a thin round bevel and the Pipe a thicker one with closed ends. Give the Rail the Rail profile as its bevel object. Keep each piece under 200 triangles. Then convert all three to meshes and add your file."
+  steps: [Give the curve depth, Lower the resolution, Choose a cross-section, Convert it to a mesh, Or use Curve to Tube]
+  starter: curve-pieces
+  timer: { minutes: 15 }
+  reference: { diagram: example }
+  measure:
+    - { metric: meshes, min: 3, label: "Three pieces converted to meshes" }
+    - { metric: tris, max: 600, label: "Under 600 triangles in all" }
+
+- id: curve-to-tube-hose
+  title: A hose with Curve to Tube
+  kind: drill
+  minutes: 10
+  text: "In a new General file, add a Bézier curve and shape it into a hose that winds across the ground. Give it a Curve to Tube modifier with Scale 0.04 m and Resolution 6, with Caps on. Convert it to a mesh."
+  timer: { minutes: 10 }
+  check:
+    - The hose is one mesh with closed ends.
+    - The UV Editor shows a UV map on it.
+
+- id: lamp-post
+  title: A lamp post from curves
+  kind: imagination
+  minutes: 15
+  text: "Make a street lamp post from curves: a straight post, a curved arm and a hanging cable. Use a round bevel for the post and the cable and a profile curve for the arm. Keep the whole lamp under 400 triangles once converted."
+  timer: { minutes: 15 }
+  check:
+    - Every piece is a mesh.
+    - The whole lamp is under 400 triangles.

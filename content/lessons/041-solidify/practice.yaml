@@ -1,0 +1,33 @@
+# Practice for lesson 41. The item marked main is the lesson's exercise.
+
+- id: banner-bowl-wall
+  main: true
+  title: Banner, bowl and wall
+  kind: drill
+  minutes: 10
+  text: "Give three surfaces a Solidify modifier. Make a banner from a standing plane 1 m by 2 m, 2 cm thick. Make a bowl from the bottom half of a UV sphere, 3 cm thick. Make an L-shaped wall from a standing plane with one side edge extruded 3 m, 20 cm thick, with Even Thickness."
+  steps: [Start from a surface, Add Solidify and set Thickness, Choose the side with Offset, Keep corners even, Close the edges]
+  timer: { minutes: 10 }
+  reference: { diagram: example }
+  measure:
+    - { metric: meshes, min: 3, label: "Three objects" }
+    - { metric: nonManifoldEdges, max: 0, label: "Every surface closed" }
+    - { metric: flippedFaces, max: 0, label: "No faces pointing inwards" }
+
+- id: solidify-leaf
+  title: A leaf with a thickness
+  kind: warm-up
+  minutes: 3
+  text: "Add a plane, and in Edit Mode move its corners into a leaf shape. Give it Solidify with Thickness 0.005 m and Offset 0, then look at it edge on."
+  timer: { minutes: 3 }
+  check:
+    - Edge on, the leaf shows a thin slab, not a line.
+
+- id: flip-the-wall
+  title: Turn the wall round
+  kind: drill
+  minutes: 5
+  text: "Stand a plane on the edge of a floor made from a flat cube, and give it Solidify with Thickness 0.2 m. Check which way the thickness grows with Face Orientation on. Make it grow onto the floor, first with Offset, then with Mesh > Normals > Flip."
+  timer: { minutes: 5 }
+  check:
+    - Both ways, the wall ends flush with the floor's edge.

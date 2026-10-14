@@ -1,0 +1,34 @@
+# Practice for lesson 43. The item marked main is the lesson's exercise.
+
+- id: window-and-keyhole
+  main: true
+  title: A window and a keyhole
+  kind: drill
+  minutes: 15
+  text: "Make a wall 4 m long, 20 cm thick and 2.5 m tall, and cut a window 1 m wide and 1.2 m tall through it. Then cut a keyhole through a lock 30 cm wide with two cutters, a cylinder and a thin box, each with its own Boolean. Apply, delete the cutters and tidy the n-gons."
+  steps: [Place a cutter, Add the Boolean modifier, Hide the cutter, Apply and tidy]
+  timer: { minutes: 15 }
+  reference: { diagram: example }
+  measure:
+    - { metric: ngons, max: 0, label: "No n-gons" }
+    - { metric: nonManifoldEdges, max: 0, label: "No holes or loose edges" }
+
+- id: three-operations
+  title: Three ways to combine
+  kind: warm-up
+  minutes: 3
+  text: "Add a second cube and move it 1 m along X, Y and Z. Give the first cube a Boolean with the second as its Object, and try Difference, Union and Intersect in turn."
+  timer: { minutes: 3 }
+  check:
+    - Difference takes a bite out of the first cube.
+    - Intersect leaves only the small cube where they overlap.
+
+- id: boolean-porthole
+  title: A porthole
+  kind: drill
+  minutes: 5
+  text: "Cut a round porthole through a wall with a cylinder of 16 vertices as the cutter. Set the cutter to Display As Wire and move it along the wall to see the hole follow, then apply the cut."
+  timer: { minutes: 5 }
+  check:
+    - The hole followed the cutter while the modifier was on.
+    - After applying, the hole stays once you delete the cutter.

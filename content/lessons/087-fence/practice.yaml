@@ -1,0 +1,35 @@
+# Practice for lesson 87. The item marked main is the lesson's exercise.
+
+- id: fence-generator
+  main: true
+  title: A fence generator
+  kind: project
+  minutes: 45
+  text: "Build a Geometry Nodes group called Fence. It stands your own post at even spacing along any curve, runs two rails between the posts, and has Spacing on the modifier. Use it on two curves. Convert one to a mesh under 2,000 triangles, export it to Godot, and add your file."
+  steps: [Start from a curve and a post, Space points along it, Stand a post on each point, Run the rails, Join and realize, Convert and export]
+  timer: { minutes: 45 }
+  reference: { diagram: example }
+  measure:
+    - { metric: tris, max: 2000, label: "Under 2,000 triangles" }
+    - { metric: ngons, max: 0, label: "No n-gons" }
+    - { metric: doubles, max: 0, label: "No doubled vertices" }
+
+- id: picket-fence
+  title: A picket fence
+  kind: imagination
+  minutes: 20
+  text: "Change your Fence group into a picket fence: model a narrow board with a pointed top as the post and set Spacing to 0.15 m."
+  timer: { minutes: 20 }
+  check:
+    - The boards stand side by side with small gaps.
+    - Both rails still run the length of the fence.
+
+- id: fence-retest
+  title: The fence generator again
+  kind: retest
+  minutes: 45
+  text: "A few days after the project, build the Fence group again from memory in a new file, without opening your first one. Then compare the two node trees."
+  timer: { minutes: 45 }
+  check:
+    - Posts and rails follow any curve you give it.
+    - Spacing is on the modifier panel.

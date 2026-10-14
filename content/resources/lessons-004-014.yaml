@@ -1,0 +1,85 @@
+# Resources added for lessons 4 to 14 (laptop navigation to origins). Each video was checked on
+# 2026-10-15 through YouTube's oEmbed endpoint (title and channel match) and its watch page
+# (length, upload date, description and chapters). blender is the version a video was made with
+# when it is older than 5.0, from its title or, failing that, the Blender release current on the
+# day it was uploaded.
+
+- id: surfaced-studio-no-mouse-numpad
+  title: How to Use Blender With No Mouse or Numpad
+  teacher: Surfaced Studio
+  url: https://www.youtube.com/watch?v=zebC4m4w5N0
+  kind: video
+  minutes: 5
+  youtube: zebC4m4w5N0
+  blender: "3.0"
+  cost: free
+  checked: 2026-10-15
+
+- id: cgcookie-select-objects
+  title: "How to Select Objects in Blender: Every Selection Tool Explained"
+  teacher: CG Cookie
+  url: https://www.youtube.com/watch?v=zkupB5S3sUQ
+  kind: video
+  minutes: 8
+  youtube: zkupB5S3sUQ
+  blender: "4.5"
+  cost: free
+  checked: 2026-10-15
+
+- id: grant-abbitt-materials
+  title: "Blender 5 Complete Beginners Guide, Part 2: Materials"
+  teacher: Grant Abbitt
+  url: https://www.youtube.com/watch?v=J2OpaKlChI8
+  kind: video
+  minutes: 11
+  youtube: J2OpaKlChI8
+  cost: free
+  checked: 2026-10-15
+
+- id: ryan-king-measure-scale
+  title: How to Measure and Scale 3D Models in Blender
+  teacher: Ryan King Art
+  url: https://www.youtube.com/watch?v=2PNiRWStZIo
+  kind: video
+  minutes: 8
+  youtube: 2PNiRWStZIo
+  blender: "4.3"
+  cost: free
+  checked: 2026-10-15
+
+- id: grant-abbitt-size-matters
+  title: "Size Matters: Fix Your Scale, Fix Your Art"
+  teacher: Grant Abbitt
+  url: https://www.youtube.com/watch?v=KLdfcvz1TR8
+  kind: video
+  minutes: 10
+  youtube: KLdfcvz1TR8
+  cost: free
+  checked: 2026-10-15
+
+- id: lisa-cree-primitive-character
+  title: Simple Blender Character using only Primitive Shapes
+  teacher: Lisa Cree
+  url: https://www.youtube.com/watch?v=BjrHLTW-7HU
+  kind: video
+  minutes: 6
+  youtube: BjrHLTW-7HU
+  blender: "3.2"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-configuring-peripherals
+  title: "Configuring Peripherals: mouse, numpad and touchpad"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/getting_started/configuration/hardware.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-scene-properties-units
+  title: "Scene Properties: Units"
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/scene_layout/scene/properties.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15

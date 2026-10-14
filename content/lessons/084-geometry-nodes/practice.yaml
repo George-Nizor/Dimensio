@@ -1,0 +1,33 @@
+# Practice for lesson 84. The item marked main is the lesson's exercise.
+
+- id: node-tower
+  main: true
+  title: A tower of three cubes
+  kind: drill
+  minutes: 15
+  text: "In a new General file, give the default cube a Geometry Nodes modifier. Use three Transform Geometry nodes and a Join Geometry node to stack three copies of it into a tower, each smaller than the one below. Put one setting on the modifier panel, then add your file."
+  steps: [Add the modifier, Add a node, Join copies, Look at one node, Put a setting on the modifier]
+  timer: { minutes: 15 }
+  reference: { diagram: example }
+  measure:
+    - { metric: tris, equals: 36, label: "36 triangles: three cubes" }
+    - { metric: base.tris, equals: 12, label: "One cube under the modifier" }
+
+- id: twisted-stack
+  title: A twisted stack
+  kind: drill
+  minutes: 10
+  text: "Build a stack of five copies of the default cube with Transform Geometry and Join Geometry. Turn each copy 10 degrees more than the one below with Rotation Z, so the stack twists."
+  timer: { minutes: 10 }
+  check:
+    - Five cubes stack up, each turned a little more.
+    - The Statistics overlay shows 60 triangles.
+
+- id: viewer-tour
+  title: Look at every node
+  kind: warm-up
+  minutes: 5
+  text: "Open your tower file. Use Shift, Ctrl and a left click on each node in turn and watch what the 3D Viewport and the Spreadsheet show. Finish on Join Geometry."
+  timer: { minutes: 5 }
+  check:
+    - The Spreadsheet's vertex count changed as you moved along the chain.

@@ -1,0 +1,32 @@
+# Practice for lesson 4. The item marked main is the lesson's exercise.
+
+- id: letters-on-a-laptop
+  main: true
+  title: The six letters on a laptop
+  kind: drill
+  minutes: 10
+  text: "Turn on Emulate Numpad and Emulate 3 Button Mouse. Then open the exercise and find the six letters again, using only the number row, the touchpad, the gizmo's buttons and the ` pie. Select each prop in the Outliner and frame it with View Selected. Write the letters down from Prop 1 to Prop 6."
+  steps: [Emulate the numpad, Emulate the middle button, Use two fingers, "Use the gizmo's buttons", Open the View pie]
+  starter: navigation-letters
+  timer: { minutes: 10 }
+  reference: { diagram: number-row }
+
+- id: touchpad-tour
+  title: A touchpad tour
+  kind: warm-up
+  minutes: 3
+  text: In a new General file, orbit around the cube with two fingers on the touchpad. Pan with Shift and two fingers, then zoom in until the cube fills the view with Ctrl and two fingers. Tap with two fingers to open the right-click menu.
+  timer: { minutes: 3 }
+  check:
+    - You orbited, panned and zoomed without a mouse.
+    - A two-finger tap opened the right-click menu.
+
+- id: six-sides-from-the-pie
+  title: Six sides from the pie
+  kind: drill
+  minutes: 3
+  text: "In a new General file, use only the ` pie to look at the cube from all six sides. Then choose View Camera to look through the camera, and View Selected to frame the cube again."
+  timer: { minutes: 3 }
+  check:
+    - You saw all six sides of the cube from the pie.
+    - View Selected filled the view with the cube.

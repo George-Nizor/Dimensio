@@ -1,0 +1,34 @@
+# Practice for lesson 37. The item marked main is the lesson's exercise.
+
+- id: stack-three-modifiers
+  main: true
+  title: Stack three modifiers
+  kind: drill
+  minutes: 10
+  text: "In a new General file, give the cube a Bevel, a Subdivision Surface at Levels Viewport 2 and a Wireframe modifier, in that order. Move Wireframe to the top, compare, and move it back. Hide it with its viewport button, then delete it. Apply Bevel and leave Subdivision Surface on."
+  steps: [Open the Modifiers tab, Build a stack, Change the order, Switch one off, Apply or delete]
+  timer: { minutes: 10 }
+  reference: { diagram: stack }
+  measure:
+    - { metric: base.faces, min: 26, label: "Bevel applied to the mesh" }
+    - { metric: faces, min: 300, label: "Subdivision Surface still on at level 2" }
+
+- id: swap-two-modifiers
+  title: Swap two modifiers
+  kind: warm-up
+  minutes: 3
+  text: "Give the default cube a Subdivision Surface and then a Bevel modifier. Look at the shape. Open Bevel's panel menu and choose Move to First, then look again."
+  timer: { minutes: 3 }
+  check:
+    - With Subdivision Surface first, the cube is a ball.
+    - With Bevel first, it is a rounded box.
+
+- id: hide-and-delete
+  title: Hide, show and delete
+  kind: drill
+  minutes: 5
+  text: "Give a cube a Bevel modifier with Amount 0.3 m. Hide it in the viewport, then show it again. Switch off its Edit Mode button and press Tab to see the plain mesh. Leave Edit Mode, then delete the modifier with X over its panel."
+  timer: { minutes: 5 }
+  check:
+    - The bevel disappeared and came back, and its panel stayed.
+    - After X the panel is gone and the cube has sharp edges.

@@ -1,0 +1,43 @@
+# Practice for lesson 47. The item marked main is the lesson's exercise.
+
+- id: low-poly-sword
+  main: true
+  title: A low-poly sword
+  kind: copy
+  minutes: 35
+  text: "Open the exercise: the sword's front and side pictures stand 1 m tall. Model the sword over them, with the blade built in half using Mirror, Solidify and Bevel, a bevelled guard and an eight-sided grip. Apply the modifiers and the scale, join the parts, and export a .glb to Godot."
+  steps: [Draw half the blade, Mirror it and thicken it, Bevel its edges, Add the guard and grip, "Apply, join and export"]
+  starter: { id: reference-images, imageFront: 046-reference-images/sword-front.png, imageSide: 046-reference-images/sword-side.png, height: 1 }
+  timer: { minutes: 35 }
+  reference: { model: kenney-dungeon-sword }
+  measure:
+    - { metric: tris, max: 200, label: "Under 200 triangles" }
+    - { metric: ngons, max: 0, label: "No n-gons" }
+    - { metric: nonManifoldEdges, max: 0, label: "No holes" }
+    - { metric: scaleApplied, equals: true, label: "Scale applied" }
+    - { metric: meshes, max: 1, label: "Parts joined into one object" }
+
+- id: sword-from-memory
+  title: The sword from memory
+  kind: retest
+  minutes: 25
+  text: "A few days after the lesson, model the sword again in a new General file without the pictures. Aim for 1 m tall, the blade built in half with Mirror, and under 200 triangles."
+  timer: { minutes: 25 }
+  measure:
+    - { metric: tris, max: 200, label: "Under 200 triangles" }
+    - { metric: ngons, max: 0, label: "No n-gons" }
+  check:
+    - The sword is about 1 m tall, with a blade, guard and grip.
+    - You applied its modifiers and joined its parts.
+
+- id: your-own-blade
+  title: A blade of your own
+  kind: imagination
+  minutes: 30
+  text: "Design a different weapon with the same method: a dagger, a broadsword or an axe head. Build any symmetric part in half with Mirror, give flat parts a Solidify, and bevel the edges. Keep it under 300 triangles."
+  timer: { minutes: 30 }
+  measure:
+    - { metric: tris, max: 300, label: "Under 300 triangles" }
+  check:
+    - You built every symmetric part in half with Mirror.
+    - The edges have a narrow bevel.

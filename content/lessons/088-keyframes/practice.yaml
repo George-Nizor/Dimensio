@@ -1,0 +1,31 @@
+# Practice for lesson 88. The item marked main is the lesson's exercise.
+
+- id: spinning-coin
+  main: true
+  title: A spinning coin
+  kind: drill
+  minutes: 15
+  text: "In a new General file, make a coin from a Cylinder 0.6 m across and 0.1 m thick, standing on its edge. Set End to 48. Keyframe it on frames 1, 24 and 48 so it rises 1 m while turning 180 degrees, then lands having turned 360."
+  steps: [Set the length, Keyframe the first pose, Keyframe the next poses, Play and step, Keyframe one property, Try Auto Keying]
+  timer: { minutes: 15 }
+  reference: { diagram: poses, alt: "The coin's three poses above the Timeline's keys on frames 1, 24 and 48." }
+
+- id: key-one-channel
+  title: Keyframe one channel
+  kind: warm-up
+  minutes: 5
+  text: "In a new General file, keyframe only the cube's Rotation Z, on frames 1 and 48, by hovering over the field and pressing I. Give it 90 degrees on frame 48 and play it."
+  timer: { minutes: 5 }
+  check:
+    - The cube turns a quarter turn and nothing else moves.
+    - Only Rotation Z shows a keyed colour in the Sidebar.
+
+- id: auto-key-walk
+  title: Four poses with Auto Keying
+  kind: drill
+  minutes: 10
+  text: "Turn Auto Keying on and move the default cube across the floor in four poses, 12 frames apart, without pressing I. Then turn Auto Keying off and play it."
+  timer: { minutes: 10 }
+  check:
+    - The Timeline shows four diamonds 12 frames apart.
+    - Auto Keying is off at the end.

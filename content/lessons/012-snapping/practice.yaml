@@ -1,0 +1,35 @@
+# Practice for lesson 12. The item marked main is the lesson's exercise.
+
+- id: stack-and-fence
+  main: true
+  title: A tower and a fence
+  kind: drill
+  minutes: 15
+  text: Open the exercise. Stack Block 2 on Block 1 and Block 3 on Block 2, corner to corner, with Vertex snapping. Then stand the five posts in a line along the ground strip, 2 m apart, starting at its left end. Move Post 1 there with Selection to Cursor, and the others with Grid snapping and Snap Base on Center.
+  steps: [Hold Ctrl to snap, Choose a Snap Target, Choose the Snap Base, Stack corner to corner, Use the Snap menu]
+  starter: snapping-blocks
+  timer:
+    rounds:
+      - { label: Stack the three blocks, minutes: 7 }
+      - { label: Set out the five posts, minutes: 8 }
+  reference: { diagram: example }
+
+- id: snap-pie-only
+  title: The Snap pie only
+  kind: warm-up
+  minutes: 3
+  text: In a new General file, use only the Shift+S pie. Put the 3D cursor on the light and add a UV sphere there. Put the cursor back at the world origin, then move the sphere to it.
+  timer: { minutes: 3 }
+  check:
+    - The sphere ends at the centre of the world, inside the cube.
+    - The 3D cursor is back at the centre.
+
+- id: wall-of-cubes
+  title: A wall with no gaps
+  kind: drill
+  minutes: 5
+  text: In a new General file, make four copies of the cube with Shift+D and snap them into a row of five, side by side, with Vertex snapping. Check the row from the top.
+  timer: { minutes: 5 }
+  check:
+    - From the top, the five cubes touch with no gaps or overlaps.
+    - The last cube's Location X is 8 m from the first.

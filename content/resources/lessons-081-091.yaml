@@ -1,0 +1,77 @@
+# Resources for lessons 81 to 91 (curves, text, other object types, Geometry Nodes and animation)
+# that catalogue.yaml does not already list. Each YouTube video was checked on 2026-10-15: oEmbed
+# answered with the same title and channel, the watch page said it plays embedded, and its length
+# and upload date come from the watch page. blender is the Blender release current on the upload
+# date, given only when that was before 5.0. Manual pages are CC BY-SA 4.0, credited to the Blender
+# Documentation Team.
+
+- id: blender-secrets-curve-to-tube
+  title: "Blender 5: Curve to Tube and Round Caps"
+  teacher: Blender Secrets
+  url: https://www.youtube.com/watch?v=aFeRQ_G7RcE
+  kind: video
+  minutes: 1
+  youtube: aFeRQ_G7RcE
+  cost: free
+  checked: 2026-10-15
+
+- id: cg-essentials-metaballs
+  title: Getting Started with Metaballs in Blender
+  teacher: The CG Essentials
+  url: https://www.youtube.com/watch?v=b0wFC20du7M
+  kind: video
+  minutes: 11
+  youtube: b0wFC20du7M
+  blender: "3.4"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-secrets-nurbs-surfaces
+  title: NURBS Surfaces Basics
+  teacher: Blender Secrets
+  url: https://www.youtube.com/watch?v=3OfShkLcj-c
+  kind: video
+  minutes: 1
+  youtube: 3OfShkLcj-c
+  blender: "3.6"
+  cost: free
+  checked: 2026-10-15
+
+- id: richard-yot-fields
+  title: "Fields in Blender's Geometry Nodes"
+  teacher: Richard Yot
+  url: https://www.youtube.com/watch?v=BxhHeugADmA
+  kind: video
+  minutes: 10
+  youtube: BxhHeugADmA
+  cost: free
+  checked: 2026-10-15
+
+- id: danene3d-fence
+  title: How to Procedurally Create a Fence
+  teacher: danene3d
+  url: https://www.youtube.com/watch?v=sKIfhjsYsLA
+  kind: video
+  minutes: 13
+  youtube: sKIfhjsYsLA
+  blender: "4.4"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-geometry-nodes-curve-to-mesh
+  title: Curve to Mesh Node
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/modeling/geometry_nodes/curve/operations/curve_to_mesh.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: skill-brew-dope-sheet
+  title: "Blender Dope Sheet Tutorial: Animation Keyframes Made Easy"
+  teacher: Skill Brew
+  url: https://www.youtube.com/watch?v=GwrTw43hu3o
+  kind: video
+  minutes: 7
+  youtube: GwrTw43hu3o
+  cost: free
+  checked: 2026-10-15

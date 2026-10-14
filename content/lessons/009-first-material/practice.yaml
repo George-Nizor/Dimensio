@@ -1,0 +1,33 @@
+# Practice for lesson 9. The item marked main is the lesson's exercise.
+
+- id: three-colours-five-shapes
+  main: true
+  title: Three colours on five shapes
+  kind: drill
+  minutes: 10
+  text: In a new General file, add a cylinder, a cone, a UV sphere and a torus in a row beside the cube. Rename the cube's material to Red and make it red. Make two new materials, Blue for the cylinder and Green for the cone. Then give the sphere Red and the torus Blue from the browse list.
+  steps: [Add a material, Choose a colour, Look in Material Preview, Reuse a material, Copy to many objects]
+  timer: { minutes: 10 }
+  reference: { diagram: example }
+  measure:
+    - { metric: meshes, min: 5, label: Five shapes or more }
+    - { metric: materials, min: 1, label: Every shape has a material }
+
+- id: one-click-for-four
+  title: One material for four cubes
+  kind: drill
+  minutes: 3
+  text: In a new General file, delete the cube and add four new cubes in a row with Shift+A. Give the first a new green material. Then give the other three the same material in one go with Ctrl+L and Link Materials.
+  timer: { minutes: 3 }
+  check:
+    - All four cubes are green in Material Preview.
+    - The material's name shows a 4 beside it.
+
+- id: shading-tour
+  title: The four shading modes
+  kind: warm-up
+  minutes: 2
+  text: With the five coloured shapes open, use the Z pie to switch the viewport to Wireframe, Solid, Material Preview and Rendered in turn, then back to Solid.
+  timer: { minutes: 2 }
+  check:
+    - You saw the colours in Material Preview and Rendered.

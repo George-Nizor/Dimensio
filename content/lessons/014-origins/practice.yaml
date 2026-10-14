@@ -1,0 +1,31 @@
+# Practice for lesson 14. The item marked main is the lesson's exercise.
+
+- id: fix-the-origins
+  main: true
+  title: Three origins to fix
+  kind: fix
+  minutes: 10
+  text: "Open the exercise. A crate, a lamp and a door stand where they belong, but their origins are wrong. Put the crate's origin at the middle of its base, and the lamp's at its base, on the centre of the world. Put the door's on its hinge: the bottom of its left edge from the front."
+  steps: [Find the origin, Bring it to the middle, Move only the origin, Drop it to the base, "Put a door's origin on its hinge", Use the 3D cursor]
+  starter: origins-wrong
+  timer: { minutes: 10 }
+  reference: { diagram: hinge }
+
+- id: stand-on-the-floor
+  title: Stand them on the floor
+  kind: drill
+  minutes: 5
+  text: In a new General file, add a cylinder 1.5 m deep and a cone 0.6 m deep beside the cube. Give each of the three an origin at the middle of its base. Then type 0 in each one's Location Z.
+  timer: { minutes: 5 }
+  check:
+    - All three stand on the grid, none sunk into it.
+    - Each origin dot sits at the middle of the object's base.
+
+- id: lid-hinge
+  title: A lid that opens
+  kind: drill
+  minutes: 5
+  text: "In a new General file, make the cube into a lid 2 m wide, 2 m deep and 0.2 m tall. Put its origin on its back edge: the middle of the edge at the top of its back face. Then rotate it around X to open it."
+  timer: { minutes: 5 }
+  check:
+    - The lid opens on its back edge and its front lifts up.

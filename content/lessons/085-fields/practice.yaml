@@ -1,0 +1,30 @@
+# Practice for lesson 85. The item marked main is the lesson's exercise.
+
+- id: ripple-plane
+  main: true
+  title: A rippling plane
+  kind: drill
+  minutes: 15
+  text: "In a new General file, add a Grid 4 m across with 40 subdivisions each way. Give it a Geometry Nodes modifier that moves every point up or down by 0.2 times the sine of 3 times its X. Use Position, Separate XYZ, Math, Combine XYZ and Set Position. Add your file."
+  steps: [Start from a grid, "Read each point's position", Do math on every point, Move the points, Read the numbers]
+  timer: { minutes: 15 }
+  reference: { diagram: example }
+
+- id: ripple-both-ways
+  title: Ripples both ways
+  kind: drill
+  minutes: 10
+  text: "Change your wave so it runs along Y instead of X. Then add X and Y together with one more Math node before the first Multiply, so the waves run across the grid at an angle."
+  timer: { minutes: 10 }
+  check:
+    - The waves run at 45 degrees to the grid's edges.
+
+- id: puff-a-sphere
+  title: Puff a sphere with Normal
+  kind: drill
+  minutes: 10
+  text: "On a UV Sphere with a Geometry Nodes modifier, link the Normal node into a Vector Math node set to Scale, with Scale 0.2. Link that into Set Position's Offset."
+  timer: { minutes: 10 }
+  check:
+    - Every point moved 0.2 m outward.
+    - The Sidebar shows Dimensions of 2.4 m each way.

@@ -1,0 +1,37 @@
+# Practice for lesson 45. The item marked main is the lesson's exercise.
+
+- id: goblet-from-outline
+  main: true
+  title: A goblet from an outline
+  kind: drill
+  minutes: 15
+  text: "Open the exercise. Draw half the outline of a goblet 1 m tall as a line of vertices. Start at the middle of the base, go out to the rim, and come down inside the cup back to the axis. Turn it with the Screw modifier at 12 steps, with Merge on and the faces pointing out."
+  steps: [Draw half the outline, Add the Screw modifier, Close the base and face it out]
+  starter: empty-scene
+  timer: { minutes: 15 }
+  reference: { diagram: profile }
+  measure:
+    - { metric: nonManifoldEdges, max: 0, label: "No holes in the goblet" }
+    - { metric: doubles, max: 0, label: "No doubled vertices on the axis" }
+    - { metric: flippedFaces, max: 0, label: "Faces point outwards" }
+    - { metric: tris, max: 300, label: "Under 300 triangles" }
+
+- id: screw-spring
+  title: A spring
+  kind: drill
+  minutes: 5
+  text: "Add a circle with 8 vertices and Radius 0.05 m. In Edit Mode, stand it up and move it 0.3 m along X. Give it a Screw modifier with Screw 0.2 m and Iterations 5, then try Iterations 10."
+  timer: { minutes: 5 }
+  check:
+    - The spring climbs 0.2 m with each turn.
+    - At Iterations 10 it is twice as tall.
+
+- id: spin-a-bowl
+  title: Spin a bowl
+  kind: drill
+  minutes: 5
+  text: "Draw half the outline of a bowl from the axis out and up, as in step 1. Put the 3D cursor at the origin, go to the top view, and choose Mesh > Extrude > Spin with Steps 12."
+  timer: { minutes: 5 }
+  check:
+    - The bowl closes all the way round, with no seam.
+    - "It has no modifier: the faces are real geometry."

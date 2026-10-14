@@ -1,0 +1,32 @@
+# Practice for lesson 89. The item marked main is the lesson's exercise.
+
+- id: retime-the-bounce
+  main: true
+  title: Retime a bouncing ball
+  kind: drill
+  minutes: 10
+  text: "Open the exercise. The ball drops and bounces three times, and every bounce takes 24 frames. In the Dope Sheet, retime it so each bounce is shorter than the one before, with no gaps. Add a marker where it lands each time and set End to the last landing."
+  steps: [Open the Dope Sheet, Select keys, Move and scale timing, Copy and duplicate, Mark moments, Label and loop]
+  starter: bounce-even
+  timer: { minutes: 10 }
+  reference: { diagram: example }
+
+- id: slow-motion
+  title: Half speed
+  kind: warm-up
+  minutes: 5
+  text: "Open the exercise, select every key, put the playhead on frame 1 and scale the keys by 2. Set End to match and play it at half speed."
+  starter: bounce-even
+  timer: { minutes: 5 }
+  check:
+    - The last keyframe is on frame 169.
+    - The ball reaches the same heights as before.
+
+- id: one-more-bounce
+  title: One more bounce
+  kind: drill
+  minutes: 10
+  text: "In your retimed file, copy the last bounce's keys with Ctrl+C and paste them after the last landing with Ctrl+V. Scale the copy so it is shorter still. Then go to its top key, move the ball down with G Z and press I."
+  timer: { minutes: 10 }
+  check:
+    - The ball bounces four times, each shorter than the last.

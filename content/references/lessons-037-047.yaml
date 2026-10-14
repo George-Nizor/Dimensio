@@ -1,0 +1,16 @@
+# Reference pictures for lessons 37 to 47. Both are renders of Kenney's CC0 Mini Dungeon sword
+# (kenney-dungeon-sword in models.yaml), made for Dimensio with Blender 5.2.2 in Workbench:
+# orthographic, transparent background, cropped so the picture's height is the sword's height,
+# 640 pixels tall. They are used by the reference-pictures and reference-images starters.
+
+- file: 046-reference-images/sword-front.png
+  credit: "Kenney, Mini Dungeon (sword), rendered from the front for Dimensio"
+  alt: "A short sword from the front: a straight grey blade with a pointed tip, a wide dark grey crossguard, and a brown grip that flares at the bottom."
+  source: "https://kenney.nl/assets/mini-dungeon"
+  licence: CC0
+
+- file: 046-reference-images/sword-side.png
+  credit: "Kenney, Mini Dungeon (sword), rendered from the side for Dimensio"
+  alt: "The same sword from the side: a narrow blade with a pointed tip, the crossguard seen end on, and the brown grip."
+  source: "https://kenney.nl/assets/mini-dungeon"
+  licence: CC0

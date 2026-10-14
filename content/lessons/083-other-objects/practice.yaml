@@ -1,0 +1,33 @@
+# Practice for lesson 83. The item marked main is the lesson's exercise.
+
+- id: slime-and-dome
+  main: true
+  title: A slime and a dome
+  kind: drill
+  minutes: 15
+  text: "In a new General file, build a slime from at least three metaballs that flow together. Then make a dome by raising the middle of a NURBS Surface. Convert both to meshes, each under 500 triangles, and add your file."
+  steps: [Shape a NURBS surface, Set its resolution, Blend metaballs, Convert them, Recognise volumes and point clouds]
+  timer: { minutes: 15 }
+  reference: { diagram: example }
+  measure:
+    - { metric: meshes, min: 2, label: "Both shapes converted to meshes" }
+    - { metric: tris, max: 1000, label: "Under 1,000 triangles in all" }
+
+- id: metaball-snowman
+  title: A metaball snowman
+  kind: warm-up
+  minutes: 5
+  text: "Stack three Ball metaballs of falling size into a snowman so each flows into the next. Then rename the top one and watch it stop blending. Rename it back."
+  timer: { minutes: 5 }
+  check:
+    - The three balls flow into one shape.
+    - Renaming the top ball separated it.
+
+- id: try-a-point-cloud
+  title: Convert a point cloud
+  kind: drill
+  minutes: 5
+  text: "Add > Point Cloud. Convert it with Object > Convert > Mesh, then look at the Statistics overlay in Edit Mode."
+  timer: { minutes: 5 }
+  check:
+    - The mesh has 400 vertices and no faces.

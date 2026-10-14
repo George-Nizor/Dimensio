@@ -1,0 +1,31 @@
+# Practice for lesson 13. The item marked main is the lesson's exercise.
+
+- id: ring-and-sign
+  main: true
+  title: A plank ring and a sign
+  kind: drill
+  minutes: 10
+  text: Open the exercise. Set the pivot point to 3D Cursor and pick each plank in the Outliner. Turn Plank 02 by 30 degrees around Z, Plank 03 by 60, and so on up to Plank 12 at 330. Then slide the tilted sign 1 m along its own X axis into its outline.
+  steps: [Open the pivot pie, Turn around the 3D cursor, Turn each one in place, Open the orientation pie, "Move along the object's own axis"]
+  starter: pivot-planks
+  timer: { minutes: 10 }
+  reference: { diagram: around-cursor }
+
+- id: spokes
+  title: Planks into spokes
+  kind: drill
+  minutes: 3
+  text: Open your file with the finished ring and select all twelve planks. With the pivot point on Individual Origins, turn them 90 degrees around Z so each plank points at the centre like a spoke.
+  timer: { minutes: 3 }
+  check:
+    - Every plank still stands in its place in the ring.
+    - From the top, every plank points at the centre.
+
+- id: active-stays
+  title: The active one stays put
+  kind: warm-up
+  minutes: 3
+  text: In a new General file, make two copies of the cube in a row with Shift+D. Select all three with the middle one active. Set the pivot point to Active Element and scale them by 0.5.
+  timer: { minutes: 3 }
+  check:
+    - The middle cube didn't move, and the other two moved towards it.

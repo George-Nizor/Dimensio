@@ -1,0 +1,36 @@
+# Practice for lesson 40. The item marked main is the lesson's exercise.
+
+- id: cushion-and-box
+  main: true
+  title: A cushion and a box
+  kind: drill
+  minutes: 15
+  text: "In a new General file, scale the cube to 1 m square and 30 cm thick, apply the scale, and press Ctrl+2 to make a cushion. Add a second cube beside it with the same modifier, and keep its edges tight with support loops or creases. Shade both smooth."
+  steps: [Add it with a shortcut, Set the two levels, Hold an edge with loops, Or crease it, Shade it smooth]
+  timer: { minutes: 15 }
+  reference: { diagram: example }
+  measure:
+    - { metric: base.ngons, max: 0, label: "No n-gons under the modifier" }
+    - { metric: base.faces, max: 150, label: "Under 150 faces before the modifier" }
+    - { metric: faces, min: 192, label: "Both objects subdivided" }
+    - { metric: shading, equals: smooth, label: "Shaded smooth" }
+
+- id: three-levels
+  title: Count the faces
+  kind: warm-up
+  minutes: 3
+  text: "Turn on the Statistics overlay. Select the default cube and press Ctrl+1, Ctrl+2 and Ctrl+3 in turn, noting the face count in Object Mode each time. Finish with Ctrl+0."
+  timer: { minutes: 3 }
+  check:
+    - The counts read 24, 96 and 384 faces.
+    - Ctrl+0 sets the level back to 0.
+
+- id: crease-a-lid
+  title: Crease a lid
+  kind: drill
+  minutes: 5
+  text: "Add a cylinder with 8 vertices and replace each cap with Grid Fill. Add Subdivision Surface at level 2. Then crease the top rim to 1, so the lid has a sharp edge and a round base."
+  timer: { minutes: 5 }
+  check:
+    - The top rim is sharp and the bottom is round.
+    - Neither cap shows a star of thin faces.

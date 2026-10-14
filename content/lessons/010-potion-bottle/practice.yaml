@@ -1,0 +1,38 @@
+# Practice for lesson 10. The item marked main is the lesson's exercise.
+
+- id: copy-the-potion
+  main: true
+  title: Copy Kenney's potion
+  kind: copy
+  minutes: 25
+  text: Build Kenney's potion from primitives in Object Mode. Use a flattened eight-sided UV sphere for the body, an eight-sided cylinder for the neck ring and an eight-sided cone for the cork. Make it 0.4 m tall and about 0.32 m wide, give each part a name and a material, and keep it under 250 triangles.
+  steps: [Read the example, Add the body, Add the neck ring, Add the cork, Name and colour the parts, Compare from the front]
+  timer: { minutes: 25 }
+  reference: { model: kenney-dungeon-potion }
+  measure:
+    - { metric: tris, max: 250, label: Under 250 triangles }
+    - { metric: meshes, min: 3, label: Three parts or more }
+    - { metric: materials, min: 1, label: Every part has a material }
+
+- id: potion-from-memory
+  title: The potion from memory
+  kind: retest
+  minutes: 15
+  text: A few days after the lesson, build the potion again without the steps or the numbers in front of you. Then put the example beside it and compare them from the front.
+  timer: { minutes: 15 }
+  reference: { model: kenney-dungeon-potion }
+  check:
+    - The bottle is close to 0.4 m tall.
+    - Every part has eight sides and its own material.
+  measure:
+    - { metric: tris, max: 250, label: Under 250 triangles }
+
+- id: a-bottle-of-your-own
+  title: A bottle of your own
+  kind: imagination
+  minutes: 15
+  text: Make a different bottle from primitives in Object Mode, such as a tall thin flask from a cylinder or a square bottle from a cube. Give it a cork and two colours, and keep it under 250 triangles.
+  timer: { minutes: 15 }
+  check:
+    - It stands on the grid and is under 0.5 m tall.
+    - Statistics shows under 250 triangles.

@@ -1,0 +1,67 @@
+# Resources for lessons 37 to 47, the Modifiers part, that are not already in catalogue.yaml.
+# Each YouTube video was checked on 2026-10-15: oEmbed answered 200 with the title and channel
+# below, the watch page reported it playable in an embed, and minutes is its length rounded. The
+# description and chapter list were read to confirm it teaches the lesson. blender is the release
+# that was current on the upload date, given when it is older than 5.0.
+
+- id: ryan-king-bevel-problems
+  title: How to Fix Common Bevel Modifier Problems in Blender
+  teacher: Ryan King Art
+  url: https://www.youtube.com/watch?v=kewi6MSXYm0
+  kind: video
+  minutes: 13
+  youtube: kewi6MSXYm0
+  cost: free
+  checked: 2026-10-15
+
+- id: cg-essentials-subdivision-surface
+  title: Using the Subdivision Surface Modifier in Blender
+  teacher: The CG Essentials
+  url: https://www.youtube.com/watch?v=iiZbeJ_ep2k
+  kind: video
+  minutes: 11
+  youtube: iiZbeJ_ep2k
+  blender: "2.92"
+  cost: free
+  checked: 2026-10-15
+
+- id: grant-abbitt-new-array
+  title: "Blender 5's New Array Modifier: Create Random and Circle Arrays"
+  teacher: Grant Abbitt
+  url: https://www.youtube.com/watch?v=_73-3mq0HI4
+  kind: video
+  minutes: 10
+  youtube: _73-3mq0HI4
+  cost: free
+  checked: 2026-10-15
+
+- id: ryan-king-screw-modifier
+  title: How to Use the Screw Modifier in Blender
+  teacher: Ryan King Art
+  url: https://www.youtube.com/watch?v=cLzsJiY-mNI
+  kind: video
+  minutes: 13
+  youtube: cLzsJiY-mNI
+  cost: free
+  checked: 2026-10-15
+
+- id: ryan-king-spin-tool
+  title: How to Use the Spin Tool in Blender
+  teacher: Ryan King Art
+  url: https://www.youtube.com/watch?v=LVHuhclIcB8
+  kind: video
+  minutes: 9
+  youtube: LVHuhclIcB8
+  cost: free
+  checked: 2026-10-15
+
+- id: grant-abbitt-low-poly-sword
+  title: Create a Low Poly Sword for Beginners
+  teacher: Grant Abbitt
+  url: https://www.youtube.com/watch?v=lgJaWqIYeKM
+  kind: video
+  minutes: 14
+  youtube: lgJaWqIYeKM
+  blender: "2.90"
+  cost: free
+  checked: 2026-10-15
