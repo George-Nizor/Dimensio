@@ -1,0 +1,30 @@
+# Practice for lesson 127. The item marked main is the lesson's exercise.
+
+- id: export-each-piece
+  main: true
+  title: Export each piece
+  kind: project
+  minutes: 30
+  text: "Open the exercise, a building kit in a collection called Kit. Write the export script in a new text called export.py, save the file and run the script. Check the export folder for one .glb per piece. Then run the script again from a terminal with blender -b and --python-text."
+  steps: [Start a new text, Type the script, Read the loop, "Save, then run it", Run it without opening Blender]
+  starter: export-kit
+  timer: { minutes: 30 }
+  reference: { diagram: code }
+
+- id: your-own-kit
+  title: Export your own kit
+  kind: drill
+  minutes: 10
+  text: Open your building kit from lesson 67 and move its pieces into a collection called Kit. Bring export.py in from the exercise file with File > Append, from its Text folder, then save and run it.
+  timer: { minutes: 10 }
+  check:
+    - Every piece of your kit has its own .glb file.
+
+- id: one-more-line
+  title: Add a line to the script
+  kind: drill
+  minutes: 10
+  text: Change the script so it also prints how many objects it exported once the loop ends. Run it and read the number in the system console, from Window > Toggle System Console.
+  timer: { minutes: 10 }
+  check:
+    - The number matches the objects in Kit.

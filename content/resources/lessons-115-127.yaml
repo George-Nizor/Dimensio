@@ -1,0 +1,44 @@
+# Resources for lessons 115 to 127 that are not in catalogue.yaml. Each video was checked through
+# YouTube's oEmbed on 2026-10-15 (title and channel), and its length and upload date read from its
+# watch page. blender is the version current on the upload date, unless the video says otherwise.
+
+- id: pixxo-3d-line-art
+  title: "Blender Line Art: Beginners Tutorial"
+  teacher: PIXXO 3D
+  url: https://www.youtube.com/watch?v=uIvHhQmRFIo
+  kind: video
+  minutes: 4
+  youtube: uIvHhQmRFIo
+  blender: "4.2"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-grease-pencil-modifiers-line-art
+  title: Line Art Modifier
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/grease_pencil/modifiers/generate/line_art.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+- id: ryan-king-missing-textures
+  title: "How to Find Missing Texture Data & Pack Files into Blender"
+  teacher: Ryan King Art
+  url: https://www.youtube.com/watch?v=RrfzsxZUyPI
+  kind: video
+  minutes: 4
+  youtube: RrfzsxZUyPI
+  blender: "4.2"
+  cost: free
+  checked: 2026-10-15
+
+- id: mina-pecheux-scripting
+  title: Everything You Need to Get Started with Blender Scripting
+  teacher: Mina Pêcheux
+  url: https://www.youtube.com/watch?v=aGsbOGK9Ia8
+  kind: video
+  minutes: 8
+  youtube: aGsbOGK9Ia8
+  blender: "4.2"
+  cost: free
+  checked: 2026-10-15

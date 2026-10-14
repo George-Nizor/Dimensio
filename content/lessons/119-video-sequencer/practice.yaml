@@ -1,0 +1,29 @@
+# Practice for lesson 119. The item marked main is the lesson's exercise.
+
+- id: asset-reel
+  main: true
+  title: A reel of your models
+  kind: project
+  minutes: 30
+  text: "Make a 20-second video of three or more of your models, from renders you made in earlier lessons. Open it with a title over the first shot and lay music you're allowed to use under the whole reel. Render it to an .mp4 file."
+  steps: [Start a video edit, Add your renders, Cut to length, Add a title, Render the video]
+  timer: { minutes: 30 }
+  reference: { diagram: example }
+
+- id: cut-it-down
+  title: Cut a shot down
+  kind: drill
+  minutes: 5
+  text: Add one movie strip, then cut it into four parts with K. Delete the second and fourth parts and slide the others together with G.
+  timer: { minutes: 5 }
+  check:
+    - Two strips are left, side by side with no gap.
+
+- id: three-titles
+  title: Three title styles
+  kind: warm-up
+  minutes: 5
+  text: Add three Text strips one after another and give them the Main Title, Corner Title and Subtitle presets. Play them through.
+  timer: { minutes: 5 }
+  check:
+    - Each strip looks different in the preview.

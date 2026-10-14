@@ -1,0 +1,29 @@
+# Practice for lesson 126. The item marked main is the lesson's exercise.
+
+- id: console-commands
+  main: true
+  title: Rename and move from the console
+  kind: drill
+  minutes: 15
+  text: "In a new General file, open the Scripting workspace. In the Python Console, rename Cube to Crate and Light to Lamp, then move the crate 1 m up. Add a cube from the Add menu, copy its line from the Info editor into the console, set its location to (3, 0, 0) and run it."
+  steps: [Open the Scripting workspace, Watch the Info editor, Turn on Python Tooltips, Type a command, Let the console finish names, Run a copied command]
+  timer: { minutes: 15 }
+  reference: { diagram: console }
+
+- id: read-the-tooltips
+  title: Read three Python paths
+  kind: warm-up
+  minutes: 5
+  text: With Python Tooltips on, hover over the crate's Rotation Z, its Scale X and the scene's frame End. Type each path in the console and press Enter to see its value.
+  timer: { minutes: 5 }
+  check:
+    - Each path printed the value the field shows.
+
+- id: list-and-count
+  title: Count with Python
+  kind: drill
+  minutes: 5
+  text: Add five objects from the Add menu. In the console, type len(D.objects) and then [obj.name for obj in D.objects] and compare them with the Outliner.
+  timer: { minutes: 5 }
+  check:
+    - The count matches the number of objects in the Outliner.

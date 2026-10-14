@@ -1,0 +1,35 @@
+# Practice for lesson 123. The item marked main is the lesson's exercise.
+
+- id: import-and-fix
+  main: true
+  title: Import two models and fix one
+  kind: drill
+  minutes: 15
+  text: "Open the exercise. The Import practice folder beside it holds lantern.glb and crate.obj. Import both, find the one that arrives at the wrong size and fix it, with its scale applied. Then export the crate on its own as an FBX file and save."
+  steps: [Pick a format, Import a file, Check its size, "Export what you've selected", Use the new FBX importer]
+  starter: import-practice
+  timer: { minutes: 15 }
+  reference: { diagram: size }
+  measure:
+    - { metric: scaleApplied, equals: true, label: "Scale applied on every object" }
+    - { metric: meshes, min: 2, label: "Both imports in the file" }
+    - { metric: height, max: 2, label: "Nothing taller than 2 m" }
+
+- id: kenney-import
+  title: Import a Kenney kit
+  kind: drill
+  minutes: 10
+  text: Download a free Kenney kit from kenney.nl. Import three of its models into one new file and stand them side by side.
+  timer: { minutes: 10 }
+  check:
+    - Each model's Scale reads 1.000.
+    - You can read each model's size in Dimensions.
+
+- id: stl-for-printing
+  title: An STL for printing
+  kind: warm-up
+  minutes: 5
+  text: Select the lantern and export it with File > Export > STL, with Selection Only ticked. Then import the .stl into a new file.
+  timer: { minutes: 5 }
+  check:
+    - The imported lantern has its shape but no material.

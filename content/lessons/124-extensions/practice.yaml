@@ -1,0 +1,29 @@
+# Practice for lesson 124. The item marked main is the lesson's exercise.
+
+- id: install-and-enable
+  main: true
+  title: Install an extension
+  kind: drill
+  minutes: 10
+  text: "Allow online access, then install Extra Mesh Objects from Get Extensions. Add a rock with Add > Mesh > Extras > Rock Generator. Turn on Node Wrangler in the Add-ons section. Close Blender, open it again and check that both are still on."
+  steps: [Allow online access, Install an extension, Install from a file, Turn on an add-on that comes with Blender, Keep them up to date]
+  timer: { minutes: 10 }
+  reference: { diagram: example }
+
+- id: install-a-theme
+  title: Install a theme
+  kind: warm-up
+  minutes: 5
+  text: In Get Extensions, show only Themes and install one you like. Blender switches to it straight away. Then uninstall it to go back to the default theme.
+  timer: { minutes: 5 }
+  check:
+    - The colours changed when you installed it and came back when you uninstalled it.
+
+- id: from-disk
+  title: Install from disk
+  kind: drill
+  minutes: 5
+  text: Download an extension's .zip from its page on extensions.blender.org, then install it with Install from Disk, with no online access.
+  timer: { minutes: 5 }
+  check:
+    - Get Extensions lists the extension, turned on.

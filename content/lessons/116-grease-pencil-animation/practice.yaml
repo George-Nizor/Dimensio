@@ -1,0 +1,31 @@
+# Practice for lesson 116. The item marked main is the lesson's exercise.
+
+- id: flickering-flame
+  main: true
+  title: A flickering flame
+  kind: drill
+  minutes: 25
+  text: "Make a new 2D Animation file and set End to 12. Draw a flame as one closed stroke on frames 1, 4, 7 and 10, each a little different. Turn on Show Start Frame so the last drawing leads back to the first. Fill each gap with Shift+Ctrl+E, then play the loop."
+  steps: [Start from the 2D Animation template, Draw on the first frame, Draw the next drawing, Set up the onion skin, Time the drawings, Let Blender draw the in-betweens]
+  timer: { minutes: 25 }
+  reference: { diagram: example }
+
+- id: bouncing-ball
+  title: A bouncing ball
+  kind: warm-up
+  minutes: 10
+  text: Make a new 2D Animation file and set End to 24. On frame 1, draw a ball in the top left. On frame 12, draw a squashed ball at the bottom middle, and on frame 24 a ball in the top right. Then draw two more balls between each pair, using the onion skin.
+  timer: { minutes: 10 }
+  check:
+    - The ball squashes only on frame 12.
+    - Each drawing sits between the ghosts either side of it.
+
+- id: flame-on-twos
+  title: A flame on twos
+  kind: drill
+  minutes: 15
+  text: Draw the flame again without interpolation, a new drawing on every second frame from 1 to 11. Then select the drawings on 7, 9 and 11 in the Dope Sheet and press G to move them one frame later.
+  timer: { minutes: 15 }
+  check:
+    - Six drawings sit two frames apart before you move any.
+    - Moving three keyframes changed the timing and nothing else.

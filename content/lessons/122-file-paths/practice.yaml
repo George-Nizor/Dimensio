@@ -1,0 +1,30 @@
+# Practice for lesson 122. The item marked main is the lesson's exercise.
+
+- id: find-and-pack
+  main: true
+  title: Find and pack the textures
+  kind: fix
+  minutes: 10
+  text: "Open the exercise. Its crate and barrel show pink because someone moved their textures into a folder called Moved textures, beside the file. Report the missing files, find them, pack them and save. Then rename the Moved textures folder and reopen the file to test it."
+  steps: [Spot the missing textures, Find them, Keep paths relative, Pack the textures, Clear out unused data]
+  starter: missing-textures
+  timer: { minutes: 10 }
+  reference: { diagram: report }
+
+- id: unpack-again
+  title: Unpack the textures
+  kind: drill
+  minutes: 5
+  text: In your packed file, choose File > External Data > Unpack Resources and pick Use files in current directory. Then look in the folder the .blend file is in.
+  timer: { minutes: 5 }
+  check:
+    - A textures folder with both images sits beside the .blend file.
+
+- id: purge-a-material
+  title: Purge an unused material
+  kind: warm-up
+  minutes: 3
+  text: In a new file, give the cube a new material, then delete the cube. Choose File > Clean Up > Purge Unused Data and confirm.
+  timer: { minutes: 3 }
+  check:
+    - The material is gone from the material browse list.

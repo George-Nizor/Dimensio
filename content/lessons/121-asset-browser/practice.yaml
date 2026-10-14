@@ -1,0 +1,32 @@
+# Practice for lesson 121. The item marked main is the lesson's exercise.
+
+- id: props-library
+  main: true
+  title: Your props as an asset library
+  kind: drill
+  minutes: 15
+  text: "Mark three or more of your props as assets and save their file in an asset library folder. Make a catalog called Props and put them in it. Then, in a new file, set Import Method to Append and drag each prop in from the Asset Browser."
+  steps: [Mark the props as assets, Save the file into a library, Sort them into a catalog, Choose how assets come in, Drag a prop into a scene]
+  timer: { minutes: 15 }
+  reference: { diagram: example }
+
+- id: starter-props-as-assets
+  title: The exercise props as assets
+  kind: drill
+  minutes: 10
+  text: Open the props library exercise, mark its crate, barrel and lamp as assets and save a copy into your asset library folder. Drag the lamp into a new file once with Link and once with Append.
+  starter: props-library
+  timer: { minutes: 10 }
+  check:
+    - The linked lamp shows a chain icon in the Outliner.
+    - The appended lamp has none.
+
+- id: append-or-reuse
+  title: Append or reuse data
+  kind: warm-up
+  minutes: 5
+  text: In a new file, drag the barrel in three times with Import Method set to Append, then three times with Append (Reuse Data). Look at the meshes in the Outliner's Blender File view.
+  timer: { minutes: 5 }
+  check:
+    - The three Append barrels each have a mesh of their own.
+    - The three Reuse Data barrels share one mesh.

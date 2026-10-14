@@ -1,0 +1,30 @@
+# Practice for lesson 115. The item marked main is the lesson's exercise.
+
+- id: sketch-a-prop
+  main: true
+  title: Sketch a prop in 3D
+  kind: imagination
+  minutes: 20
+  text: "Sketch a prop you plan to model, such as a chest or a lantern, about 1 m tall. Draw its front on the Front (X-Z) plane from the front view, then its side on the Side (Y-Z) plane from the right view. Put the lines on one layer and the fills on a second layer below it."
+  steps: [Add a Grease Pencil object, Draw in Draw Mode, Choose the drawing plane, "Draw strokes, fills or both", Keep lines and fills on layers]
+  timer: { minutes: 20 }
+  reference: { diagram: example }
+
+- id: draw-on-the-cube
+  title: Draw on the cube
+  kind: warm-up
+  minutes: 5
+  text: In a new General file, add a Grease Pencil object and set Stroke Placement to Surface. Draw a face on the front of the default cube and a stripe across its top. Orbit around it.
+  timer: { minutes: 5 }
+  check:
+    - The strokes sit on the cube's faces from every angle.
+
+- id: three-shapes
+  title: "Stroke, fill and both"
+  kind: drill
+  minutes: 5
+  text: Draw three closed shapes side by side, the first with Stroke, the second with Fill and the third with Both. Then change Surface > Fill > Base Color in the Material properties.
+  timer: { minutes: 5 }
+  check:
+    - Only the first shape has no fill.
+    - The fills changed colour together when you changed the material.

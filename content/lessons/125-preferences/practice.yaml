@@ -1,0 +1,30 @@
+# Practice for lesson 125. The item marked main is the lesson's exercise.
+
+- id: your-startup-file
+  main: true
+  title: Set up your startup file
+  kind: drill
+  minutes: 10
+  text: "In a new General file, check that Units are Metric and Meters, turn on the Statistics overlay and arrange the layout the way you like it. Add Shade Auto Smooth and Apply > All Transforms to Quick Favorites. Save the startup file, then open File > New > General to check."
+  steps: [Open the Preferences, Fit the interface to your screen, Change a shortcut, Collect Quick Favorites, Save your startup file]
+  timer: { minutes: 10 }
+  reference: { diagram: startup }
+
+- id: f5-shortcut
+  title: A shortcut on F5
+  kind: drill
+  minutes: 5
+  text: Right-click Object > Shade Flat and choose Assign Shortcut, then press F5. Select an object with smooth shading and press F5 over the 3D Viewport.
+  timer: { minutes: 5 }
+  check:
+    - F5 makes the object flat shaded.
+    - The Keymap section finds the shortcut when you search for F5.
+
+- id: find-in-preferences
+  title: Find three settings
+  kind: warm-up
+  minutes: 3
+  text: Use only the Preferences search field to find Emulate Numpad, Resolution Scale and Undo Steps. Change none of them.
+  timer: { minutes: 3 }
+  check:
+    - You found each one by typing part of its name.

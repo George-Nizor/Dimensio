@@ -1,0 +1,31 @@
+# Practice for lesson 120. The item marked main is the lesson's exercise.
+
+- id: append-and-link
+  main: true
+  title: "Append a crate, link a barrel"
+  kind: drill
+  minutes: 10
+  text: "Open the exercise, a library of three props, and note the folder it's saved in. Choose File > New > General and delete the cube. Append the Crate and link the Barrel from the library. Make a library override of the barrel, move it 2 m along X and save."
+  steps: [Append a copy, Link instead, Override to edit a linked model, Make it local, Choose append or link]
+  starter: props-library
+  timer: { minutes: 10 }
+  reference: { diagram: example }
+
+- id: your-own-props
+  title: Bring in your own props
+  kind: drill
+  minutes: 10
+  text: In a new file, append the crate you made in lesson 35 and link the barrel from lesson 36. Then make the barrel local with Object > Relations > Make Local.
+  timer: { minutes: 10 }
+  check:
+    - Neither prop shows a chain icon in the Outliner at the end.
+    - Both props are their usual size and stand on the ground.
+
+- id: reload-a-change
+  title: Change the library
+  kind: warm-up
+  minutes: 5
+  text: Link the Lamp from the props library into a new file and save it. Open the library, scale the lamp's head up a little in Edit Mode, save, and reopen your new file.
+  timer: { minutes: 5 }
+  check:
+    - The linked lamp shows the bigger head, and you didn't link it again.

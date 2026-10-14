@@ -1,0 +1,30 @@
+# Practice for lesson 118. The item marked main is the lesson's exercise.
+
+- id: grade-the-portfolio
+  main: true
+  title: Grade your portfolio render
+  kind: drill
+  minutes: 20
+  text: "Open your portfolio render from lesson 74. In the Compositing workspace, put a Glare set to Bloom, a Color Balance and a Vignette between Render Layers and Group Output. Render with F12 and save the picture beside your first render to compare them."
+  steps: [Start a compositing tree, Add a glow, Grade the colour, Darken the corners, Look at a pass]
+  timer: { minutes: 20 }
+  reference: { diagram: example }
+
+- id: glare-types
+  title: Five kinds of glare
+  kind: warm-up
+  minutes: 5
+  text: Give a sphere a material with Emission Strength 10, render it and add a Glare node. Switch its Type through Bloom, Fog Glow, Streaks, Simple Star and Ghosts, looking at the Viewer each time.
+  timer: { minutes: 5 }
+  check:
+    - Each type changed only the glow round the bright sphere.
+
+- id: pass-by-pass
+  title: Look at the passes
+  kind: drill
+  minutes: 10
+  text: Tick Ambient Occlusion, Shadow and Emission in View Layer properties > Passes > Light and render. Wire each new Render Layers output to the Viewer in turn.
+  timer: { minutes: 10 }
+  check:
+    - Render Layers shows three new outputs.
+    - You can say what each pass shows in your scene.
