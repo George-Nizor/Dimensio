@@ -124,6 +124,9 @@ export interface PracticeItem {
   starter: { id: string; options: Record<string, string | number | boolean> } | null;
   measure: Measure[];
   check: Inline[];
+  // False for exercises in a lesson that makes no model (installing Blender, the interface): they
+  // hand in no .blend and have nothing to measure.
+  makesModel: boolean;
 }
 
 export interface Resource {

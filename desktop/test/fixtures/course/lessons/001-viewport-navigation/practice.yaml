@@ -1,0 +1,21 @@
+# Practice for lesson 1. The item marked main is the lesson's exercise.
+
+- id: tour-the-default-scene
+  main: true
+  title: Find your way round
+  kind: drill
+  minutes: 10
+  text: The starter scene is Blender's default cube, camera and light. Orbit all the way round the cube, pan until it sits in a corner, then zoom out until it's tiny. Centre each object in turn with `Numpad Period`, then look from the front, the right and the top. Save with `Ctrl+S` and add the file here.
+  steps: [Orbit, Pan, Zoom, Snap to a view, Find your way back]
+  starter: empty-scene
+  timer: { minutes: 10 }
+
+- id: views-without-the-mouse
+  title: Views without the mouse
+  kind: warm-up
+  minutes: 5
+  text: Open a new scene. Without touching the mouse, show the cube from the front, right, top, back, left and bottom. Switch to orthographic and back at each view.
+  timer: { minutes: 5 }
+  reference: { prompt: "Front, right, top, back, left, bottom" }
+  check:
+    - The text at the top left names each view as you reach it.

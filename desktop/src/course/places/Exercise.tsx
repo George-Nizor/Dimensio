@@ -21,7 +21,7 @@ function freeItem(prompt: string): PracticeItem {
   return {
     id: 'free', lesson: '', main: false, title: 'Modelling prompt', kind: 'imagination', minutes: 20,
     text: [[{ t: 'text', v: "Model this in Blender from imagination. Stop when the time is up, or keep going if you're enjoying it." }]],
-    steps: [], rounds: [{ label: '', seconds: 1200 }], reference: { type: 'prompt', prompt }, starter: null, measure: [], check: [],
+    steps: [], rounds: [{ label: '', seconds: 1200 }], reference: { type: 'prompt', prompt }, starter: null, measure: [], check: [], makesModel: true,
   };
 }
 
@@ -104,7 +104,7 @@ function Exercise({ item }: { item: PracticeItem }) {
                 {timer.phase !== 'ready' && item.rounds.length > 1 ? <button type="button" className="quiet" onClick={timer.skipRound}>Next round</button> : null}
                 {timer.phase === 'ready'
                   ? <button type="button" className="quiet" onClick={timer.finish}>Skip the timer</button>
-                  : <button type="button" className="button primary" onClick={timer.finish}>I've finished my model</button>}
+                  : <button type="button" className="button primary" onClick={timer.finish}>{item.makesModel ? "I've finished my model" : "I've finished"}</button>}
               </div>
             </div>
           ) : (
@@ -168,7 +168,7 @@ function ReferenceArea({ item, model }: { item: PracticeItem; model: ReferenceMo
   if (reference.type === 'diagram') {
     return (
       <>
-        <p className="reference-note">Your model should end up looking something like this.</p>
+        {item.makesModel ? <p className="reference-note">Your model should end up looking something like this.</p> : null}
         <DiagramView diagram={content.diagrams[reference.diagram]} className="reference-art" />
       </>
     );
@@ -338,6 +338,32 @@ function Finish({ item, checks, model, starterFile, onResult }: {
         <div className="actions">
           {lesson ? <a className="button primary" href={href('lesson', lesson.slug)}>Back to the lesson</a> : <a className="button primary" href={href()}>Home</a>}
           {saved.withModel ? <a className="button" href={href('models')}>See it in Models</a> : null}
+        </div>
+      </section>
+    );
+  }
+
+  // An exercise that makes no model (installing Blender, the interface) hands nothing in: the
+  // learner ticks the checks and saves.
+  if (!item.makesModel) {
+    return (
+      <section className="finish">
+        <h2>Checking your work</h2>
+        {checks.length ? (
+          <fieldset className="check-boxes">
+            <legend>Tick each check that holds</legend>
+            {checks.map((check, i) => (
+              <label key={i} className="check-box">
+                <input type="checkbox" checked={held[i] ?? false} onChange={(event) => setHeld((list) => list.map((value, j) => (j === i ? event.target.checked : value)))} />
+                <span><InlineText nodes={check} /></span>
+              </label>
+            ))}
+            {item.main ? <p className="meta">When every check holds, the lesson is done.</p> : null}
+          </fieldset>
+        ) : null}
+        {problem ? <p className="error" role="alert">{problem}</p> : null}
+        <div className="actions">
+          <button type="button" className="button primary" onClick={() => void saveQuietly(false)}>Save</button>
         </div>
       </section>
     );

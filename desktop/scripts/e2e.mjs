@@ -17,6 +17,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright';
 import { preview } from 'vite';
+import { execFileSync } from 'node:child_process';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const out = path.resolve(process.env.E2E_OUT || path.join(root, 'test-results', 'e2e'));
@@ -26,6 +27,12 @@ if (!fs.existsSync(path.join(root, 'dist', 'index.html'))) {
   console.error('Build first: npm run build');
   process.exit(1);
 }
+// The run uses a small fixed course, test/fixtures/course, in place of the real one, so it does not
+// change as lessons are written. It is built into dist/content.json for the run and the real
+// content is put back afterwards.
+const realContent = path.join(root, 'public', 'content.json');
+execFileSync(process.execPath, [path.join(root, 'scripts', 'build-content.mjs'), '--content', path.join(root, 'test', 'fixtures', 'course'), '--out', path.join(root, 'dist', 'content.json')], { stdio: 'inherit' });
+process.on('exit', () => { if (fs.existsSync(realContent)) fs.copyFileSync(realContent, path.join(root, 'dist', 'content.json')); });
 const content = JSON.parse(fs.readFileSync(path.join(root, 'dist', 'content.json'), 'utf8'));
 
 const problems = [];

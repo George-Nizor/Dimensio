@@ -1,0 +1,35 @@
+# Every resource a lesson links to. Only add one you have opened and that teaches the lesson.
+# cost is free or paid. youtube is the video id when the lesson can play it in place; check it
+# through https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=<id>&format=json
+# first. blender is the version the resource was made with; the app shows it when it is older
+# than 5.0.
+
+- id: blenderguru-donut-2026-1
+  title: Blender Donut Tutorial Part 1
+  teacher: Blender Guru
+  url: https://www.youtube.com/watch?v=-tbSCMbJA6o
+  kind: video
+  minutes: 29
+  youtube: -tbSCMbJA6o
+  cost: free
+  checked: 2026-10-15
+  blender: "5.0"
+
+- id: blenderguru-beginner-4-0
+  title: Beginner Blender 4.0 Tutorial
+  teacher: Blender Guru
+  url: https://www.youtube.com/watch?v=B0J27sf9N1Y
+  kind: video
+  minutes: 18
+  youtube: B0J27sf9N1Y
+  cost: free
+  checked: 2026-10-15
+  blender: "4.0"
+
+- id: manual-axis-locking
+  title: Axis Locking
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/scene_layout/object/editing/transform/control/axis_locking.html
+  kind: written page
+  cost: free
+  checked: 2026-10-15

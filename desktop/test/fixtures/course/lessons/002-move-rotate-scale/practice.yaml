@@ -1,0 +1,28 @@
+# Practice for lesson 2. The item marked main is the lesson's exercise.
+
+- id: cube-stool
+  main: true
+  title: A stool from cubes
+  kind: copy
+  minutes: 20
+  text: The starter scene puts the example stool beside you as a wire model. Build your own from cubes. Press `Shift+A` and choose Mesh > Cube for each part. Shape it with `S` and an axis, place it with `G`, and lean the legs out 8 degrees with `R` `X`. Apply the scale, then save and add the file.
+  steps: [Move, Lock to an axis, Type an amount, Rotate and scale, Apply the scale]
+  reference: { model: stool }
+  starter: copy-reference
+  timer: { minutes: 20 }
+  measure:
+    - { metric: meshes, min: 5, label: "A seat and four legs" }
+    - { metric: scaleApplied, equals: true, label: "Scale applied on every part" }
+    - { metric: ngons, max: 0, label: "No n-gons" }
+
+- id: even-out-a-bevel
+  title: Even out a bevel
+  kind: fix
+  minutes: 5
+  text: The starter scene has a shelf board scaled in Object Mode, with a Bevel modifier. The bevel comes out wide at the ends and thin along the long edges. Select the shelf, press `Ctrl+A` and choose Scale, and watch the bevel even out. Save the file and add it here.
+  starter: unapplied-scale
+  timer: { minutes: 5 }
+  measure:
+    - { metric: scaleApplied, equals: true, label: "Scale applied on the shelf" }
+  check:
+    - The bevel is the same width along every edge.

@@ -7,6 +7,8 @@
 //   node scripts/build-content.mjs                    check and write public/content.json
 //   node scripts/build-content.mjs --check            check only
 //   node scripts/build-content.mjs --check --content <dir>   check another content folder
+//   node scripts/build-content.mjs --content <dir> --out <file>   build another folder elsewhere
+//                                                     (the e2e run uses test/fixtures/course)
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -17,7 +19,8 @@ import { isKeys, lintProse, words } from './copy-rules.mjs';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const contentFlag = process.argv.indexOf('--content');
 const contentDir = contentFlag > 0 ? path.resolve(process.argv[contentFlag + 1]) : path.join(root, '..', 'content');
-const repo = path.dirname(contentDir);
+// The repository root, for starters and scripts named by `made:`, whichever content folder is read.
+const repo = path.join(root, '..');
 const publicDir = path.join(root, 'public');
 const startersDir = path.join(repo, 'blender', 'starters');
 const METRICS = JSON.parse(fs.readFileSync(path.join(root, 'src', 'course', 'engine', 'metrics.json'), 'utf8'));
@@ -393,6 +396,9 @@ async function readPractice(folder, lesson, diagrams, practice) {
     practice.set(raw.id, {
       id: raw.id, lesson: lesson.slug, main: Boolean(raw.main), title: raw.title, kind: raw.kind, minutes: raw.minutes,
       text: paragraphs(raw.text, at), steps: (raw.steps || []).map(String), rounds, reference, starter, measure, check,
+      // A lesson that ends with "Checking your work" makes no model, so its exercises hand none in
+      // and cannot be measured.
+      makesModel: lesson.checkHeading !== 'Checking your work',
     });
     lesson.practice.push(raw.id);
   }
@@ -560,5 +566,6 @@ console.log(`Content: ${number} lessons in ${parts.length} parts, ${written.leng
 if (!checkOnly) {
   const output = { format: 1, parts, lessons, practice: Object.fromEntries(practice), resources: Object.fromEntries(resources), references: Object.fromEntries(models), diagrams: Object.fromEntries(diagrams), prompts };
   fs.mkdirSync(publicDir, { recursive: true });
-  fs.writeFileSync(path.join(publicDir, 'content.json'), `${JSON.stringify(output)}\n`);
+  const outFlag = process.argv.indexOf('--out');
+  fs.writeFileSync(outFlag > 0 ? path.resolve(process.argv[outFlag + 1]) : path.join(publicDir, 'content.json'), `${JSON.stringify(output)}\n`);
 }
