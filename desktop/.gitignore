@@ -1,0 +1,4 @@
+# Written by scripts/build-content.mjs from ../content on every build.
+public/content.json
+# Screenshots from scripts/e2e.mjs.
+test-results/

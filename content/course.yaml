@@ -1,0 +1,14 @@
+# The course: parts and lessons in order. This file is the one source of each lesson's title and
+# one-sentence summary for the course page. A lesson with a folder under content/lessons/ is
+# written; the rest show in the course as coming later. Lesson numbers follow the order here.
+
+parts:
+  - title: Blender basics
+    lessons:
+      - { slug: viewport-navigation, title: "Viewport navigation", summary: "Orbiting, panning and zooming the 3D Viewport, and snapping to the front, right and top." }
+      - { slug: move-rotate-scale, title: "Move, rotate and scale", summary: "Moving, turning and resizing objects by exact amounts, then applying their scale." }
+
+  - title: Modelling
+    lessons:
+      - { slug: edit-mode, title: "Edit Mode", summary: "Switching to Edit Mode and selecting vertices, edges and faces to change a mesh." }
+      - { slug: extrude, title: "Extrude", summary: "Pulling faces and edges out of a mesh to build new shapes from a cube." }

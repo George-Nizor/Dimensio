@@ -1,0 +1,12 @@
+# Example models. Each one is a .blend in desktop/public/reference/ with renders from the front,
+# right, top and a three-quarter view, made by our own Blender scripts. Only CC0 or public-domain
+# models: say where a model came from (source) or which script in this repository builds it (made).
+
+- id: stool
+  title: Four-legged stool
+  file: models/stool/stool.blend
+  renders: { persp: models/stool/persp.png, front: models/stool/front.png, right: models/stool/right.png, top: models/stool/top.png }
+  credit: Made for Dimensio with a Blender script
+  alt: A low stool with a square seat and four square legs. The front and back legs lean out a little.
+  made: desktop/scripts/sample-models.py
+  licence: CC0

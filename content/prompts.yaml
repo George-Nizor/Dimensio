@@ -1,0 +1,43 @@
+# Modelling prompts, for modelling something for its own sake. A prompt is a subject, often with a
+# twist and a limit: "a lantern, worn at the edges, under 500 triangles". Keep entries ordinary
+# things a low-poly game might need.
+
+subjects:
+  - a wooden crate
+  - a barrel
+  - a street lamp
+  - a park bench
+  - a treasure chest
+  - a mailbox
+  - a stone well
+  - a signpost
+  - a campfire
+  - a bookshelf
+  - a lantern
+  - a wheelbarrow
+  - a market stall
+  - a rowing boat
+  - a watering can
+  - a fence with a gate
+  - a mushroom house
+  - a sword on a stand
+  - a cooking pot
+  - a tree stump with an axe
+
+twists:
+  - worn at the edges
+  - made of stone
+  - with one part broken
+  - for a desert town
+  - painted in two colours
+  - tipped on its side
+  - covered in snow
+  - built from scrap
+
+limits:
+  - under 300 triangles
+  - under 500 triangles
+  - under 1000 triangles
+  - from cubes only
+  - with no n-gons
+  - with every scale applied
