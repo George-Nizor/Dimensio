@@ -22,7 +22,7 @@ test("the brand v2 cube is the canonical desktop identity", () => {
   assert.ok(ico.readUInt16LE(4) >= 6);
   assert.equal(packageJson.build.win.icon, "assets/icon.ico");
   assert.match(renderer, /import InstrumentaIcons from "\.\/brand\/instrumenta-icons\.js"/);
-  assert.match(renderer, /InstrumentaIcons\.render\("forge3d"/);
+  assert.match(renderer, /InstrumentaIcons\.render\("dimensio"/);
   assert.doesNotMatch(renderer, /forge3d-mark|brand-symbol|Codex-driven asset studio|class="brand-mark">F3/);
 });
 
@@ -109,7 +109,7 @@ test("themes: dark default on the family neutrals, a derived light, following th
   assert.match(styles, /--accent-deep: #7d331b/);
   assert.match(styles, /--accent-text: light-dark\(var\(--accent-deep\), var\(--accent\)\)/);
   assert.match(styles, /:root\[data-theme="light"\] \{ color-scheme: light; \}/);
-  assert.match(renderer, /forge3d\.theme/);
+  assert.match(renderer, /dimensio\.theme/);
   assert.match(renderer, /id="theme-toggle"/);
 });
 

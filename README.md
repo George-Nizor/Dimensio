@@ -1,196 +1,220 @@
-![Forge3D banner](docs/images/forge3d-banner.png)
+![Dimensio banner](docs/images/dimensio-banner.png)
 
-<p align="center"><img src="docs/brand/forge3d-animated.svg" alt="Forge3D cube" width="96" /></p>
+<p align="center"><img src="docs/brand/dimensio-animated.svg" alt="Dimensio cube" width="96" /></p>
 
-# Forge3D
+# Dimensio
 
-Prompt-driven 3D modelling on the Codex App Server.
+Dimensio is a Windows desktop app that teaches Blender. It holds a Blender course with exercises you
+do in Blender itself, measures the models you make, and keeps a record of them. Its Workshop builds
+a model from a prompt with an agent: Claude Code by default, or Codex. Version 0.4.0, Windows x64.
 
-Forge3D turns a prompt into a versioned local 3D run. The Windows desktop drives your own Codex App
-Server, calls the Forge3D skill, keeps the transcript, and previews the result. Blender, Godot, WSL,
-CUDA, and large models stay separate installations. Version 0.3.0, Windows x64.
+Dimensio was called Forge3D until October 2026. The Workshop is what Forge3D was.
 
-## Start here
+## Install
 
-The usual route is the Forge3D card in Instrumenta, which installs the managed bundle, checks its
-hash, keeps the previous version for rollback, and opens `Forge3D.exe`.
+Install Dimensio from its card in Instrumenta. Instrumenta downloads the release, checks its hash,
+keeps the previous version for rollback, and opens `Dimensio.exe`.
 
 From a source checkout:
 
 ```powershell
-.\scripts\setup.ps1 -InstallModels -InstallPersonalPlugin
-forge3d doctor --json
+.\scripts\setup.ps1 -InstallModels
+dimensio doctor --json
 cd desktop
 npm install
 npm start
 ```
 
-`setup.ps1` also takes `-DryRun`. Restart Codex after installing or repairing the personal plugin so
-it refreshes its skill list.
+`setup.ps1` also takes `-DryRun`, and `-InstallPersonalPlugin` to install the Dimensio plugin for
+Codex. Claude Code needs no install step: the Workshop hands it the plugin each run.
 
-## Requirements
+## What you need
 
-Blender 5.x, Godot 4.6, Python 3.11 or newer, Node.js 22 or newer (for the Godot MCP server), `uv`,
-and the Codex CLI. Godot is optional. The TripoSplat route also needs WSL2 Ubuntu with CUDA access
-and an NVIDIA GPU with about 8 GB of VRAM. `forge3d doctor` reports what is missing.
+- Blender 5.2 or later. The course is written for Blender 5.2 LTS, and Dimensio uses Blender to
+  measure your models and build exercise scenes.
+- For the Workshop, Claude Code installed and signed in, or Codex. Making a splat from words alone
+  needs Codex, because Claude Code cannot make the reference image; with Claude Code, attach one.
+- Python 3.11 or later and `uv` for the command-line tool, and Node.js 22 or later for the Godot MCP
+  server.
+- Godot 4.6, if you want to review assets in a game engine. It is optional.
+- For TripoSplat, WSL2 Ubuntu with CUDA and an NVIDIA GPU with about 8 GB of video memory.
 
-## Asset routes
+`dimensio doctor` reports what is missing.
 
-| Route | Good fit | Main output |
+## The course
+
+The course follows a learner from installing Blender to a rigged, animated character in Godot, in 16
+parts. Most parts end with a low-poly game asset built with that part's skills. Each lesson has its
+steps, diagrams, the teachers' videos and pages it draws on, and an exercise.
+
+The window has these places:
+
+- Home: where you left off, a review or warm-up, and a free prompt to model.
+- Course: every part and lesson, with "I already know this" on each lesson.
+- Practice: drills, warm-ups, timed exercises, copies of example models, fixes and projects.
+- Library: the teachers' videos and pages, and the example models.
+- Models: every `.blend` you added, with its renders and measurements, first and latest attempts
+  side by side.
+- Workshop: projects where an agent builds a model from a prompt.
+- Settings and Credits, from the header. Settings holds the Blender path and links to the
+  Workshop's agent setup.
+
+An exercise can open a starter scene in Blender. When you have ticked your own checks, Dimensio
+measures your model in Blender (triangles, n-gons, non-manifold edges, applied scale, dimensions and
+more) and shows the facts and renders, never a score.
+
+The course content lives in `content/` as Markdown and YAML a person can read.
+`docs/course/PLAN.md` is the plan the course is built to, and `docs/course/WRITING.md` sets how
+every word in it is written.
+
+## The Workshop
+
+The Workshop opens on its start screen: New project, Open project, your recent projects, and any
+untitled work a crash left behind. The File menu has New (`Ctrl+N`), Open (`Ctrl+O`), the
+recent list, Save (`Ctrl+S`), Save as (`Ctrl+Shift+S`), Show project folder and Close project. The
+window title carries the project name, with `●` while it has unsaved changes. Tick "Reopen the last
+project when Dimensio starts" to skip the start screen. A `.dimensio` path on the command line opens
+that project.
+
+Inside a project you describe a model in the prompt bar, attach pictures or models, and press Run.
+The viewport shows the result, with orbit, pan, framing, shading, capture and fullscreen tools on the
+left. The run history and a Steps, Files, Checks and Logs inspector are on the right, and a Plan,
+Build, Check and Output dock with the run's files runs along the bottom. The status bar shows
+whether the agent and the tools are ready; click it to open the setup card, where you choose the
+agent.
+
+One run happens at a time. You can steer it or stop it, and its transcript and steps are written to
+disk as it goes. A stopped or interrupted run stays in the list and can be continued.
+
+The agent works only inside the run's folder. Claude Code runs with an allowlist (the `dimensio`
+command, the Blender and Godot MCP tools, reading files and writing inside the run folder) and
+nothing waits for a person to approve. With Codex, contained local commands and local Blender or
+Godot tool calls are approved automatically, and anything else asks. Nothing goes to a cloud
+provider.
+
+There are two routes for a model:
+
+| Route | Good for | Output |
 | --- | --- | --- |
-| Authored Blender | Editable props, buildings, rigs, animation, collision, LODs | `.blend` source and a validated `.glb` |
-| TripoSplat | Static props where the reference image matters more than mesh editing | Gaussian `.splat` or `.ply` data with a collision proxy |
+| Authored Blender | Editable props, buildings, rigs, animation, collision, levels of detail | A `.blend` source and a checked `.glb` |
+| TripoSplat | Static props where the picture matters more than editing the mesh | Gaussian `.splat` or `.ply` data with a collision proxy |
 
-The Blender route makes conventional geometry. TripoSplat makes a Gaussian visual asset whose unseen
-surfaces are inferred from one image. A splat is not a polygon mesh, and renaming the file will not
-persuade Blender otherwise. Model weights are not committed or bundled.
+A splat is not a polygon mesh. Its hidden sides are guessed from one picture. A good source picture
+has one whole subject, a little margin, soft light and nothing in front of it.
 
-Example prompts:
-
-> Build an industrial generator in Blender. Keep the `.blend`, add collision and two LODs, export a
-> GLB, then validate the import in Godot.
-
-> Turn this isolated prop image into a TripoSplat asset. Add a simple collision proxy and verify the
-> splat in the interactive preview.
-
-A good source image has one complete subject, a little margin, diffuse light, and nothing in front of
-it. Check `prepared-input.webp` before blaming the model for a crop it was given.
-
-## The desktop
-
-Forge3D opens on a start screen: **New project**, **Open project…**, your recent projects, and any
-untitled work a crash left behind. The **File** menu beside the name has New (Ctrl+N), Open (Ctrl+O),
-the recent list, Save (Ctrl+S), Save as (Ctrl+Shift+S), Show project folder and Close project. The
-window title carries the project name, with `●` while it has unsaved changes, and closing, opening
-or starting another project asks whether to save first. Tick "Reopen the last project when Forge3D
-starts" on the start screen to skip it; passing a `.forge3d` path on the command line opens that
-project directly.
-
-Inside a project it is a viewport-first workstation: prompt, attachments, run settings and Run in the top bar; a full-bleed
-viewport with orbit, pan, framing, shading, capture and fullscreen tools on the left; run history and
-a Steps / Files / Checks / Logs inspector on the right; a Plan, Build, Check, Output dock with a
-filmstrip of artifacts at the bottom; one status bar for Codex and tool readiness.
-
-One job runs at a time. You can steer or cancel it, and the streamed transcript and workflow state
-are written to disk as it goes. Interrupted jobs stay in the library with their Codex thread IDs for
-an explicit continuation.
-
-Contained local commands, run-file edits and local Blender or Godot tool calls are approved
-automatically for the session. Network requests, writes outside the run directory and remote provider
-actions still ask. The desktop is local-only: it does not use cloud providers.
-
-Previews by type:
-
-- PNG, JPEG, WebP and GIF render directly; ordered image folders play as 12 fps sequences.
-- GLB and glTF use Three.js with animation playback and automatic framing.
-- SPLAT, SOG and Gaussian PLY use SparkJS, so a splat can be orbited and inspected in place.
-- Validation JSON, text and logs render in the inspector. Unsupported files show metadata and keep
-  their Reveal and Open actions.
-
-Per-file actions: reveal, open, open in Blender, review in Godot, copy path, and export to another
-format through headless Blender. Per-run actions: duplicate, archive, and trash to the Recycle Bin.
-Paths are checked against the run root first.
+Each file in a run can be revealed, opened, opened in Blender, reviewed in Godot, copied as a path,
+or exported to another format through Blender. Pictures, image sequences, GLB and glTF models and
+splats preview in the viewport. Validation reports, text and logs show in the inspector.
 
 ## Projects, runs and files
 
-A project is a folder with one manifest and its runs:
+A Workshop project is a folder with one project file and its runs:
 
 ```text
-%USERPROFILE%\Documents\Forge3D\Projects\Bottle\     (the default location; any folder works)
-  Bottle.forge3d                                     project manifest: id, run settings, last selection
-  runs\<timestamp>-<slug>-<id>\                     one self-contained folder per job
+%USERPROFILE%\Documents\Dimensio\Projects\Bottle\   (the default place; any folder works)
+  Bottle.dimensio                                  the project file: id, run settings, last selection
+  runs\<timestamp>-<slug>-<id>\                    one folder per run
 ```
 
-Runs are written as they happen, so a Save only has the project's own state to write: its run
-settings and where you left off. A new project is untitled, and its runs are kept under
-`%LOCALAPPDATA%\Instrumenta\Forge3D\untitled` until the first Save moves them into the chosen
-folder. Discarding an untitled project sends that folder to the Recycle Bin. Save as on a saved
-project copies it, runs and all, and leaves the original where it was.
+Runs are written as they happen, so Save only writes the project's run settings and where you left
+off. A new project is untitled, and its runs wait in `%LOCALAPPDATA%\Instrumenta\Dimensio\untitled`
+until the first Save moves them. Discarding an untitled project sends that folder to the Recycle
+Bin. Save as copies a saved project, runs and all.
 
-Runs made before projects existed (`Documents\Forge3D\runs`) became a
-project called **Earlier runs** the first time this version started. A manifest was added beside
-the folder and nothing was moved. It shows in the recent list.
+`run.json` in each run records the prompt, route, settings, steps, files, validation, times, the
+transcript and the agent's session. Dimensio never overwrites a file a run made: each version gets a
+new folder.
 
-Attachments are copied in before Codex starts. `run.json` records the prompt, route, settings,
-steps, relative artifacts, validation, timestamps, transcript, and Codex thread and turn IDs. New
-runs use schema v2; v1 stays readable. Forge3D never overwrites an existing asset output, so each
-version gets a new folder.
+The course keeps its starter scenes and copies of example models in `Documents\Dimensio\Course`.
+Settings, logs and caches live in `%LOCALAPPDATA%\Instrumenta\Dimensio` and `%APPDATA%\Dimensio`.
 
-Review assets, logs, configuration and caches live in `%LOCALAPPDATA%\Instrumenta\Forge3D`.
+### Coming from Forge3D
+
+The first time Dimensio starts, it copies Forge3D's agent choice and recent projects from
+`%LOCALAPPDATA%\Instrumenta\Forge3D\config`, and the course's Blender path from `%APPDATA%\Forge3D`.
+Forge3D's run library, `Documents\Forge3D\runs`, opens as a project called Earlier runs.
+`.forge3d` projects open as they are and stay `.forge3d` when you save them; Save as makes a
+`.dimensio` copy. `FORGE3D_*` environment variables still work when the `DIMENSIO_*` ones are not
+set, and models Forge3D installed in WSL are used where they are. Nothing of Forge3D's is moved or
+deleted.
 
 ## Command line
 
-The desktop is the normal interface. The CLI is for diagnostics and repeatable jobs:
+The app is the usual way in. The `dimensio` command is for checks and repeatable jobs, and it is
+what the Workshop's agent runs:
 
 ```powershell
-forge3d doctor
-forge3d models list
-forge3d models status
-forge3d process --help
-forge3d rig --help
-forge3d animate --help
-forge3d retarget --help
-forge3d humanoid-retarget --help
-forge3d validate --help
+dimensio doctor
+dimensio capabilities --json
+dimensio models list
+dimensio models status
+dimensio process --help
+dimensio rig --help
+dimensio animate --help
+dimensio retarget --help
+dimensio humanoid-retarget --help
+dimensio validate --help
 ```
 
 A local TripoSplat run:
 
 ```powershell
-forge3d models run triposplat C:\path\to\reference.png `
+dimensio models run triposplat C:\path\to\reference.png `
   --output-dir C:\path\to\output\prop-splat-v001 `
   --gaussians 262144
 ```
 
-For interactive scene review, start Blender with its MCP bridge:
+To review a scene with an agent, start Blender with its MCP bridge:
 
 ```powershell
 .\scripts\start-blender-mcp.ps1
 .\scripts\start-blender-mcp.ps1 -BlendFile C:\path\to\asset-v001.blend
 ```
 
-The CLI also has an opt-in Tripo cloud fallback (`forge3d models cloud-run`). It uploads nothing
-without `--approve-upload` for that job, and provider charges stay visible.
+The command line also has a Tripo cloud option (`dimensio models cloud-run`). It uploads nothing
+without `--approve-upload` for that job. The app never uses it.
 
 ## Repository map
 
 ```text
-blender/       reviewed Blender tasks and asset builders
-desktop/       Electron client, previews, tests, and Windows package
-docs/          architecture, schema, brand, release, and workflow notes
+blender/       Blender tasks: measuring, starter scenes, asset builders
+content/       the course: lessons, practice, resources, example models
+desktop/       the Electron app: the course app, the Workshop, tests and the Windows package
+docs/          the course plan, architecture, schema, brand and release notes
 godot/         GLB and Gaussian review project
-plugins/       Forge3D Codex plugin and skill
-scripts/       setup, packaging, launchers, and WSL workers
-src/forge3d/   dependency-light host CLI
-tests/         Python integration and policy tests
+plugins/       the Dimensio plugin and skill for Claude Code and Codex
+scripts/       setup, packaging, launchers and WSL workers
+src/dimensio/  the command-line tool
+tests/         Python tests
 ```
 
 Further reading:
 
-- [Desktop process, security, approvals, and preview routing](docs/desktop-architecture.md)
+- [The course plan](docs/course/PLAN.md) and [how it is written](docs/course/WRITING.md)
+- [Desktop process, security, approvals and preview routing](docs/desktop-architecture.md)
+- [Capability report](docs/capabilities.md)
 - [Run schema and crash recovery](docs/run-schema-v2.md)
 - [Humanoid retarget workflow](docs/humanoid-retarget.md)
 - [Windows packaging and troubleshooting](docs/releasing.md)
 - [Brand identity](docs/brand-identity.md) and [brand v2 alignment](docs/brand/README.md)
-- [Publication audit](docs/publication-audit.md)
 
-## Verify a change
+## Checking a change
 
 ```powershell
 uv run --with pytest pytest -q
 npm --prefix desktop test
+npm --prefix desktop run lint:copy
 npm --prefix desktop run build
 .\blender\tests\smoke.ps1
 ```
 
-The Blender and Godot headless checks need those applications installed. Game-facing assets should
-finish with an engine import and runtime review.
+The Blender and Godot checks need those applications installed.
 
 ## Licence
 
-Forge3D is MIT licensed. Bundled integrations keep their own notices, listed in
-[`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md); other providers' licences and limits are in
-`forge3d models info <name>`.
+Dimensio is MIT licensed. Bundled integrations keep their own notices, listed in
+[`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md). Other providers' licences and limits are in
+`dimensio models info <name>`.
 
 ---
 

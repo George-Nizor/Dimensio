@@ -124,9 +124,9 @@ func _build_controller_splat() -> void:
 	splat_node.add_child(collision_proxy)
 
 	var dimensions := bounds.size * scale_factor
-	set_meta("forge3d_splat_points", point_count)
-	set_meta("forge3d_dimensions_m", dimensions)
-	set_meta("forge3d_collision", "BoxShape3D")
+	set_meta("dimensio_splat_points", point_count)
+	set_meta("dimensio_dimensions_m", dimensions)
+	set_meta("dimensio_collision", "BoxShape3D")
 
 
 func _build_overlay() -> void:
@@ -151,8 +151,8 @@ func _build_overlay() -> void:
 	text.name = "Status"
 	text.add_theme_color_override("font_color", Color("d8f4f4"))
 	text.add_theme_font_size_override("font_size", 16)
-	var points := int(get_meta("forge3d_splat_points", 0))
-	var dimensions: Vector3 = get_meta("forge3d_dimensions_m", Vector3.ZERO)
+	var points := int(get_meta("dimensio_splat_points", 0))
+	var dimensions: Vector3 = get_meta("dimensio_dimensions_m", Vector3.ZERO)
 	text.text = "TRIPOSPLAT → GODOT\n%s Gaussians  •  %s × %s × %s m\nDrag: orbit   Wheel: zoom   C: collision proxy" % [
 		str(points), str(snappedf(dimensions.x, 0.001)), str(snappedf(dimensions.y, 0.001)), str(snappedf(dimensions.z, 0.001))
 	]

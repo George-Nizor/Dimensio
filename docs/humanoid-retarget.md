@@ -1,11 +1,11 @@
 # Humanoid retarget proof workflow
 
-`forge3d humanoid-retarget` productizes the approval-gated workflow for moving a tested human animation onto a stylized, chibi, rigid-piece, or pixel-rendered humanoid.
+`dimensio humanoid-retarget` productizes the approval-gated workflow for moving a tested human animation onto a stylized, chibi, rigid-piece, or pixel-rendered humanoid.
 
 ## Command
 
 ```powershell
-forge3d humanoid-retarget `
+dimensio humanoid-retarget `
   C:\absolute\target-tpose.blend `
   C:\absolute\human-control.glb `
   --profile C:\absolute\humanoid-profile.json `
@@ -27,13 +27,13 @@ Use `--no-review` only for automation where review images are produced elsewhere
 
 The task transfers each source bone's evaluated global **rest-relative delta** onto the target bone's own rest orientation by default. This keeps target axial twist, including its head/visor forward convention. A profile may list anatomically aligned body or limb bones under `absolute_orientation_bones` when they must reproduce the human control's exact global joint angles. Child bone heads remain attached to their target parent joints. Optional translation scales transfer controlled pelvis bob without copying incompatible source proportions.
 
-The source animation is imported at `source_fps` before its `source_frames` are sampled. Forge3D changes to `output_fps` only after the source motion is captured, avoiding Blender's import-time action rescaling trap.
+The source animation is imported at `source_fps` before its `source_frames` are sampled. Dimensio changes to `output_fps` only after the source motion is captured, avoiding Blender's import-time action rescaling trap.
 
 ## Profile contract
 
 Start from [`blender/profiles/segmented-humanoid-walk.example.json`](../blender/profiles/segmented-humanoid-walk.example.json). Required fields are:
 
-- `schema`: `forge3d.humanoid-retarget-profile.v1`;
+- `schema`: `dimensio.humanoid-retarget-profile.v1` (profiles written for Forge3D, with `forge3d.humanoid-retarget-profile.v1`, are still read);
 - `source_armature` and `target_armature`;
 - `source_to_target`: one-to-one bone map.
 

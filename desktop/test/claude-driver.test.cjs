@@ -21,13 +21,15 @@ const {
 } = require("../src/lib/agents/claude.cjs");
 const { interpretLine, toolItem } = require("../src/lib/agents/stream-json.cjs");
 
+// Sessions recorded from Claude Code 2.1.299. They were recorded when the app was called Forge3D, so the plugin,
+// skill and commands in them say forge3d; the tests that replay them expect what was recorded.
 const FIXTURES = path.join(__dirname, "fixtures", "claude");
 const FAKE = path.join(__dirname, "fixtures", "fake-claude.cjs");
 const fixture = (name) => JSON.parse(fs.readFileSync(path.join(FIXTURES, name), "utf8"));
 const emitted = (name) => fixture(name).steps.filter((step) => step.emit).map((step) => JSON.stringify(step.emit));
 
 function workspace() {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), "forge3d-claude-"));
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "dimensio-claude-"));
   const run = path.join(root, "run");
   fs.mkdirSync(run);
   return { root, run, log: path.join(root, "fake.log") };
@@ -88,8 +90,8 @@ test("a refused command is a permission_denied event and an is_error tool result
 });
 
 test("tool calls map onto the step vocabulary the run view draws", () => {
-  assert.deepEqual(toolItem("Bash", { command: "forge3d --version" }, "t1"), { id: "t1", name: "Bash", type: "commandExecution", command: "forge3d --version" });
-  assert.deepEqual(toolItem("PowerShell", { command: "forge3d make x" }, "t2").type, "commandExecution");
+  assert.deepEqual(toolItem("Bash", { command: "dimensio --version" }, "t1"), { id: "t1", name: "Bash", type: "commandExecution", command: "dimensio --version" });
+  assert.deepEqual(toolItem("PowerShell", { command: "dimensio make x" }, "t2").type, "commandExecution");
   assert.deepEqual(toolItem("mcp__blender__get_scene_info", {}, "t3"), { id: "t3", name: "mcp__blender__get_scene_info", type: "mcpToolCall", server: "blender", tool: "get_scene_info" });
   assert.deepEqual(toolItem("Write", { file_path: "/run/a.py" }, "t4").changes, [{ path: "/run/a.py" }]);
   assert.equal(toolItem("Read", { file_path: "x" }, "t5").type, "agentTool");
@@ -144,22 +146,22 @@ test("sign-in is read from claude auth status: loggedIn and the exit code", () =
 /* ── the command line ─────────────────────────────────────────── */
 
 test("the command line uses only flags Claude Code 2.1.299 accepts, with no permission prompts", () => {
-  const args = buildClaudeArgs({ model: "opus", effort: "medium", mcpConfigFile: "/s/claude-mcp.json", pluginDir: "/app/forge3d-plugin", runDir: "/p/runs/r1", sessionId: "s-1", platform: "linux" });
+  const args = buildClaudeArgs({ model: "opus", effort: "medium", mcpConfigFile: "/s/claude-mcp.json", pluginDir: "/app/dimensio-plugin", runDir: "/p/runs/r1", sessionId: "s-1", platform: "linux" });
   const value = (flag) => args[args.indexOf(flag) + 1];
   assert.deepEqual(args.slice(0, 6), ["-p", "--input-format", "stream-json", "--output-format", "stream-json", "--verbose"]);
   assert.ok(args.includes("--replay-user-messages"));
   assert.ok(args.includes("--restricted"));
   assert.ok(args.includes("--strict-mcp-config"));
   assert.equal(value("--mcp-config"), "/s/claude-mcp.json");
-  assert.equal(value("--plugin-dir"), "/app/forge3d-plugin");
+  assert.equal(value("--plugin-dir"), "/app/dimensio-plugin");
   assert.equal(value("--permission-mode"), "dontAsk");
   assert.equal(value("--permission-prompts"), "none");
   assert.equal(value("--model"), "opus");
   assert.equal(value("--effort"), "medium");
   assert.equal(value("--session-id"), "s-1");
   assert.equal(value("--tools"), "Bash,Read,Edit,Write,Glob,Grep,Skill");
-  assert.deepEqual(args.filter((_, index) => args[index - 1] === "--add-dir"), ["/p/runs/r1", "/app/forge3d-plugin"]);
-  assert.equal(value("--allowedTools"), "Bash(forge3d *),mcp__blender,mcp__godot,Read,Glob,Grep,Edit(//p/runs/r1/**),Skill(forge3d:forge3d)");
+  assert.deepEqual(args.filter((_, index) => args[index - 1] === "--add-dir"), ["/p/runs/r1", "/app/dimensio-plugin"]);
+  assert.equal(value("--allowedTools"), "Bash(dimensio *),mcp__blender,mcp__godot,Read,Glob,Grep,Edit(//p/runs/r1/**),Skill(dimensio:dimensio)");
   assert.doesNotMatch(args.join(" "), /dangerously|bypassPermissions/);
   const resumed = buildClaudeArgs({ model: "sonnet", effort: "high", mcpConfigFile: "m", pluginDir: "p", runDir: "/r", sessionId: "s-1", resume: "s-0", platform: "linux" });
   assert.equal(resumed[resumed.indexOf("--resume") + 1], "s-0");
@@ -167,11 +169,11 @@ test("the command line uses only flags Claude Code 2.1.299 accepts, with no perm
 });
 
 test("on Windows the allowlist covers PowerShell too and writes are scoped to the run folder", () => {
-  const rules = allowedTools({ runDir: "C:\\Users\\Ann\\Documents\\Forge3D\\Projects\\My bottle\\runs\\r1", platform: "win32" });
-  assert.ok(rules.includes("Bash(forge3d *)"));
-  assert.ok(rules.includes("PowerShell(forge3d *)"));
-  assert.ok(rules.includes("PowerShell(forge3d.exe *)"));
-  assert.ok(rules.includes("Edit(//c/Users/Ann/Documents/Forge3D/Projects/My bottle/runs/r1/**)"));
+  const rules = allowedTools({ runDir: "C:\\Users\\Ann\\Documents\\Dimensio\\Projects\\My bottle\\runs\\r1", platform: "win32" });
+  assert.ok(rules.includes("Bash(dimensio *)"));
+  assert.ok(rules.includes("PowerShell(dimensio *)"));
+  assert.ok(rules.includes("PowerShell(dimensio.exe *)"));
+  assert.ok(rules.includes("Edit(//c/Users/Ann/Documents/Dimensio/Projects/My bottle/runs/r1/**)"));
   assert.equal(permissionPath("/home/ann/run/", "linux"), "//home/ann/run/**");
   const args = buildClaudeArgs({ model: "opus", effort: "low", mcpConfigFile: "m", pluginDir: "p", runDir: "C:\\r", sessionId: "s", platform: "win32" });
   assert.equal(args[args.indexOf("--tools") + 1], "Bash,PowerShell,Read,Edit,Write,Glob,Grep,Skill");

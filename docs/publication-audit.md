@@ -1,6 +1,8 @@
 # Forge3D publication audit
 
-Audit updated: 2026-08-21.
+Audit updated: 2026-08-21. This is a record from when Dimensio was called Forge3D, and the repository,
+release and file names in it are Forge3D's. The current release checklist is in
+[releasing.md](releasing.md).
 
 This audit established the public 0.2.0 source and release baseline. The current source and desktop
 version is 0.2.2. A future public 0.2.2 artifact needs its own clean build and release verification;

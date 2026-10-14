@@ -1,15 +1,16 @@
-# Forge3D brand identity
+# Dimensio brand identity
 
 ## Brand v2 cube
 
-Forge3D's mark is the cube from the Instrumenta brand v2 icon family: a freestanding object with
+Dimensio's mark is the cube from the Instrumenta brand v2 icon family: a freestanding object with
 depth (flat drawing, dark ink outline, deep-shaded extrusion down and to the right), ember
-`#EE7752`. It replaces the Topology Loop (the earlier "approved Logo A"), which was retired on
+`#EE7752`. It is Forge3D's cube, unchanged: when Forge3D became Dimensio on 2026-10-15 only the name
+changed. The cube replaced the Topology Loop (the earlier "approved Logo A"), which was retired on
 2026-10-06 when the whole suite moved to brand v2. See `docs/brand/README.md` for what was copied
 from Instrumenta and what is deliberately kept.
 
 The icon is drawn by `desktop/src/renderer/brand/instrumenta-icons.js`; never edit the copied
-files, regenerate them in Instrumenta and copy again. The cube's lid lifts on hover and when a job
+files, regenerate them in Instrumenta and copy again. The cube's lid lifts on hover and when a run
 starts, and `prefers-reduced-motion` stops it.
 
 ## Colour, themes and type
@@ -27,20 +28,20 @@ versions, sizes and IDs. All three are SIL OFL 1.1, vendored under
 
 ## Icons
 
-Interface icons are Forge3D's own brand-v2 set (`desktop/src/renderer/brand-icons/`): flat objects
+The Workshop's interface icons are its own brand-v2 set (`desktop/src/renderer/brand-icons/`): flat objects
 with an ink outline and a stepped extrusion, drawn at 16, 24 and 48 tiers, with meaning hues (ember
 default, green done, rose stop/failed/trash, gold alert, teal hand-offs, stone at rest). A few
 motion moments (hammer on Run, anvil while building, tick pop, lid lift, shake) stop under reduced
 motion. The sun, moon and monitor of the theme toggle and eight small utilities stay plain lines.
 `docs/brand/README.md` has the details.
 
-## Interface expression — approved UI B
+## The Workshop's layout: approved UI B
 
-Forge3D follows the **viewport-first workstation** composition captured in
-the approved alignment reference
+The Workshop follows the **viewport-first workstation** composition captured in the approved
+alignment reference, made when it was Forge3D
 (`Instrumenta/docs/design-references/forge3d-ui-claude-alignment-reference.png`):
 
-- One application bar holding the Forge3D wordmark, a wide prompt omnibox, Attach, run settings,
+- One application bar holding the Dimensio wordmark, a wide prompt omnibox, Attach, run settings,
   and a single ember Run action. On Windows the native caption is hidden and the system window
   controls are drawn over the reserved inset at the right of that bar.
 - A full-bleed viewport underneath it. With no output it shows a studio backdrop with a receding
@@ -51,7 +52,7 @@ the approved alignment reference
   inspector. Both collapse to vertical edge tabs so the viewport can run edge to edge.
 - A production dock across the bottom: the Plan, Build, Check, Output pipeline derived from real
   run state, and a filmstrip of the run's outputs.
-- One status bar for toolchain, Codex, Blender, Godot, and WSL readiness.
+- One status bar for toolchain, agent, Blender, Godot, and WSL readiness.
 - Opaque objects with an ink outline and a hard extrusion, sentence-case labels, and ember
   reserved for the primary action, the active tool, and the running stage. No dashboard
   cards, numbered stages, marketing subtitle, or explanatory copy beneath every control.

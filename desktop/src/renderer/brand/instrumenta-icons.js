@@ -23,7 +23,9 @@
     { id: 'discere', name: 'Discere', hue: 258 },
     { id: 'learnchess', name: 'LearnChess', hue: 150 },
     { id: 'luna', name: 'Luna', hue: 235, chroma: 0.07 },
-    { id: 'forge3d', name: 'Forge3D', hue: 38 },
+    { id: 'dimensio', name: 'Dimensio', hue: 38 },
+    // Chartreuse: the hue furthest from every other accent, midway between brass and green.
+    { id: 'delineare', name: 'Delineare', hue: 112 },
   ];
 
   function oklchToHex(L, C, h) {
@@ -58,19 +60,36 @@
   // ---- Glyphs -------------------------------------------------------------------------------
   // A 48-unit grid. Class tokens say what each shape is, not how it looks:
   //   f / f2   fill areas (accent / light)       s      line (ink), solid  filled in ink
-  //   k0..k6   filled in another product's colour, in catalogue order after Instrumenta
+  //   s2       a light core drawn inside an ink line, so a bar reads on a dark ground
+  //   k0..k9   filled in another product's colour, in catalogue order after Instrumenta
   //   thin     a lighter line                    dt     detail, dropped at 16 and 24 px
   //   flat     casts no depth (floats in front)
   //   m-*      a moving part                     w0..w9 its delay, in tenths of a second
   const SUITE = PRODUCTS.slice(1);
-  const organX = [...Array(7)].map((_, i) => 4.6 + i * 5.6);
-  const organH = [13, 18, 23, 28, 23, 18, 13];
+  // One pipe per product, spread across the 42-unit chest and rising to the middle. Seven pipes
+  // keep the original spacing; more pipes get narrower so the organ keeps its width.
+  const organPipes = SUITE.length;
+  const organW = Math.min(4.6, (39.2 - (organPipes - 1) * 0.9) / organPipes);
+  const organStep = organPipes === 7 ? 5.6 : organW + 0.9;
+  const organX = [...Array(organPipes)].map((_, i) => +(3 + (42 - (organPipes - 1) * organStep - organW) / 2 + i * organStep).toFixed(2));
+  const organH = [...Array(organPipes)].map((_, i) => {
+    const middle = (organPipes - 1) / 2;
+    return +(28 - (Math.abs(i - middle) / Math.max(middle, 1)) * 15).toFixed(1);
+  });
+  // A pencil in local coordinates: tip at the origin pointing left, body along +x, 10 units thick.
+  const pencil = '<path class="f2" d="M0 0L9 -5L9 5Z"/><path class="s" d="M0 0L9 -5L9 5Z"/>'
+    + '<path class="solid" d="M0 0L3.4 -1.9L3.4 1.9Z"/>'
+    + '<rect class="f" x="9" y="-5" width="20" height="10"/><rect class="f2" x="9" y="-5" width="20" height="3.1"/>'
+    + '<rect class="s" x="9" y="-5" width="20" height="10"/><path class="s thin dt" d="M9 1.7H29"/>'
+    + '<rect class="f2" x="29" y="-5" width="4.6" height="10"/><rect class="s" x="29" y="-5" width="4.6" height="10"/>'
+    + '<path class="s thin dt" d="M31.3 -5V5"/>'
+    + '<rect class="f" x="33.6" y="-4.5" width="5.2" height="9" rx="3"/><rect class="s" x="33.6" y="-4.5" width="5.2" height="9" rx="3"/>';
 
   const GLYPHS = {
-    instrumenta: organX.map((x, i) => `<g class="m-pipe w${Math.abs(i - 3) * 1}">`
-      + `<rect class="k${i}" x="${x}" y="${33 - organH[i]}" width="4.6" height="${organH[i]}" rx=".8"/>`
-      + `<rect class="s thin" x="${x}" y="${33 - organH[i]}" width="4.6" height="${organH[i]}" rx=".8"/>`
-      + `<path class="s thin dt" d="M${(x + 1.3).toFixed(1)} 29.5h2"/></g>`).join('')
+    instrumenta: organX.map((x, i) => `<g class="m-pipe w${Math.min(9, Math.round(Math.abs(i - (organPipes - 1) / 2)))}">`
+      + `<rect class="k${i}" x="${x}" y="${(33 - organH[i]).toFixed(1)}" width="${organW.toFixed(2)}" height="${organH[i]}" rx=".8"/>`
+      + `<rect class="s thin" x="${x}" y="${(33 - organH[i]).toFixed(1)}" width="${organW.toFixed(2)}" height="${organH[i]}" rx=".8"/>`
+      + `<path class="s thin dt" d="M${(x + organW / 2 - 1).toFixed(1)} 29.5h2"/></g>`).join('')
       + '<rect class="f" x="3" y="33" width="42" height="9" rx="1.5"/><rect class="s" x="3" y="33" width="42" height="9" rx="1.5"/>'
       + '<path class="s dt" d="M8 37.5H40"/>',
     fabula: '<rect class="f" x="7" y="19" width="34" height="23" rx="2"/><rect class="s" x="7" y="19" width="34" height="23" rx="2"/>'
@@ -93,10 +112,14 @@
       + '<path class="s" d="M13 41H35V36.5H31.5L29.5 22H32.5V10H27.5V14.5H25.5V10H22.5V14.5H20.5V10H15.5V22H18.5L16.5 36.5H13Z"/>'
       + '<path class="s dt" d="M18.5 22H29.5"/></g>',
     luna: '<path class="f" d="M26 6A17.5 17.5 0 1 0 39 35A14.5 14.5 0 0 1 26 6Z"/><path class="s" d="M26 6A17.5 17.5 0 1 0 39 35A14.5 14.5 0 0 1 26 6Z"/>'
-      + '<path class="s m-bar" d="M33.5 19V28"/><path class="s m-bar w2" d="M38.5 15V32"/><path class="s m-bar w4" d="M43.5 19.5V27.5"/>',
-    forge3d: '<g class="m-forge"><path class="f2" d="M24 7L39 15.5L24 24L9 15.5Z"/><path class="s" d="M24 7L39 15.5L24 24L9 15.5Z"/></g>'
+      + '<path class="s m-bar" d="M33.5 19V28"/><path class="s m-bar w2" d="M38.5 15V32"/><path class="s m-bar w4" d="M43.5 19.5V27.5"/>'
+      + '<path class="s2 flat m-bar" d="M33.5 19V28"/><path class="s2 flat m-bar w2" d="M38.5 15V32"/><path class="s2 flat m-bar w4" d="M43.5 19.5V27.5"/>',
+    dimensio: '<g class="m-forge"><path class="f2" d="M24 7L39 15.5L24 24L9 15.5Z"/><path class="s" d="M24 7L39 15.5L24 24L9 15.5Z"/></g>'
       + '<path class="f" d="M9 19V32L24 41V27.5Z"/><path class="f2" d="M39 19V32L24 41V27.5Z"/>'
       + '<path class="s" d="M9 19V32L24 41L39 32V19M24 27.5V41M9 19L24 27.5L39 19"/>',
+    // A pencil that has just drawn a line; the line has a light core so it reads on dark.
+    delineare: '<path class="s flat m-draw" d="M3 44.5C6 38 10.5 45 14.6 38.4"/><path class="s2 flat m-draw" d="M3 44.5C6 38 10.5 45 14.6 38.4"/>'
+      + `<g class="m-sweep"><g transform="translate(15 38) rotate(-45)">${pencil}</g></g>`,
   };
 
   // Simplification by size: fewer depth layers, heavier lines, details dropped.
@@ -144,6 +167,7 @@
       if (t.includes('f')) return ` fill="${col.accent}"`;
       if (t.includes('f2')) return ` fill="${col.light}"`;
       if (t.includes('solid')) return ` fill="${col.ink}"`;
+      if (t.includes('s2')) return ` fill="none" stroke="${col.light}" stroke-width="${(tier.line * 0.45).toFixed(2)}"${round}`;
       if (t.includes('s')) return ` fill="none" stroke="${col.ink}" stroke-width="${t.includes('thin') ? tier.thin : tier.line}"${round}`;
       return '';
     });

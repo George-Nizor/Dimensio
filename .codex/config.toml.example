@@ -16,10 +16,10 @@ UV_PYTHON_PREFERENCE = "only-managed"
 [mcp_servers.godot]
 command = 'C:\Windows\System32\cmd.exe'
 args = ["/c", "npx", "-y", "@npgamedev/godot-mcp-server@1.0.0"]
-cwd = '<FORGE3D_GODOT_PROJECT>'
+cwd = '<DIMENSIO_GODOT_PROJECT>'
 startup_timeout_sec = 120
 tool_timeout_sec = 240
 
 [mcp_servers.godot.env]
 GODOT_MCP_CONFIG_VERSION = "1"
-GODOT_MCP_PROJECT_PATH = '<FORGE3D_GODOT_PROJECT>'
+GODOT_MCP_PROJECT_PATH = '<DIMENSIO_GODOT_PROJECT>'

@@ -1,4 +1,4 @@
-/* Forge3D, brand v2 shell.
+/* The Workshop, brand v2 shell.
    Composition follows the approved UI B (docs/brand-identity.md): a full-bleed viewport, an omnibox bar, a tool rail,
    floating panels, a production pipeline dock and one status bar. The material is Instrumenta's: opaque objects with an
    ink outline and a hard extrusion down and to the right, flat fills, sentence-case Commissioner, Fraunces for moments.
@@ -28,7 +28,7 @@
   --fam-text: #f2ede6;
   --fam-muted: #a39a90;
 
-  /* Brand v2 forge3d block (brand/tokens.json): accent, tint, deep, ink. */
+  /* Brand v2 dimensio block (brand/tokens.json): accent, tint, deep, ink. */
   --accent: #ee7752;
   --accent-tint: #ffbda6;
   --accent-deep: #7d331b;

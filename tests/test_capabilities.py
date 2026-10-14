@@ -6,10 +6,10 @@ from pathlib import Path
 
 import pytest
 
-from forge3d import capabilities as caps
-from forge3d.cli import main
-from forge3d.errors import CommandError
-from forge3d.process import CommandResult
+from dimensio import capabilities as caps
+from dimensio.cli import main
+from dimensio.errors import CommandError
+from dimensio.process import CommandResult
 
 
 class FakeRunner:
@@ -149,10 +149,10 @@ def test_a_splat_from_words_alone_needs_codex_and_says_so():
 
 
 def test_the_agent_comes_from_the_flag_then_the_environment():
-    env = full_windows_env(environ={"APPDATA": "C:/A", "USERPROFILE": "C:/Users/u", "FORGE3D_AGENT": "codex"})
+    env = full_windows_env(environ={"APPDATA": "C:/A", "USERPROFILE": "C:/Users/u", "DIMENSIO_AGENT": "codex"})
     assert caps.collect(env)["agent"]["id"] == "codex"
     assert caps.collect(env, agent="claude")["agent"]["id"] == "claude"
-    odd = full_windows_env(environ={"USERPROFILE": "C:/Users/u", "FORGE3D_AGENT": "gemini"})
+    odd = full_windows_env(environ={"USERPROFILE": "C:/Users/u", "DIMENSIO_AGENT": "gemini"})
     assert caps.collect(odd)["agent"]["id"] == "claude"
 
 
@@ -324,8 +324,21 @@ def test_linux_and_mac_degrade_without_running_anything():
 
 
 def test_models_dir_override_is_quoted_into_the_script():
-    env = make_env(environ={"FORGE3D_WSL_MODELS_DIR": "/data/my models"})
+    env = make_env(environ={"DIMENSIO_WSL_MODELS_DIR": "/data/my models"})
     assert "'/data/my models'" in caps.wsl_probe_script(env)
+
+
+def test_the_capability_report_reads_forge3d_agent_and_models_folder() -> None:
+    env = full_windows_env(environ={"USERPROFILE": "C:/Users/u", "FORGE3D_AGENT": "codex"})
+    assert caps.collect(env)["agent"]["id"] == "codex"
+    assert "root=/old/models" in caps.wsl_probe_script(make_env(environ={"FORGE3D_WSL_MODELS_DIR": "/old/models"}))
+
+
+def test_the_probe_falls_back_to_forge3d_models_and_marker() -> None:
+    script = caps.wsl_probe_script(make_env())
+    assert '"$HOME/.local/share/dimensio/models"' in script
+    assert '"$HOME/.local/share/forge3d/models"' in script
+    assert ".dimensio-install-complete" in script and ".forge3d-install-complete" in script
 
 
 def test_parse_version():

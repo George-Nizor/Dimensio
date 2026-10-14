@@ -4,9 +4,9 @@ param()
 $ErrorActionPreference = "Stop"
 $scriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $repoRoot = Split-Path -Parent $scriptRoot
-$sourcePlugin = Join-Path $repoRoot "plugins\forge3d"
+$sourcePlugin = Join-Path $repoRoot "plugins\dimensio"
 $pluginParent = Join-Path $env:USERPROFILE "plugins"
-$targetPlugin = Join-Path $pluginParent "forge3d"
+$targetPlugin = Join-Path $pluginParent "dimensio"
 $marketplace = Join-Path $env:USERPROFILE ".agents\plugins\marketplace.json"
 $pythonExe = $null
 $uvExe = Join-Path $env:USERPROFILE ".local\bin\uv.exe"
@@ -14,7 +14,7 @@ $creator = Join-Path $env:USERPROFILE ".codex\skills\.system\plugin-creator\scri
 $validator = Join-Path $env:USERPROFILE ".codex\skills\.system\plugin-creator\scripts\validate_plugin.py"
 
 if (-not (Test-Path -LiteralPath $sourcePlugin)) {
-    throw "Forge3D plugin source is missing: $sourcePlugin"
+    throw "Dimensio plugin source is missing: $sourcePlugin"
 }
 if (-not (Test-Path -LiteralPath $creator)) {
     throw "Codex plugin creator is missing: $creator"
@@ -46,17 +46,17 @@ if (-not $pythonExe) {
 
 $resolvedParent = [System.IO.Path]::GetFullPath($pluginParent)
 $resolvedTarget = [System.IO.Path]::GetFullPath($targetPlugin)
-$expectedTarget = [System.IO.Path]::Combine($resolvedParent, "forge3d")
+$expectedTarget = [System.IO.Path]::Combine($resolvedParent, "dimensio")
 if ($resolvedTarget -ne $expectedTarget) {
     throw "Refusing to replace an unexpected plugin path: $resolvedTarget"
 }
 
 if (Test-Path -LiteralPath $targetPlugin) {
-    $backupName = "forge3d.backup-{0}" -f (Get-Date -Format "yyyyMMdd-HHmmss")
+    $backupName = "dimensio.backup-{0}" -f (Get-Date -Format "yyyyMMdd-HHmmss")
     Move-Item -LiteralPath $targetPlugin -Destination (Join-Path $pluginParent $backupName)
 }
 
-& $pythonExe $creator forge3d --path $pluginParent --with-skills --with-mcp --with-marketplace --force
+& $pythonExe $creator dimensio --path $pluginParent --with-skills --with-mcp --with-marketplace --force
 if ($LASTEXITCODE -ne 0) {
     throw "The plugin scaffold helper failed."
 }
@@ -67,11 +67,11 @@ Copy-Item -LiteralPath $sourcePlugin -Destination $targetPlugin -Recurse
 if (Test-Path -LiteralPath $validator) {
     & $uvExe run --no-project --with pyyaml python $validator $targetPlugin
     if ($LASTEXITCODE -ne 0) {
-        throw "The installed Forge3D plugin failed validation."
+        throw "The installed Dimensio plugin failed validation."
     }
 }
 
-Write-Host "Installed Forge3D plugin to $targetPlugin"
+Write-Host "Installed Dimensio plugin to $targetPlugin"
 Write-Host "Marketplace: $marketplace"
 
 $codexBin = Join-Path $env:LOCALAPPDATA "OpenAI\Codex\bin"
@@ -81,8 +81,8 @@ $codexCli = Get-ChildItem -LiteralPath $codexBin -Recurse -Filter codex.exe -Fil
 if (-not $codexCli) {
     throw "Could not locate the Codex CLI under $codexBin"
 }
-& $codexCli.FullName plugin add "forge3d@personal"
+& $codexCli.FullName plugin add "dimensio@personal"
 if ($LASTEXITCODE -ne 0) {
-    throw "Codex could not enable forge3d@personal."
+    throw "Codex could not enable dimensio@personal."
 }
-Write-Host "Enabled Forge3D in Codex."
+Write-Host "Enabled Dimensio in Codex."

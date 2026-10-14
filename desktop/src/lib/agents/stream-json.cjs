@@ -1,11 +1,11 @@
 "use strict";
 
 // Reads `claude -p --output-format stream-json --verbose --replay-user-messages` output. One line in, a list of
-// small normalised events out; anything Forge3D does not use becomes []. The shapes are the ones recorded from
+// small normalised events out; anything Dimensio does not use becomes []. The shapes are the ones recorded from
 // Claude Code 2.1.299 in test/fixtures/claude/*.json:
 //
 //   {"type":"system","subtype":"init","session_id","model","tools":[...],"mcp_servers":[{name,status}],"plugins":[...]}
-//   {"type":"user","isReplay":true,"message":{"content":...}}          an echo of a message Forge3D wrote to stdin
+//   {"type":"user","isReplay":true,"message":{"content":...}}          an echo of a message Dimensio wrote to stdin
 //   {"type":"assistant","message":{"content":[{type:"text"|"tool_use"|"thinking",...}]}}
 //   {"type":"user","message":{"content":[{type:"tool_result",tool_use_id,is_error,content}]}}
 //   {"type":"system","subtype":"permission_denied","tool_name","tool_use_id","message"}

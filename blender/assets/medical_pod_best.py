@@ -411,12 +411,12 @@ def build_asset(output_dir: Path) -> tuple[list[bpy.types.Object], bpy.types.Col
     )
     collision.hide_render = True
     collision.display_type = "WIRE"
-    collision["forge3d_role"] = "convex_collision_helper"
+    collision["dimensio_role"] = "convex_collision_helper"
     objects.append(collision)
 
     for obj in objects:
-        obj["forge3d_asset"] = ASSET_NAME
-        obj["forge3d_units"] = "meters"
+        obj["dimensio_asset"] = ASSET_NAME
+        obj["dimensio_units"] = "meters"
     return objects, asset, mats
 
 

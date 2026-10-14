@@ -1,24 +1,43 @@
-# Brand v2 in Forge3D
+# Brand v2 in Dimensio
 
-Aligned 2026-10-06 against Instrumenta `brand/` at commit `292a1dd` (`brand/ALIGNMENT.md`).
-Instrumenta is the source; nothing copied here is edited by hand. To refresh, regenerate in
-Instrumenta (`uv run brand/scripts/build-brand.py`) and copy again.
+Aligned 2026-10-06 against Instrumenta `brand/` at commit `292a1dd` (`brand/ALIGNMENT.md`), when
+the app was Forge3D. Instrumenta is the source; nothing copied here is edited by hand. To refresh,
+regenerate in Instrumenta (`uv run brand/scripts/build-brand.py`) and copy again.
+
+## The rename to Dimensio
+
+On 2026-10-15 Forge3D became Dimensio and only the name changed: the cube and the ember accent are
+Forge3D's. The renamed files were copied from Instrumenta's `feat/dimensio` branch at commit
+`8702c5c` ("Keep Forge3D's cube for Dimensio: only the name changes"), in place of the forge3d ones.
+Checked by SHA-256 against the files they replace:
+
+- `dimensio-{16,24,32,48,64,128,256,512}.png`, `dimensio.ico` and `dimensio-app-art.png` are
+  byte-identical to the forge3d files, and so are `desktop/assets/icon.png` and `icon.ico`.
+- `dimensio{,-24,-16}.svg` and `desktop/assets/icon.svg` differ only in `aria-label`, which now says
+  Dimensio.
+- `docs/brand/dimensio-animated.svg` draws the same cube; its embedded motion CSS also carries
+  Delineare's pencil keyframes, as the current `instrumenta-icons.css` does.
+- `docs/images/dimensio-banner.png` is Instrumenta's `brand/out/dimensio-banner.png`: the same cube
+  and colours, with the name Dimensio and the launcher's new blurb.
+- `instrumenta-icons.{js,css}` are the current library. The cube is drawn exactly as before under the
+  id `dimensio`; the library also knows Delineare, and the organ has a pipe for it.
 
 ## Copied
 
 | From `Instrumenta/brand/` | To | Used for |
 | --- | --- | --- |
 | `fonts/*.woff2`, `fonts.css`, `OFL-*.txt` | `desktop/src/renderer/brand/fonts/` | Fraunces, Commissioner, Spline Sans Mono (replace `@fontsource/space-grotesk`, which is removed from `package.json` and the lockfile). Bundled by Vite into `dist/assets`, so the packaged app loads them from `self` and nothing from a CDN. |
-| `icons/instrumenta-icons.{js,css}` | `desktop/src/renderer/brand/` | `InstrumentaIcons.render('forge3d')` draws the cube in the title bar and the empty viewport. The lid lifts on hover of the wordmark and for about three seconds when a job starts; `prefers-reduced-motion` stops it (the icon CSS handles that). Imported as a module; the UMD file exports instead of setting a global once bundled. |
-| (Forge3D's own, not copied) `desktop/src/renderer/brand-icons/` | in place | The interface icon set: 36 flat objects with ink outline and stepped extrusion in the suite's algorithm, plus 8 `currentColor` line utilities. `icons.mjs` is the renderer's single door to it. See "Interface icons" below. |
-| `icons/svg/forge3d{,-24,-16}.svg`, `icons/png/forge3d-*.png`, `icons/ico/forge3d.ico`, `artwork/forge3d-app-art.png` | `desktop/assets/brand/` | reference set and launcher art; `instrumenta/product.json` `assets.mark` points at the app art |
-| `icons/png/forge3d-512.png`, `icons/svg/forge3d.svg`, `icons/ico/forge3d.ico` | `desktop/assets/icon.{png,svg,ico}` | Windows executable icon: `build.win.icon` is now `assets/icon.ico` (16 to 256, each size drawn at that size); the PNG and SVG stay for tests and tooling |
-| `icons/svg/forge3d-animated.svg` | `docs/brand/` | README only |
-| `tokens.json` "forge3d" block | `desktop/src/renderer/style.css` `:root` | accent `#EE7752`, secondary `#FFBDA6` (`--accent-tint`), deep `#7D331B`, ink `#23100A`, surface `#31170F` |
+| `icons/instrumenta-icons.{js,css}` | `desktop/src/renderer/brand/` | `InstrumentaIcons.render('dimensio')` draws the cube in the Workshop's title bar and empty viewport, and in the course app's header. The lid lifts on hover of the wordmark and for about three seconds when a run starts; `prefers-reduced-motion` stops it (the icon CSS handles that). Imported as a module; the UMD file exports instead of setting a global once bundled. |
+| (the Workshop's own, not copied) `desktop/src/renderer/brand-icons/` | in place | The interface icon set: 36 flat objects with ink outline and stepped extrusion in the suite's algorithm, plus 8 `currentColor` line utilities. `icons.mjs` is the renderer's single door to it. See "Interface icons" below. |
+| `icons/svg/dimensio{,-24,-16}.svg`, `icons/png/dimensio-*.png`, `icons/ico/dimensio.ico`, `artwork/dimensio-app-art.png` | `desktop/assets/brand/` | reference set and launcher art; `instrumenta/product.json` `assets.mark` points at the app art |
+| `icons/png/dimensio-512.png`, `icons/svg/dimensio.svg`, `icons/ico/dimensio.ico` | `desktop/assets/icon.{png,svg,ico}` | Windows executable icon: `build.win.icon` is now `assets/icon.ico` (16 to 256, each size drawn at that size); the PNG and SVG stay for tests and tooling |
+| `icons/svg/dimensio-animated.svg` | `docs/brand/` | README only |
+| `out/dimensio-banner.png` | `docs/images/` | README banner |
+| `tokens.json` "dimensio" block | `desktop/src/renderer/style.css` `:root` | accent `#EE7752`, secondary `#FFBDA6` (`--accent-tint`), deep `#7D331B`, ink `#23100A`, surface `#31170F` |
 
-`docs/images/forge3d-banner.png` (1600x500) was rendered from the brand files in headless Chromium:
-surface field, accent glow at the edges, Fraunces name, the cube from `InstrumentaIcons.render`, and
-the launcher's blurb.
+The first banner, `docs/images/forge3d-banner.png` (1600x500), was rendered here from the brand
+files in headless Chromium: surface field, accent glow at the edges, Fraunces name, the cube from
+`InstrumentaIcons.render`, and the launcher's blurb. Instrumenta now renders the banner itself.
 
 ## Surfaces and themes
 
@@ -78,10 +97,10 @@ old-glyph to new-icon table, which the renderer follows mechanically.
 - Success green, warning amber and danger red as status colours (`--ok`, `--warn`, `--danger`),
   with per-theme values chosen for contrast.
 - The window `backgroundColor` and title-bar overlay colours in `main.cjs`, which are set per theme.
-- The Instrumenta cube (`InstrumentaIcons.render('forge3d')`) as the mark; it is not part of the
+- The Instrumenta cube (`InstrumentaIcons.render('dimensio')`) as the mark; it is not part of the
   interface set.
 
-## Verification
+## Verification of the 2026-10-06 alignment
 
 - `npm --prefix desktop test` (74 pass), `uv run --with pytest pytest -q` (38 pass, 4 skipped),
   `vite build` succeeds.
@@ -89,7 +108,7 @@ old-glyph to new-icon table, which the renderer follows mechanically.
   `window.forge3d`), empty, running, settings popover and keyboard focus. Computed styles confirm
   the three faces and the `FLAR`/`SOFT`/`WONK` axes apply.
 
-## Not verified / follow-ups
+## Not verified in the 2026-10-06 alignment
 
 - The Windows package (`electron-builder` with the ICO, `Forge3D.exe` icon, the managed bundle and
   `--instrumenta-launch-check`) was not built here; the change is confined to the renderer, the icon

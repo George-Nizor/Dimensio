@@ -24,6 +24,6 @@ test("run settings persist valid selections and recover from corrupt storage", a
   assert.deepEqual(readRunSettings(storage), {
     workflow: "auto", quality: "balanced", target: "blend", tool: "auto", model: "gpt-test", effort: "auto",
   });
-  values.set("forge3d.runSettings.v1", "not json");
+  values.set("dimensio.runSettings.v1", "not json");
   assert.equal(readRunSettings(storage).target, "splat");
 });

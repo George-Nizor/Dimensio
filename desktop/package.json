@@ -1,11 +1,11 @@
 {
-  "name": "forge3d-desktop",
-  "productName": "Forge3D",
-  "version": "0.3.0",
+  "name": "dimensio-desktop",
+  "productName": "Dimensio",
+  "version": "0.4.0",
   "private": true,
   "author": "George Nizor",
   "license": "MIT",
-  "description": "Local spatial creation and review application",
+  "description": "A Blender course, and a Workshop where an agent builds models from a prompt",
   "main": "src/main.cjs",
   "scripts": {
     "dev": "node scripts/build-content.mjs && vite --host 127.0.0.1",
@@ -44,9 +44,9 @@
     "yaml": "2.9.1"
   },
   "build": {
-    "appId": "com.instrumenta.forge3d",
-    "productName": "Forge3D",
-    "executableName": "Forge3D",
+    "appId": "com.instrumenta.dimensio",
+    "productName": "Dimensio",
+    "executableName": "Dimensio",
     "asar": true,
     "directories": {
       "output": "dist-package",
@@ -60,10 +60,10 @@
       "package.json"
     ],
     "extraResources": [
-      { "from": "runtime/forge3d.exe", "to": "bin/forge3d.exe" },
-      { "from": "../plugins/forge3d", "to": "forge3d-plugin" },
-      { "from": "../blender", "to": "forge3d-toolkit/blender" },
-      { "from": "../scripts", "to": "forge3d-toolkit/scripts", "filter": ["**/*", "!build_desktop.ps1", "!forge3d_entry.py"] },
+      { "from": "runtime/dimensio.exe", "to": "bin/dimensio.exe" },
+      { "from": "../plugins/dimensio", "to": "dimensio-plugin" },
+      { "from": "../blender", "to": "dimensio-toolkit/blender" },
+      { "from": "../scripts", "to": "dimensio-toolkit/scripts", "filter": ["**/*", "!build_desktop.ps1", "!dimensio_entry.py"] },
       { "from": "../LICENSE", "to": "LICENSE" },
       { "from": "../THIRD_PARTY_NOTICES.md", "to": "THIRD_PARTY_NOTICES.md" },
       { "from": "../godot", "to": "godot-template", "filter": ["**/*", "!.godot/**/*"] }
@@ -71,7 +71,7 @@
     "win": {
       "icon": "assets/icon.ico",
       "target": ["zip"],
-      "artifactName": "Forge3D-${version}-windows-x64.${ext}"
+      "artifactName": "Dimensio-${version}-windows-x64.${ext}"
     }
   }
 }

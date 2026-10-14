@@ -21,6 +21,7 @@ const TITLE_BAR_HEIGHT = 72;
 const { RunStore, agentSession } = require("./lib/run-store.cjs");
 const {
   BUNDLE_VERSION,
+  GODOT_TEMPLATE_MARKER,
   detectExternalTools,
   detectWslModelsDirectory,
   ensureRuntimeState,
@@ -38,6 +39,7 @@ const { createCapabilitiesService } = require("./lib/capabilities-service.cjs");
 const { closeAction, stopRunQuestion } = require("./lib/close-guard.cjs");
 const {
   PROJECT_EXTENSION,
+  PROJECT_EXTENSIONS,
   RecentProjects,
   UNTITLED_NAME,
   adoptLegacyLibrary,
@@ -65,15 +67,16 @@ const {
 } = require("./lib/project-store.cjs");
 const { APP_ORIGIN, APP_PRIVILEGES, isAppUrl, openHttps, registerAppProtocol } = require("./lib/app-protocol.cjs");
 const { registerCourseIpc } = require("./lib/course-ipc.cjs");
+const { carryForge3DSettings, envSetting, legacyFolders } = require("./lib/forge3d-compat.cjs");
 
-// One Forge3D at a time. A second launch hands its command line to this one, which comes to the front and opens a
+// One Dimensio at a time. A second launch hands its command line to this one, which comes to the front and opens a
 // project named there.
 const singleInstance = app.requestSingleInstanceLock();
 if (!singleInstance) app.quit();
 
 protocol.registerSchemesAsPrivileged([
   {
-    scheme: "forge3d-artifact",
+    scheme: "dimensio-artifact",
     privileges: { standard: true, secure: true, supportFetchAPI: true, corsEnabled: true, stream: true },
   },
   APP_PRIVILEGES,
@@ -99,15 +102,15 @@ const pendingRunEvents = new Map();
 
 const repoRoot = path.resolve(__dirname, "..", "..");
 const bundledPlugin = () => app.isPackaged
-  ? path.join(process.resourcesPath, "forge3d-plugin")
-  : path.join(repoRoot, "plugins", "forge3d");
+  ? path.join(process.resourcesPath, "dimensio-plugin")
+  : path.join(repoRoot, "plugins", "dimensio");
 const bundledToolkit = () => app.isPackaged
-  ? path.join(process.resourcesPath, "forge3d-toolkit")
+  ? path.join(process.resourcesPath, "dimensio-toolkit")
   : repoRoot;
 
 function rendererUrlAllowed(url) {
   if (url.startsWith("file://") || isAppUrl(url)) return true;
-  const dev = process.env.FORGE3D_DEV_SERVER_URL;
+  const dev = envSetting("DEV_SERVER_URL");
   return Boolean(dev && url.startsWith(dev));
 }
 
@@ -160,7 +163,7 @@ function currentState() {
 
 function sendState() {
   updateWindowTitle();
-  send("forge3d:state", currentState());
+  send("dimensio:state", currentState());
 }
 
 /* ── projects ─────────────────────────────────────────────────── */
@@ -233,7 +236,7 @@ async function leaveSession({ discard = false } = {}) {
       if (hasRuns(leaving.folder)) await shell.trashItem(leaving.folder);
       else fs.rmSync(leaving.folder, { recursive: true, force: true });
     } catch (error) {
-      send("forge3d:error", `Forge3D could not remove the unsaved project folder: ${error.message}`);
+      send("dimensio:error", `Dimensio could not remove the unsaved project folder: ${error.message}`);
     }
   }
   refreshRecoverable();
@@ -261,7 +264,7 @@ async function confirmLeave(doing) {
 }
 
 function projectsDirectory() {
-  return path.join(app.getPath("documents"), "Forge3D", "Projects");
+  return path.join(app.getPath("documents"), "Dimensio", "Projects");
 }
 
 async function saveProject() {
@@ -281,10 +284,10 @@ async function saveProjectAs() {
   const defaultDirectory = project.untitled ? projectsDirectory() : path.dirname(project.folder);
   fs.mkdirSync(defaultDirectory, { recursive: true });
   const result = await dialog.showSaveDialog(mainWindow, {
-    title: project.untitled ? "Save Forge3D project" : "Save Forge3D project as",
+    title: project.untitled ? "Save project" : "Save project as",
     defaultPath: path.join(defaultDirectory, `${suggested}${PROJECT_EXTENSION}`),
     buttonLabel: "Save project",
-    filters: [{ name: "Forge3D project", extensions: [PROJECT_EXTENSION.slice(1)] }],
+    filters: [{ name: "Dimensio project", extensions: [PROJECT_EXTENSION.slice(1)] }],
     properties: ["createDirectory", "showOverwriteConfirmation"],
   });
   if (result.canceled || !result.filePath) return false;
@@ -330,10 +333,11 @@ async function openProject(payload = {}) {
   if (!file) {
     fs.mkdirSync(projectsDirectory(), { recursive: true });
     const result = await dialog.showOpenDialog(mainWindow, {
-      title: "Open Forge3D project",
+      title: "Open project",
       defaultPath: project?.folder ? path.dirname(project.folder) : projectsDirectory(),
       buttonLabel: "Open project",
-      filters: [{ name: "Forge3D project", extensions: [PROJECT_EXTENSION.slice(1)] }],
+      // Forge3D's .forge3d projects open too.
+      filters: [{ name: "Dimensio project", extensions: PROJECT_EXTENSIONS.map((extension) => extension.slice(1)) }],
       properties: ["openFile"],
     });
     if (result.canceled || !result.filePaths.length) return { canceled: true, ...currentState() };
@@ -412,7 +416,7 @@ async function deleteOpenProject() {
       await shell.trashItem(target);
     } catch (error) {
       sendState();
-      throw new Error(`Forge3D could not move ${target} to the Recycle Bin: ${error.message}`);
+      throw new Error(`Dimensio could not move ${target} to the Recycle Bin: ${error.message}`);
     }
   }
   recentProjects.remove(file);
@@ -428,7 +432,7 @@ function onSecondInstance(argv = []) {
   mainWindow.show();
   mainWindow.focus();
   const file = projectFromArgv(argv.slice(1));
-  if (file) openProject({ path: file }).catch((error) => send("forge3d:error", `Forge3D could not open ${path.basename(file)}: ${error.message}`));
+  if (file) openProject({ path: file }).catch((error) => send("dimensio:error", `Dimensio could not open ${path.basename(file)}: ${error.message}`));
 }
 
 async function closeProject() {
@@ -453,15 +457,15 @@ function onWindowClose(event) {
   event.preventDefault();
   (async () => {
     if (running) {
-      if (!(await confirmStopRun("closing Forge3D"))) return;
-      await stopActiveRun("Stopped because Forge3D was closed during the run.");
+      if (!(await confirmStopRun("closing Dimensio"))) return;
+      await stopActiveRun("Stopped because Dimensio was closed during the run.");
     }
-    const { proceed, discard } = await confirmLeave("closing Forge3D");
+    const { proceed, discard } = await confirmLeave("closing Dimensio");
     if (!proceed) return;
     await leaveSession({ discard });
     allowWindowClose = true;
     mainWindow.close();
-  })().catch((error) => send("forge3d:error", error.message));
+  })().catch((error) => send("dimensio:error", error.message));
 }
 
 async function confirmStopRun(doing) {
@@ -512,13 +516,13 @@ function flushRunEvents() {
     store().appendEvents(runId, events);
     count += events.length;
   }
-  if (count) send("forge3d:event", { refresh: true, count });
+  if (count) send("dimensio:event", { refresh: true, count });
 }
 
 function failActiveJob(error) {
-  const message = `Forge3D could not process the agent's activity: ${error.message}`;
+  const message = `Dimensio could not process the agent's activity: ${error.message}`;
   appServerError = message;
-  send("forge3d:error", message);
+  send("dimensio:error", message);
   try { flushRunEvents(); } catch {}
   if (activeJob) {
     try { store().setStatus(activeJob.runId, "failed", message); } catch {}
@@ -532,9 +536,9 @@ function capabilitiesService() {
   if (!capabilitiesServiceInstance) {
     const binDirectory = app.isPackaged ? path.join(process.resourcesPath, "bin") : path.join(repoRoot, ".venv", "Scripts");
     capabilitiesServiceInstance = createCapabilitiesService({
-      command: path.join(binDirectory, process.platform === "win32" ? "forge3d.exe" : "forge3d"),
+      command: path.join(binDirectory, process.platform === "win32" ? "dimensio.exe" : "dimensio"),
       args: () => ["capabilities", "--json", "--agent", agentSettings.agent()],
-      env: { ...process.env, FORGE3D_TOOLKIT_ROOT: bundledToolkit(), FORGE3D_PLUGIN_ROOT: bundledPlugin() },
+      env: { ...process.env, DIMENSIO_TOOLKIT_ROOT: bundledToolkit(), DIMENSIO_PLUGIN_ROOT: bundledPlugin() },
     });
   }
   return capabilitiesServiceInstance;
@@ -547,22 +551,22 @@ function agentWorkspace() {
   return runStore?.root || runtimeState.root;
 }
 
-// What every agent process gets: forge3d.exe on PATH, the toolkit and plugin roots, where runs go, and the tools
+// What every agent process gets: dimensio.exe on PATH, the toolkit and plugin roots, where runs go, and the tools
 // the host already found, so the agent never has to look for them.
 function agentEnvironment() {
   const binDirectory = app.isPackaged ? path.join(process.resourcesPath, "bin") : path.join(repoRoot, ".venv", "Scripts");
   const tools = externalTools();
-  if (wslModelsDirectory === undefined) wslModelsDirectory = process.env.FORGE3D_WSL_MODELS_DIR || detectWslModelsDirectory(tools.wsl);
+  if (wslModelsDirectory === undefined) wslModelsDirectory = envSetting("WSL_MODELS_DIR") || detectWslModelsDirectory(tools.wsl);
   return {
     ...process.env,
     PATH: `${binDirectory}${path.delimiter}${process.env.PATH || ""}`,
-    ...(runStore ? { FORGE3D_OUTPUT: runStore.root } : {}),
-    FORGE3D_TOOLKIT_ROOT: bundledToolkit(),
-    FORGE3D_PLUGIN_ROOT: bundledPlugin(),
-    FORGE3D_STATE_ROOT: runtimeState.root,
+    ...(runStore ? { DIMENSIO_OUTPUT: runStore.root } : {}),
+    DIMENSIO_TOOLKIT_ROOT: bundledToolkit(),
+    DIMENSIO_PLUGIN_ROOT: bundledPlugin(),
+    DIMENSIO_STATE_ROOT: runtimeState.root,
     ...(tools.blender ? { BLENDER_EXECUTABLE: tools.blender } : {}),
     ...(tools.godot ? { GODOT_EXECUTABLE: tools.godot } : {}),
-    ...(wslModelsDirectory ? { FORGE3D_WSL_MODELS_DIR: wslModelsDirectory } : {}),
+    ...(wslModelsDirectory ? { DIMENSIO_WSL_MODELS_DIR: wslModelsDirectory } : {}),
   };
 }
 
@@ -641,7 +645,7 @@ function onAgentApproval(driver, { requestId, method, params, message }) {
     return;
   }
   queueRunEvent(activeJob.runId, { kind: "approval-request", requestId, method, params: compact(params) });
-  send("forge3d:approval", { requestId, method, params: compact(params) });
+  send("dimensio:approval", { requestId, method, params: compact(params) });
   sendState();
 }
 
@@ -660,7 +664,7 @@ function finishActiveJob(driver, { status, error = null, turnId = null }) {
 // notify: a protocol problem worth a toast.
 function onAgentError(driver, { message, fatal = false, method = null, notify = false, internal = false }) {
   const ours = activeJob && activeJob.agent === driver.id;
-  if (notify || internal) send("forge3d:error", message);
+  if (notify || internal) send("dimensio:error", message);
   if (fatal) {
     if (!ours && driver.id !== agentSettings.agent()) return; // an agent no longer in use
     try { flushRunEvents(); } catch {}
@@ -680,13 +684,13 @@ function promptWithPolicy(manifest) {
   const gaussianDensity = quality === "draft" ? 65536 : quality === "balanced" ? 131072 : 262144;
   return [
     manifest.prompt,
-    "Work only inside this Forge3D run directory. Never overwrite an existing artifact; create a numbered version.",
+    "Work only inside this run directory. Never overwrite an existing artifact; create a numbered version.",
     "This desktop is local-only. Never use a cloud provider, upload a user file, or request cloud approval.",
     `Workflow: ${manifest.workflow_route}; quality: ${quality}; target: ${manifest.settings?.target_format}; tool/model: ${manifest.settings?.tool}.`,
-    "The desktop host has already detected local Blender, Godot, WSL, and the model directory and provided their paths in environment variables. Start production immediately. Do not rerun forge3d doctor, inspect CLI help, rediscover tools, reinstall packages, inspect plugin source, or launch review applications unless the first production command fails.",
-    `Use one production pass and at most one targeted correction. For a splat, create one clean reference, then invoke exactly: forge3d models run triposplat <reference-image> --output-dir <versioned-output> --gaussians ${gaussianDensity} --json. Do not try local-run or alternate model commands. Preserve the PLY and SPLAT outputs and create only the minimum interaction proxy.`,
+    "The desktop host has already detected local Blender, Godot, WSL, and the model directory and provided their paths in environment variables. Start production immediately. Do not rerun dimensio doctor, inspect CLI help, rediscover tools, reinstall packages, inspect plugin source, or launch review applications unless the first production command fails.",
+    `Use one production pass and at most one targeted correction. For a splat, create one clean reference, then invoke exactly: dimensio models run triposplat <reference-image> --output-dir <versioned-output> --gaussians ${gaussianDensity} --json. Do not try local-run or alternate model commands. Preserve the PLY and SPLAT outputs and create only the minimum interaction proxy.`,
     "Perform one consolidated validation pass. Do not make redundant screenshots, orbit renders, duplicate reports, or optional integration probes.",
-    "The Forge3D host exclusively owns run.json. Do not create, edit, replace, rename, or delete it. Write validation evidence to separate files and return artifact paths relative to this run directory.",
+    "The Dimensio Workshop exclusively owns run.json. Do not create, edit, replace, rename, or delete it. Write validation evidence to separate files and return artifact paths relative to this run directory.",
   ].join("\n\n");
 }
 
@@ -702,7 +706,7 @@ function runAttachments(manifest, directory) {
 // the chosen agent; otherwise (a run from the other agent, or a copy that never ran) a new session gets the whole
 // brief followed by the note.
 async function beginRun(manifest, { model = "auto", effort = "auto", continuation = null } = {}) {
-  if (activeJob) throw new Error("Forge3D already has an active job");
+  if (activeJob) throw new Error("A run is already in progress. Wait for it to finish, or stop it.");
   const driver = currentAgent();
   await ensureAgentReady(driver);
   if (!currentSkill) await refreshSkill(false);
@@ -813,7 +817,7 @@ function createWindow() {
     minWidth: 1100,
     minHeight: 720,
     backgroundColor: chromeColors().bar,
-    title: "Forge3D",
+    title: "Dimensio",
     show: false,
     ...titleBarOptions(),
     webPreferences: {
@@ -831,17 +835,17 @@ function createWindow() {
     if (!rendererUrlAllowed(url)) { event.preventDefault(); openHttps(shell, url); }
   });
   mainWindow.once("ready-to-show", () => mainWindow.show());
-  // The window title belongs to the project ("● Name — Forge3D"), so the page's own <title> never replaces it.
+  // The window title belongs to the project ("● Name — Dimensio"), so the page's own <title> never replaces it.
   mainWindow.on("page-title-updated", (event) => event.preventDefault());
   mainWindow.on("close", onWindowClose);
   updateWindowTitle();
-  const dev = process.env.FORGE3D_DEV_SERVER_URL;
+  const dev = envSetting("DEV_SERVER_URL");
   if (dev) mainWindow.loadURL(dev);
   else mainWindow.loadURL(`${APP_ORIGIN}/index.html`);
 }
 
 function registerIpc() {
-  handle("forge3d:bootstrap", async () => {
+  handle("dimensio:bootstrap", async () => {
     try {
       await refreshSkill(false);
     } catch (error) {
@@ -851,12 +855,12 @@ function registerIpc() {
     return { ...currentState(), models: info.models, modelDefaults: { model: info.defaultModel || "", effort: info.defaultEffort || "" } };
   });
 
-  handle("forge3d:pick-attachments", async () => {
+  handle("dimensio:pick-attachments", async () => {
     const result = await dialog.showOpenDialog(mainWindow, {
-      title: "Add Forge3D attachments",
+      title: "Add attachments",
       properties: ["openFile", "multiSelections"],
       filters: [
-        { name: "Forge3D inputs", extensions: ["png", "jpg", "jpeg", "webp", "gif", "glb", "gltf", "blend", "fbx", "obj", "ply", "splat", "sog", "spz", "ksplat", "json", "txt", "md"] },
+        { name: "Pictures, models and notes", extensions: ["png", "jpg", "jpeg", "webp", "gif", "glb", "gltf", "blend", "fbx", "obj", "ply", "splat", "sog", "spz", "ksplat", "json", "txt", "md"] },
         { name: "All files", extensions: ["*"] },
       ],
     });
@@ -865,21 +869,21 @@ function registerIpc() {
 
   // The agent is checked (installed, signed in, started) before the run folder is made, so a missing agent leaves
   // no run behind that never started.
-  handle("forge3d:start-run", async (payload = {}) => {
+  handle("dimensio:start-run", async (payload = {}) => {
     store();
-    if (activeJob) throw new Error("Forge3D already has an active job");
+    if (activeJob) throw new Error("A run is already in progress. Wait for it to finish, or stop it.");
     await ensureAgentReady();
     const manifest = await store().create(payload);
     return beginRun(manifest, payload);
   });
 
-  handle("forge3d:continue-run", async (payload = {}) => {
+  handle("dimensio:continue-run", async (payload = {}) => {
     const loaded = store().find(payload.runId, false).manifest;
-    const text = typeof payload.text === "string" && payload.text.trim() ? payload.text.trim() : "Continue this Forge3D run from its saved state, verify existing artifacts, and finish the requested result.";
+    const text = typeof payload.text === "string" && payload.text.trim() ? payload.text.trim() : "Continue this run from its saved state, verify existing artifacts, and finish the requested result.";
     return beginRun(loaded, { ...payload, continuation: text });
   });
 
-  handle("forge3d:steer", async (payload = {}) => {
+  handle("dimensio:steer", async (payload = {}) => {
     if (!activeJob || payload.runId !== activeJob.runId) throw new Error("This run is not active");
     if (typeof payload.text !== "string" || !payload.text.trim()) throw new Error("Steering text is required");
     await jobAgent().steer(payload.text.trim());
@@ -887,7 +891,7 @@ function registerIpc() {
     return currentState();
   });
 
-  handle("forge3d:cancel", async (payload = {}) => {
+  handle("dimensio:cancel", async (payload = {}) => {
     if (!activeJob || payload.runId !== activeJob.runId) throw new Error("This run is not active");
     store().setStatus(activeJob.runId, "cancelling");
     await jobAgent().interrupt();
@@ -895,19 +899,19 @@ function registerIpc() {
     return currentState();
   });
 
-  handle("forge3d:approval", async (payload = {}) => {
+  handle("dimensio:approval", async (payload = {}) => {
     if (!activeJob) throw new Error("No active job is awaiting approval");
     jobAgent().decide(payload.requestId, payload.decision);
     store().appendEvent(activeJob.runId, { kind: "approval-decision", requestId: payload.requestId, decision: payload.decision });
     return currentState();
   });
 
-  handle("forge3d:duplicate", async (payload = {}) => store().duplicate(payload.runId));
-  handle("forge3d:archive", async (payload = {}) => {
+  handle("dimensio:duplicate", async (payload = {}) => store().duplicate(payload.runId));
+  handle("dimensio:archive", async (payload = {}) => {
     if (activeJob?.runId === payload.runId) throw new Error("Cancel the active job before archiving it");
     return store().archive(payload.runId);
   });
-  handle("forge3d:trash", async (payload = {}) => {
+  handle("dimensio:trash", async (payload = {}) => {
     if (activeJob?.runId === payload.runId) throw new Error("Cancel the active job before moving it to trash");
     const directory = store().runDirectory(payload.runId);
     await shell.trashItem(directory);
@@ -915,7 +919,7 @@ function registerIpc() {
     return { recoverable: true };
   });
 
-  handle("forge3d:artifact-action", async (payload = {}) => {
+  handle("dimensio:artifact-action", async (payload = {}) => {
     const absolute = store().resolveArtifact(payload.runId, payload.path);
     if (payload.action === "reveal") shell.showItemInFolder(absolute);
     else if (payload.action === "copy") clipboard.writeText(absolute);
@@ -940,7 +944,7 @@ function registerIpc() {
     return { path: absolute };
   });
 
-  handle("forge3d:export-artifact", async (payload = {}) => {
+  handle("dimensio:export-artifact", async (payload = {}) => {
     if (activeJob) throw new Error("Wait for the active run to finish before exporting");
     const manifest = store().find(payload.runId, false).manifest;
     const artifact = (manifest.artifacts || []).find((item) => item.path === payload.path);
@@ -954,7 +958,7 @@ function registerIpc() {
       message: artifact.preview_role === "gaussian-splat" ? "Create a Blender package for this Gaussian splat" : "Choose an export format",
       detail: artifact.preview_role === "gaussian-splat"
         ? "The Blend file preserves the Gaussian representation through KIRI Engine. It does not pretend the splat is a polygon mesh."
-        : "Forge3D creates a new versioned export inside this run. Existing files are never overwritten.",
+        : "Dimensio creates a new versioned export inside this run. Existing files are never overwritten.",
       buttons,
       cancelId: buttons.length - 1,
       defaultId: 0,
@@ -975,33 +979,33 @@ function registerIpc() {
     return result;
   });
 
-  handle("forge3d:repair-plugin", async () => {
-    if (agentSettings.agent() !== "codex") throw new Error("Claude Code loads the Forge3D plugin from this app each run, so there is nothing to repair.");
+  handle("dimensio:repair-plugin", async () => {
+    if (agentSettings.agent() !== "codex") throw new Error("Claude Code loads the Dimensio plugin from this app each run, so there is nothing to repair.");
     const result = repairForgePlugin({ bundledPlugin: bundledPlugin(), runtimeState });
     await refreshSkill(true);
     sendState();
     return { ...result, skill: currentSkill };
   });
-  handle("forge3d:set-theme", async (payload) => {
+  handle("dimensio:set-theme", async (payload) => {
     if (!["system", "light", "dark"].includes(payload)) throw new Error("Unknown theme");
     nativeTheme.themeSource = payload;
     return payload;
   });
   nativeTheme.on("updated", applyChromeColors);
-  handle("forge3d:capabilities", (payload = {}) => capabilitiesService().get({ force: Boolean(payload?.force) }));
-  handle("forge3d:agent-settings", () => agentSettings.get());
-  handle("forge3d:set-agent", (payload) => setAgent(typeof payload === "string" ? payload : payload?.agent));
-  handle("forge3d:agent-status", (payload = {}) => agentStatus(payload));
-  handle("forge3d:models", (payload = {}) => agentModels(payload?.agent));
-  handle("forge3d:project-new", (payload = {}) => newProject(payload));
-  handle("forge3d:project-open", (payload = {}) => openProject(payload));
-  handle("forge3d:project-open-recovered", (payload = {}) => openRecovered(payload));
-  handle("forge3d:project-save", async () => ({ saved: await saveProject(), ...currentState() }));
-  handle("forge3d:project-save-as", async () => ({ saved: await saveProjectAs(), ...currentState() }));
-  handle("forge3d:project-close", () => closeProject());
-  handle("forge3d:project-rename", (payload = {}) => renameOpenProject(payload));
-  handle("forge3d:project-delete", () => deleteOpenProject());
-  handle("forge3d:project-reveal", async () => {
+  handle("dimensio:capabilities", (payload = {}) => capabilitiesService().get({ force: Boolean(payload?.force) }));
+  handle("dimensio:agent-settings", () => agentSettings.get());
+  handle("dimensio:set-agent", (payload) => setAgent(typeof payload === "string" ? payload : payload?.agent));
+  handle("dimensio:agent-status", (payload = {}) => agentStatus(payload));
+  handle("dimensio:models", (payload = {}) => agentModels(payload?.agent));
+  handle("dimensio:project-new", (payload = {}) => newProject(payload));
+  handle("dimensio:project-open", (payload = {}) => openProject(payload));
+  handle("dimensio:project-open-recovered", (payload = {}) => openRecovered(payload));
+  handle("dimensio:project-save", async () => ({ saved: await saveProject(), ...currentState() }));
+  handle("dimensio:project-save-as", async () => ({ saved: await saveProjectAs(), ...currentState() }));
+  handle("dimensio:project-close", () => closeProject());
+  handle("dimensio:project-rename", (payload = {}) => renameOpenProject(payload));
+  handle("dimensio:project-delete", () => deleteOpenProject());
+  handle("dimensio:project-reveal", async () => {
     if (!project) throw new Error("No project is open");
     if (project.file) shell.showItemInFolder(project.file);
     else await shell.openPath(project.folder);
@@ -1009,40 +1013,40 @@ function registerIpc() {
   });
   // Run settings belong to the project and make it unsaved. The selection is written to a saved project's file as
   // it changes, without asking and without making the project unsaved.
-  handle("forge3d:project-settings", (payload = {}) => {
+  handle("dimensio:project-settings", (payload = {}) => {
     if (!project) return null;
     project.settings = sanitizeSettings(payload);
     updateWindowTitle();
     return projectSummary();
   });
-  handle("forge3d:project-view", (payload = {}) => {
+  handle("dimensio:project-view", (payload = {}) => {
     if (!project) return null;
     project.view = sanitizeView(payload);
     if (!project.untitled) {
       try {
         project.manifest = writeProjectView(project.file, project.manifest, project.view);
       } catch (error) {
-        send("forge3d:error", `Forge3D could not keep the selection in the project file: ${error.message}`);
+        send("dimensio:error", `Dimensio could not keep the selection in the project file: ${error.message}`);
       }
     }
     return null;
   });
-  handle("forge3d:recent-remove", (payload = {}) => {
+  handle("dimensio:recent-remove", (payload = {}) => {
     if (typeof payload.path !== "string") throw new Error("A project path is required");
     recentProjects.remove(payload.path);
     sendState();
     return currentState();
   });
-  handle("forge3d:recent-clear", () => {
+  handle("dimensio:recent-clear", () => {
     recentProjects.clear();
     sendState();
     return currentState();
   });
-  handle("forge3d:project-preferences", (payload = {}) => {
+  handle("dimensio:project-preferences", (payload = {}) => {
     recentProjects.setPreferences({ reopenLast: payload.reopenLast });
     return currentState();
   });
-  handle("forge3d:refresh-tools", async (payload = {}) => {
+  handle("dimensio:refresh-tools", async (payload = {}) => {
     if (payload.force) externalTools(true);
     updateWindowTitle();
     return currentState();
@@ -1051,23 +1055,27 @@ function registerIpc() {
 
 app.whenReady().then(async () => {
   if (!singleInstance) return;
-  const legacyLibrary = path.join(app.getPath("documents"), "Forge3D");
-  const localStateRoot = path.join(process.env.LOCALAPPDATA || app.getPath("appData"), "Instrumenta", "Forge3D");
+  const localAppData = process.env.LOCALAPPDATA || app.getPath("appData");
+  const localStateRoot = path.join(localAppData, "Instrumenta", "Dimensio");
   const resourceBase = app.isPackaged ? process.resourcesPath : path.join(repoRoot, "desktop");
   runtimeState = ensureRuntimeState(localStateRoot, resourceBase);
-  if (!app.isPackaged && !fs.existsSync(path.join(runtimeState.godot, ".forge3d-template-version"))) {
+  // Forge3D, the earlier name, kept its settings in folders of its own. The first start copies them across and
+  // leaves Forge3D's folders as they are (lib/forge3d-compat.cjs).
+  const forge3d = legacyFolders({ localAppData, appData: app.getPath("appData"), documents: app.getPath("documents") });
+  carryForge3DSettings({ from: forge3d, to: { stateRoot: runtimeState.root, userData: app.getPath("userData") } });
+  if (!app.isPackaged && !fs.existsSync(path.join(runtimeState.godot, GODOT_TEMPLATE_MARKER))) {
     fs.cpSync(path.join(repoRoot, "godot"), runtimeState.godot, { recursive: true, force: true, filter: (item) => !item.includes(`${path.sep}.godot${path.sep}`) });
-    fs.writeFileSync(path.join(runtimeState.godot, ".forge3d-template-version"), `${BUNDLE_VERSION}\n`, "utf8");
+    fs.writeFileSync(path.join(runtimeState.godot, GODOT_TEMPLATE_MARKER), `${BUNDLE_VERSION}\n`, "utf8");
   }
   recentProjects = new RecentProjects(path.join(runtimeState.root, "config", "recent-projects.json"));
   agentSettings = new AgentSettings(path.join(runtimeState.root, "config", "settings.json"));
   if (!recentProjects.legacyAdopted()) {
     try {
-      const adopted = adoptLegacyLibrary(legacyLibrary, { appVersion: BUNDLE_VERSION });
+      const adopted = adoptLegacyLibrary(forge3d.library, { appVersion: BUNDLE_VERSION });
       if (adopted) recentProjects.add(adopted);
       recentProjects.markLegacyAdopted();
     } catch (error) {
-      console.error(`Forge3D could not adopt the earlier run library: ${error.message}`);
+      console.error(`Dimensio could not adopt Forge3D's run library: ${error.message}`);
     }
   }
   refreshRecoverable();
@@ -1080,7 +1088,7 @@ app.whenReady().then(async () => {
   }
 
   registerAppProtocol({ protocol, net, session: session.defaultSession, root: path.join(__dirname, "..", "dist") });
-  protocol.handle("forge3d-artifact", (request) => {
+  protocol.handle("dimensio-artifact", (request) => {
     if (!runStore) return new Response("No project is open", { status: 404 });
     const url = new URL(request.url);
     const runId = url.hostname;
@@ -1093,11 +1101,11 @@ app.whenReady().then(async () => {
   registerIpc();
   registerCourseIpc({ handle, getWindow: () => mainWindow });
   createWindow();
-  if (launchError) mainWindow.webContents.once("did-finish-load", () => send("forge3d:error", `Forge3D could not reopen the project: ${launchError}`));
+  if (launchError) mainWindow.webContents.once("did-finish-load", () => send("dimensio:error", `Dimensio could not reopen the project: ${launchError}`));
   const godot = externalTools(true).godot;
   if (godot) {
     godotPrimePromise = primeGodotProject(runtimeState, godot);
-    godotPrimePromise.catch((error) => send("forge3d:error", `Godot project setup failed: ${error.message}`));
+    godotPrimePromise.catch((error) => send("dimensio:error", `Godot project setup failed: ${error.message}`));
   }
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();

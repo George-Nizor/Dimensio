@@ -1,16 +1,17 @@
 # Capabilities report
 
-`forge3d capabilities --json` answers one question before a run starts: which of the four routes
+`dimensio capabilities --json` answers one question before a run starts: which of the four routes
 (splat, blender, export, godot) can this machine do, and for the ones it cannot, what is missing and
 what should the person do. It is read-only: it never installs, writes or changes configuration. The
-Setup panel in the desktop renders it; the code is `src/forge3d/capabilities.py`.
+The setup card in the Workshop renders it; the code is `src/dimensio/capabilities.py`.
 
 ```text
-forge3d capabilities [--json] [--agent claude|codex]     exit code 0 whenever a report was produced
+dimensio capabilities [--json] [--agent claude|codex]     exit code 0 whenever a report was produced
 ```
 
-The generating routes need "an agent": the one named by `--agent`, else `FORGE3D_AGENT`, else Claude
-Code. The desktop passes the agent chosen on its setup card.
+The generating routes need "an agent": the one named by `--agent`, else `DIMENSIO_AGENT` (or
+Forge3D's `FORGE3D_AGENT`), else Claude Code. The Workshop passes the agent chosen on its setup card.
+Every `DIMENSIO_*` variable the command reads falls back to its `FORGE3D_*` name the same way.
 
 It runs on Windows (the real target) and degrades on WSL/Linux/macOS: the report says which
 `platform.system` it saw, and the splat stack is reported `missing` with a reason on platforms that
@@ -25,14 +26,14 @@ A cold WSL VM can take several seconds, so call it asynchronously and cache it. 
 ```jsonc
 {
   "schema": 1,
-  "forge3d_version": "0.3.0",
+  "dimensio_version": "0.4.0",
   "generated_at": "2026-10-06T21:14:03+00:00",
   "platform": { "system": "windows", "python": "3.12.3", "release": "10" },   // system: windows | wsl | linux | macos
   "agent": { "id": "claude", "name": "Claude Code" },  // the agent the routes need
   "capabilities": { "<id>": { /* item */ }, ... },    // ordered, keyed by id
   "routes": { "splat": { /* route */ }, "splat_text": {}, "blender": {}, "export": {}, "godot": {} },
   "versions": {                                       // real detected versions, null when unknown
-    "forge3d": "0.3.0", "agent": "2.1.299", "blender": "5.0.1", "godot": "4.6.2",
+    "dimensio": "0.4.0", "agent": "2.1.299", "blender": "5.0.1", "godot": "4.6.2",
     "uv": "0.8.3", "node": "22.1.0", "cuda": "12.9", "wsl_distro": "Ubuntu-24.04"
   }
 }
@@ -66,7 +67,7 @@ it.
 | --- | --- | --- | --- |
 | `agent` | The chosen agent and its sign-in | splat, blender | `label` is the agent's name and `detail.agent` its id. Claude Code: found at `DIMENSIO_CLAUDE_EXE`, `%USERPROFILE%\.local\bin\claude.exe`, `claude.exe` or `claude.cmd` on PATH, then npm's `claude.cmd`; sign-in is `claude auth status` (exit 0 and `loggedIn`). Codex: sign-in is `codex login status` (exit 0). A timed-out check is `degraded`. |
 | `image_generation` | The agent can make a reference image from words | splat_text | Optional. `ready` only with Codex. With Claude Code it is `optional_missing`, and says a splat needs an attached image. |
-| `git_bash` | Git Bash for Claude Code | | Windows with Claude Code only. Optional and never blocking: without it Claude Code runs commands in PowerShell, which Forge3D allows. |
+| `git_bash` | Git Bash for Claude Code | | Windows with Claude Code only. Optional and never blocking: without it Claude Code runs commands in PowerShell, which Dimensio allows. |
 | `blender` | Blender 4.2 or later | blender, export | `degraded` below 4.2 (extensions). Version from `blender --version`. |
 | `kiri` | KIRI Engine Blender extension | export | Needed only for splat-to-Blend export. Looked up in Blender's user extensions folders. |
 | `blender_mcp` | Blender MCP add-on | blender | `optional_missing` when absent. Supervised live inspection only; presence is checked, not whether its bridge is running. |
@@ -106,7 +107,7 @@ blocked with the reason "Claude Code cannot make images, so a splat from words a
 
 ## What the renderer should do
 
-* Call `window.forge3d.capabilities({ force })` (main handler `forge3d:capabilities`). It resolves to
+* Call `window.dimensio.capabilities({ force })` (main handler `dimensio:capabilities`). It resolves to
   either `{ ok: true, ...report }` or `{ ok: false, error, fix }` (the CLI could not run or printed
   something invalid). It never rejects. Run stays off until the first answer arrives, and when the
   check could not be done.

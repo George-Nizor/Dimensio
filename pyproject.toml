@@ -3,15 +3,15 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "forge3d"
-version = "0.3.0"
-description = "Lean, local-first 3D workflow helpers for Codex, Blender, and Godot"
+name = "dimensio"
+version = "0.4.0"
+description = "Dimensio's command-line tool: the Blender, Godot and local model steps the Workshop's agent runs"
 requires-python = ">=3.11"
 license = { text = "MIT" }
 dependencies = []
 
 [project.scripts]
-forge3d = "forge3d.cli:main"
+dimensio = "dimensio.cli:main"
 
 [tool.setuptools]
 package-dir = { "" = "src" }

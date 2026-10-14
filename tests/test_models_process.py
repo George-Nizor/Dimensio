@@ -3,8 +3,8 @@ from __future__ import annotations
 import sys
 import unittest
 
-from forge3d.errors import CommandError
-from forge3d.process import CommandRunner, WSL
+from dimensio.errors import CommandError
+from dimensio.process import CommandRunner, WSL
 
 
 class StubRunner:
@@ -14,7 +14,7 @@ class StubRunner:
         self.stderr = stderr
 
     def run(self, command: list[str], **_: object):
-        from forge3d.process import CommandResult
+        from dimensio.process import CommandResult
 
         return CommandResult(tuple(command), self.returncode, self.stdout, self.stderr)
 

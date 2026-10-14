@@ -6,10 +6,10 @@ const fs = require("node:fs");
 const os = require("node:os");
 const path = require("node:path");
 const test = require("node:test");
-const { detectWslModelsDirectory, findCodexExecutable, primeGodotProject } = require("../src/lib/runtime.cjs");
+const { WSL_MODELS_ROOT, detectWslModelsDirectory, findCodexExecutable, primeGodotProject } = require("../src/lib/runtime.cjs");
 
 test("primes a fresh Godot project class cache once", async (t) => {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), "forge3d-godot-"));
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "dimensio-godot-"));
   t.after(() => fs.rmSync(root, { recursive: true, force: true }));
   const godot = path.join(root, "godot.exe");
   const project = path.join(root, "project");
@@ -41,29 +41,34 @@ test("primes a fresh Godot project class cache once", async (t) => {
 
 test("resolves the default local model directory once for child tool calls", () => {
   const spawnProcess = (_command, args) => {
-    assert.deepEqual(args, ["--exec", "sh", "-lc", "printf %s \"$HOME/.local/share/forge3d/models\""]);
-    return { status: 0, stdout: "/home/george/.local/share/forge3d/models" };
+    assert.deepEqual(args, ["--exec", "sh", "-lc", WSL_MODELS_ROOT]);
+    return { status: 0, stdout: "/home/george/.local/share/dimensio/models" };
   };
-  assert.equal(detectWslModelsDirectory("wsl.exe", { spawnProcess }), "/home/george/.local/share/forge3d/models");
+  assert.equal(detectWslModelsDirectory("wsl.exe", { spawnProcess }), "/home/george/.local/share/dimensio/models");
+  // Models Forge3D installed are used where they are when Dimensio's folder is not there.
+  assert.match(WSL_MODELS_ROOT, /\[ -d "\$root" \] \|\| \[ ! -d "\$HOME\/\.local\/share\/forge3d\/models" \] \|\| root="\$HOME\/\.local\/share\/forge3d\/models"/);
 });
 
 test("Codex discovery prefers the spawnable local app binary over WindowsApps PATH entries", () => {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), "forge3d-codex-"));
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "dimensio-codex-"));
   const localAppData = path.join(root, "LocalAppData");
   const executable = path.join(localAppData, "OpenAI", "Codex", "bin", "current", "codex.exe");
   fs.mkdirSync(path.dirname(executable), { recursive: true });
   fs.writeFileSync(executable, "test");
   const originalLocalAppData = process.env.LOCALAPPDATA;
-  const originalOverride = process.env.FORGE3D_CODEX_EXE;
+  const overrides = ["DIMENSIO_CODEX_EXE", "FORGE3D_CODEX_EXE"];
+  const original = Object.fromEntries(overrides.map((name) => [name, process.env[name]]));
   try {
     process.env.LOCALAPPDATA = localAppData;
-    delete process.env.FORGE3D_CODEX_EXE;
+    for (const name of overrides) delete process.env[name];
     assert.equal(findCodexExecutable(), executable);
   } finally {
     if (originalLocalAppData === undefined) delete process.env.LOCALAPPDATA;
     else process.env.LOCALAPPDATA = originalLocalAppData;
-    if (originalOverride === undefined) delete process.env.FORGE3D_CODEX_EXE;
-    else process.env.FORGE3D_CODEX_EXE = originalOverride;
+    for (const name of overrides) {
+      if (original[name] === undefined) delete process.env[name];
+      else process.env[name] = original[name];
+    }
     fs.rmSync(root, { recursive: true, force: true });
   }
 });

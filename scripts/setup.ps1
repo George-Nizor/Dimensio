@@ -51,7 +51,7 @@ foreach ($requiredPath in @($blenderExe, $uvExe, $uvxExe, $addonSource)) {
     }
 }
 
-Invoke-Step "Install the Forge3D CLI as an editable uv tool" {
+Invoke-Step "Install the Dimensio CLI as an editable uv tool" {
     & $uvExe tool install --force --editable $repoRoot
     if ($LASTEXITCODE -ne 0) { throw "uv tool install failed." }
     & $uvExe tool update-shell
@@ -69,7 +69,7 @@ target = target_dir / 'blender_mcp.py'
 shutil.copy2(source, target)
 bpy.ops.preferences.addon_enable(module='blender_mcp')
 bpy.ops.wm.save_userpref()
-print(f'Forge3D: installed Blender MCP to {target}')
+print(f'Dimensio: installed Blender MCP to {target}')
 "@
     & $blenderExe --background --factory-startup --python-expr $installScript
     if ($LASTEXITCODE -ne 0) { throw "Blender add-on installation failed." }
@@ -104,24 +104,24 @@ if ($godotExe -and (Test-Path -LiteralPath $godotExe)) {
 
 if ($InstallModels) {
     Invoke-Step "Install the local TripoSplat visual reconstruction baseline in WSL" {
-        $forge3dExe = Join-Path $env:USERPROFILE ".local\bin\forge3d.exe"
-        if (-not (Test-Path -LiteralPath $forge3dExe)) {
-            throw "The installed Forge3D CLI was not found: $forge3dExe"
+        $dimensioExe = Join-Path $env:USERPROFILE ".local\bin\dimensio.exe"
+        if (-not (Test-Path -LiteralPath $dimensioExe)) {
+            throw "The installed Dimensio CLI was not found: $dimensioExe"
         }
-        & $forge3dExe models install triposplat
+        & $dimensioExe models install triposplat
         if ($LASTEXITCODE -ne 0) { throw "TripoSplat installation failed." }
     }
 }
 
 if ($InstallPersonalPlugin) {
-    Invoke-Step "Install the personal Forge3D Codex plugin" {
+    Invoke-Step "Install the personal Dimensio Codex plugin" {
         & (Join-Path $scriptRoot "install-personal-plugin.ps1")
         if ($LASTEXITCODE -ne 0) { throw "Personal plugin installation failed." }
     }
 }
 
 Write-Host ""
-Write-Host "Forge3D setup complete."
-Write-Host "Run: forge3d doctor"
-Write-Host "Restart Codex so it loads .codex/config.toml and the Forge3D plugin."
+Write-Host "Dimensio setup complete."
+Write-Host "Run: dimensio doctor"
+Write-Host "Restart Codex so it loads .codex/config.toml and the Dimensio plugin."
 Write-Host "Launch Blender for MCP with: scripts\start-blender-mcp.ps1"

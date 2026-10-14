@@ -1,7 +1,7 @@
 # Renderer screenshot harness
 
-A visual check for the Forge3D renderer, not a unit test. `harness.cjs` serves a built renderer, injects a
-mocked `window.forge3d` bridge with invented runs, and shoots named scenes in headless Chromium
+A visual check for the Workshop's renderer, not a unit test. `harness.cjs` serves a built renderer, injects a
+mocked `window.dimensio` bridge with invented runs, and shoots named scenes in headless Chromium
 (SwiftShader WebGL). The run data shapes are guesses taken from `main.js`; the real Electron shell,
 title-bar overlay, ClearType and real IPC timing are not covered.
 
@@ -16,7 +16,9 @@ Scenes: `first checking offline plugin done image model checks text logs running
 approval settings focus`, plus the readiness scenes `blocked signedout degraded ready capserror stopped blockedrun checkingcaps`
 (the mocked `capabilities()` answers with a report in the schema of `docs/capabilities.md`; `capserror` answers `{ ok: false }`).
 Project scenes: `start` (start screen with recent projects and unsaved work), `startempty`, `untitled` (an unsaved new
-project) and `filemenu` (the File menu open). Every other scene runs inside a saved project.
+project), `filemenu` (the File menu open), `setuplink` (the page opened as `workshop.html#setup`, as the course
+app's Settings links to it: the setup card with no project open) and `setuplinkclosed` (the same after Close).
+Every other scene runs inside a saved project.
 Both themes: `THEME=light P=light- npm run shots`. Pick some with `node test-tools/screenshots/harness.cjs first,model,failed`.
 
 Environment variables:

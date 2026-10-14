@@ -150,7 +150,7 @@ The preload exposes `window.dimensio.course`:
 - `reveal(path)`: shows a file in Explorer.
 - `courseFolder()`: where starter files and copies live (`Documents\Dimensio\Course` by default).
 
-The Workshop keeps `window.forge3d` until the rename step.
+The Workshop's own calls are on the same object, `window.dimensio`, beside `course`.
 
 ## Agents in the Workshop
 

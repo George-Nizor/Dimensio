@@ -68,10 +68,23 @@ export function shortcutCommand(event = {}) {
   return null;
 }
 
-/** The window title: "● Name — Forge3D" while unsaved, the bare app name on the start screen. */
+/** The window title: "● Name — Dimensio" while unsaved, the bare app name on the start screen. */
 export function projectTitle(project) {
-  if (!project) return "Forge3D";
-  return `${project.dirty ? "● " : ""}${project.name} — Forge3D`;
+  if (!project) return "Dimensio";
+  return `${project.dirty ? "● " : ""}${project.name} — Dimensio`;
+}
+
+/** Whether the page was opened to set up the agent: the course app's Settings links to workshop.html#setup. */
+export function setupRequested(hash = "") {
+  return String(hash).replace(/^#/, "").toLowerCase() === "setup";
+}
+
+/**
+ * The start screen covers the Workshop while no project is open. It stands aside while the setup card is open, so
+ * the card can be reached before any project exists (from #setup, or the status bar).
+ */
+export function startScreenVisible({ project, setupOpen = false } = {}) {
+  return project === null && !setupOpen;
 }
 
 /** A short location for a recent entry: the folder, with the user profile shortened to ~. */

@@ -10,7 +10,7 @@ config_version=5
 
 [application]
 
-config/name="Forge3D Review"
+config/name="Dimensio Review"
 run/main_scene="res://review.tscn"
 config/features=PackedStringArray("4.6")
 
@@ -28,7 +28,7 @@ window/stretch/mode="canvas_items"
 
 [dotnet]
 
-project/assembly_name="Forge3D Review"
+project/assembly_name="Dimensio Review"
 
 [editor_plugins]
 

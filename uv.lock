@@ -3,6 +3,6 @@ revision = 3
 requires-python = ">=3.11"
 
 [[package]]
-name = "forge3d"
-version = "0.3.0"
+name = "dimensio"
+version = "0.4.0"
 source = { editable = "." }

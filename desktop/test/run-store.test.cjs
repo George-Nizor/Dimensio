@@ -8,7 +8,7 @@ const test = require("node:test");
 const { RunStore, atomicWriteJson } = require("../src/lib/run-store.cjs");
 
 function temporaryDirectory() {
-  return fs.mkdtempSync(path.join(os.tmpdir(), "forge3d-run-store-"));
+  return fs.mkdtempSync(path.join(os.tmpdir(), "dimensio-run-store-"));
 }
 
 test("atomic writes retry transient Windows file locks and remove their temporary file", (t) => {

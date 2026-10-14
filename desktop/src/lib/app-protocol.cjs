@@ -17,8 +17,8 @@ const path = require("node:path");
 const { pathToFileURL } = require("node:url");
 
 const APP_SCHEME = "dimensio-app";
-// The app id electron-builder registers (package.json build.appId). The rename step changes both.
-const APP_ID = "com.instrumenta.forge3d";
+// The app id electron-builder registers (package.json build.appId). A test keeps the two the same.
+const APP_ID = "com.instrumenta.dimensio";
 const EMBED_URLS = ["https://www.youtube-nocookie.com/embed/*"];
 const EMBED_REFERRER = `https://${APP_ID}/`;
 const APP_HOST = "app";

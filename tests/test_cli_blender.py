@@ -5,8 +5,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from forge3d.blender import Blender
-from forge3d.process import CommandResult
+from dimensio.blender import Blender
+from dimensio.process import CommandResult
 
 
 class CapturingRunner:
@@ -25,7 +25,7 @@ class BlenderBridgeTests(unittest.TestCase):
     def test_task_uses_dispatcher_request_contract_and_cleans_request(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
-            dispatcher = root / "blender" / "forge3d_task.py"
+            dispatcher = root / "blender" / "dimensio_task.py"
             dispatcher.parent.mkdir()
             dispatcher.write_text("# task", encoding="utf-8")
             executable = root / "blender.exe"

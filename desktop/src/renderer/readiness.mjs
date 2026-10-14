@@ -89,7 +89,7 @@ export function deriveReadiness({ capabilities = null, settings = {}, appServerE
 
   if (!capabilities) return { ...base, phase: "checking", reason: `Checking this machine for ${agentName}, Blender and the splat stack.` };
   if (!capabilities.ok) {
-    return { ...base, phase: "error", error: capabilities.error || "The capability check did not run.", fix: capabilities.fix || "", reason: "Forge3D could not check this machine, so it cannot say whether a run will work." };
+    return { ...base, phase: "error", error: capabilities.error || "The capability check did not run.", fix: capabilities.fix || "", reason: "The Workshop could not check this machine, so it cannot say whether a run will work." };
   }
 
   const report = capabilities;
@@ -178,7 +178,7 @@ export function sentenceCase(value) {
 }
 
 // The headline and lead line of the setup card.
-export function setupHeadline(readiness, { firstRun = false } = {}) {
+export function setupHeadline(readiness, { firstRun = false, noProject = false } = {}) {
   switch (readiness.phase) {
     case "checking":
       return { title: "Checking this machine", lead: readiness.reason };
@@ -195,13 +195,14 @@ export function setupHeadline(readiness, { firstRun = false } = {}) {
         ? { title: `The ${readiness.agentName || DEFAULT_AGENT.name} session ended`, lead: readiness.reason }
         : { title: "Ready, with a caveat", lead: `${readiness.reason} Run is still available.` };
     default:
+      if (noProject) return { title: "Everything is ready", lead: "Create or open a project, then describe a model in the prompt bar." };
       return firstRun
-        ? { title: "What shall we forge?", lead: "Everything Forge3D needs is ready. Describe an asset in the prompt bar." }
-        : { title: "Everything is ready", lead: "Every dependency Forge3D checked is in place." };
+        ? { title: "Everything is ready", lead: "Describe a model in the prompt bar to start the first run." }
+        : { title: "Everything is ready", lead: "Everything the Workshop checked is in place." };
   }
 }
 
-// The agent choice on the setup card, from window.forge3d.agentStatus(): one row per agent with its state, what it
+// The agent choice on the setup card, from window.dimensio.agentStatus(): one row per agent with its state, what it
 // can do that matters here, and the install or sign-in fix when it is not ready.
 export function agentChoices(result) {
   const statuses = result?.statuses || {};

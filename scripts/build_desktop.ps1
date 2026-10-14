@@ -14,7 +14,7 @@ $temporaryRoot = Join-Path $repoRoot ".tmp\desktop-build"
 
 foreach ($command in @("uv", "npm")) {
     if (-not (Get-Command $command -ErrorAction SilentlyContinue)) {
-        throw "$command is required to build Forge3D."
+        throw "$command is required to build Dimensio."
     }
 }
 
@@ -26,15 +26,15 @@ if (-not $SkipCli) {
         --noconfirm `
         --clean `
         --onefile `
-        --name forge3d `
+        --name dimensio `
         --paths (Join-Path $repoRoot "src") `
         --distpath $runtimeRoot `
         --workpath (Join-Path $temporaryRoot "work") `
         --specpath (Join-Path $temporaryRoot "spec") `
-        (Join-Path $repoRoot "scripts\forge3d_entry.py")
+        (Join-Path $repoRoot "scripts\dimensio_entry.py")
     $pyInstallerExitCode = $LASTEXITCODE
     Pop-Location
-    if ($pyInstallerExitCode -ne 0) { throw "PyInstaller failed to build forge3d.exe." }
+    if ($pyInstallerExitCode -ne 0) { throw "PyInstaller failed to build dimensio.exe." }
 }
 
 $npmSteps = [System.Collections.Generic.List[string]]::new()
@@ -49,7 +49,7 @@ if ($env:OS -eq "Windows_NT" -and $desktopRoot.StartsWith("\\")) {
     # temporary drive for this child process and removes it when cmd exits.
     $npmCommand = 'pushd "{0}" && {1} && popd' -f $desktopRoot, ($npmSteps -join " && ")
     & cmd.exe /d /s /c $npmCommand
-    if ($LASTEXITCODE -ne 0) { throw "Forge3D desktop dependency, test, or package step failed." }
+    if ($LASTEXITCODE -ne 0) { throw "Dimensio desktop dependency, test, or package step failed." }
 }
 else {
     Push-Location $desktopRoot
@@ -57,7 +57,7 @@ else {
         foreach ($npmStep in $npmSteps) {
             $npmArguments = $npmStep.Substring(4).Split(" ")
             & npm @npmArguments
-            if ($LASTEXITCODE -ne 0) { throw "Forge3D desktop step failed: $npmStep" }
+            if ($LASTEXITCODE -ne 0) { throw "Dimensio desktop step failed: $npmStep" }
         }
     }
     finally {
@@ -68,25 +68,25 @@ else {
 $desktopPackage = Get-Content -LiteralPath (Join-Path $desktopRoot "package.json") -Raw | ConvertFrom-Json
 $releaseVersion = [string]$desktopPackage.version
 if ([string]::IsNullOrWhiteSpace($releaseVersion)) {
-    throw "Forge3D desktop package version is missing."
+    throw "Dimensio desktop package version is missing."
 }
-$assetName = "Forge3D-$releaseVersion-windows-x64.zip"
+$assetName = "Dimensio-$releaseVersion-windows-x64.zip"
 $asset = Join-Path $packageRoot $assetName
 if (-not (Test-Path -LiteralPath $asset -PathType Leaf)) {
     $electronVersion = ($releaseVersion -split "\+", 2)[0]
-    $electronAssetName = "Forge3D-$electronVersion-windows-x64.zip"
+    $electronAssetName = "Dimensio-$electronVersion-windows-x64.zip"
     $electronAsset = Join-Path $packageRoot $electronAssetName
     if ($electronAsset -ne $asset -and (Test-Path -LiteralPath $electronAsset -PathType Leaf)) {
         Move-Item -LiteralPath $electronAsset -Destination $asset
     }
 }
 if (-not (Test-Path -LiteralPath $asset -PathType Leaf)) {
-    throw "Forge3D release archive was not created: $asset"
+    throw "Dimensio release archive was not created: $asset"
 }
 $assetInfo = Get-Item -LiteralPath $asset
 $manifest = [ordered]@{
     schemaVersion = 1
-    product = "forge3d"
+    product = "dimensio"
     version = $releaseVersion
     platform = "windows-x64"
     minimumInstrumentaVersion = "0.8.0"
@@ -95,11 +95,11 @@ $manifest = [ordered]@{
         asset = $assetName
         size = $assetInfo.Length
         sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $asset).Hash.ToLowerInvariant()
-        entry = "Forge3D.exe"
+        entry = "Dimensio.exe"
     }
 }
 $manifestPath = Join-Path $packageRoot "instrumenta-release.json"
 $manifestJson = $manifest | ConvertTo-Json -Depth 6
 [System.IO.File]::WriteAllText($manifestPath, "$manifestJson`n", [System.Text.UTF8Encoding]::new($false))
-Write-Host "Forge3D release ready: $asset"
+Write-Host "Dimensio release ready: $asset"
 Write-Host "Instrumenta manifest: $manifestPath"

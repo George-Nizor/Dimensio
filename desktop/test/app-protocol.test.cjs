@@ -54,7 +54,7 @@ test("YouTube's player page is told which app embeds it, as YouTube asks of desk
   assert.deepEqual(filter.urls, ["https://www.youtube-nocookie.com/embed/*"]);
   const send = (requestHeaders) => new Promise((resolve) => listener({ requestHeaders }, (answer) => resolve(answer.requestHeaders)));
   return Promise.all([
-    send({ Accept: "text/html" }).then((headers) => assert.equal(headers.Referer, "https://com.instrumenta.forge3d/")),
+    send({ Accept: "text/html" }).then((headers) => assert.equal(headers.Referer, "https://com.instrumenta.dimensio/")),
     send({ referer: "https://example.org/" }).then((headers) => { assert.equal(headers.referer, "https://example.org/"); assert.equal(headers.Referer, undefined); }),
   ]);
 });

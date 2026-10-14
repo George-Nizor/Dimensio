@@ -1,7 +1,7 @@
 # Experiments
 
 These are demonstrations and retained research, not dependencies of the
-Forge3D production pipeline.
+Dimensio production pipeline.
 
 ## `threejs/`
 

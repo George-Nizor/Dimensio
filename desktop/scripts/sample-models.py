@@ -25,7 +25,7 @@ from mathutils import Euler, Vector
 WIDTH, HEIGHT = 640, 480
 VIEWS = ("persp", "front", "right", "top")
 WOOD = (0.80, 0.56, 0.34, 1.0)
-OUTLINE = (0.933, 0.467, 0.322)  # Forge3D ember, #EE7752
+OUTLINE = (0.933, 0.467, 0.322)  # Dimensio ember, #EE7752
 ATTEMPT_FILL = (0.17, 0.17, 0.17, 0.82)
 
 

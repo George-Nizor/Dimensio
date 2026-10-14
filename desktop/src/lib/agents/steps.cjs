@@ -21,7 +21,7 @@ function presentItem(item) {
   if (/triposplat|models run|gaussian|candidate\.(splat|ply)/.test(lower)) return { phase: "generate", name: "Generate asset", detail: "Generating the Gaussian splat locally" };
   if (/validat|report|quality check|doctor/.test(lower)) return { phase: "validate", name: "Check quality", detail: "Checking output quality" };
   if (/export|proxy|collision|save|convert/.test(lower)) return { phase: "package", name: "Package deliverables", detail: "Preparing reusable output files" };
-  if (/blender|procedural|forge3d_task/.test(lower)) return { phase: "generate", name: "Generate asset", detail: "Building the asset in Blender" };
+  if (/blender|procedural|dimensio_task/.test(lower)) return { phase: "generate", name: "Generate asset", detail: "Building the asset in Blender" };
   return { phase: "local", name: "Local processing", detail: item.type === "mcpToolCall" ? "Using a local 3D tool" : "Running a local production task" };
 }
 

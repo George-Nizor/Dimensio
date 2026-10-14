@@ -18,7 +18,7 @@ def main() -> None:
         if "FINISHED" not in result:
             raise RuntimeError(f"Could not start Blender MCP: {result}")
 
-    print("Forge3D: Blender MCP is listening on 127.0.0.1:9876")
+    print("Dimensio: Blender MCP is listening on 127.0.0.1:9876")
 
 
 main()

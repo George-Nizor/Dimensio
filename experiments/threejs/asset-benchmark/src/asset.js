@@ -49,7 +49,7 @@ function createWingGeometry(side) {
 
 function createVentBank(material, side) {
   const group = name(new THREE.Group(), `${side > 0 ? 'Right' : 'Left'}VentBank`, {
-    forge3dRole: 'detail',
+    dimensioRole: 'detail',
   });
   const geometry = new RoundedBoxGeometry(0.05, 0.045, 0.34, 2, 0.015);
 
@@ -66,7 +66,7 @@ function createVentBank(material, side) {
 function createThruster(materials, side) {
   const label = side > 0 ? 'Right' : 'Left';
   const root = name(new THREE.Group(), `${label}Thruster`, {
-    forge3dRole: 'thruster',
+    dimensioRole: 'thruster',
     exportPart: true,
   });
   root.position.set(side * 1.04, -0.02, 0.14);
@@ -96,7 +96,7 @@ function createThruster(materials, side) {
     new THREE.CircleGeometry(0.235, 32),
     materials.thrusterGlow,
     `${label}ThrusterGlow`,
-    { forge3dRole: 'emissive' },
+    { dimensioRole: 'emissive' },
   );
   glow.position.z = -0.235;
   glow.rotation.y = 180 * DEG;
@@ -104,7 +104,7 @@ function createThruster(materials, side) {
   root.add(glow);
 
   const rotor = name(new THREE.Group(), `${label}ThrusterRotor`, {
-    forge3dRole: 'animated',
+    dimensioRole: 'animated',
   });
   rotor.position.z = -0.25;
   const bladeGeometry = new RoundedBoxGeometry(0.42, 0.035, 0.055, 2, 0.015);
@@ -125,7 +125,7 @@ function createThruster(materials, side) {
 
 function createSensorHead(materials) {
   const yaw = name(new THREE.Group(), 'SensorYaw', {
-    forge3dRole: 'animationPivot',
+    dimensioRole: 'animationPivot',
     exportPart: true,
   });
   yaw.position.set(0, 0.42, -0.02);
@@ -138,7 +138,7 @@ function createSensorHead(materials) {
   yaw.add(neck);
 
   const pitch = name(new THREE.Group(), 'SensorPitch', {
-    forge3dRole: 'animationPivot',
+    dimensioRole: 'animationPivot',
   });
   pitch.position.y = 0.14;
   yaw.add(pitch);
@@ -164,7 +164,7 @@ function createSensorHead(materials) {
     new THREE.CircleGeometry(0.105, 32),
     materials.lens,
     'PrimaryLens',
-    { forge3dRole: 'sensor' },
+    { dimensioRole: 'sensor' },
   );
   lens.position.set(0, -0.025, 0.29);
   lens.castShadow = false;
@@ -203,7 +203,7 @@ function createSensorHead(materials) {
 
 function createUndercarriage(materials) {
   const root = name(new THREE.Group(), 'Undercarriage', {
-    forge3dRole: 'support',
+    dimensioRole: 'support',
     exportPart: true,
   });
 
@@ -347,7 +347,7 @@ function createAnimationClips() {
 export function createAegisDrone() {
   const materials = createMaterials();
   const root = name(new THREE.Group(), 'AegisM4', {
-    forge3dSchema: 'forge3d.three.asset.v1',
+    dimensioSchema: 'dimensio.three.asset.v1',
     assetType: 'sentry_drone',
     units: 'meters',
     upAxis: 'Y',
@@ -355,7 +355,7 @@ export function createAegisDrone() {
   });
 
   const chassis = name(new THREE.Group(), 'Chassis', {
-    forge3dRole: 'body',
+    dimensioRole: 'body',
     exportPart: true,
   });
   root.add(chassis);
@@ -387,7 +387,7 @@ export function createAegisDrone() {
       createWingGeometry(side),
       materials.armor,
       `${side < 0 ? 'Left' : 'Right'}Wing`,
-      { forge3dRole: 'wing', exportPart: true },
+      { dimensioRole: 'wing', exportPart: true },
     );
     wing.position.set(0, 0.02, -0.06);
     root.add(wing);
@@ -418,7 +418,7 @@ export function createAegisDrone() {
 
   root.traverse((object) => {
     if (object.isMesh) {
-      object.userData.forge3dRole ??= 'renderMesh';
+      object.userData.dimensioRole ??= 'renderMesh';
     }
   });
 

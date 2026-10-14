@@ -43,7 +43,7 @@ test("the registry makes one driver per agent and wires it once", () => {
 });
 
 test("the agent setting defaults to Claude Code and keeps an explicit choice", () => {
-  const file = path.join(temp("forge3d-settings-"), "config", "settings.json");
+  const file = path.join(temp("dimensio-settings-"), "config", "settings.json");
   const settings = new AgentSettings(file);
   assert.equal(settings.agent(), "claude");
   assert.equal(fs.existsSync(file), false, "reading never writes");
@@ -60,20 +60,20 @@ test("the agent setting defaults to Claude Code and keeps an explicit choice", (
 });
 
 test("tool calls from either agent become the same run steps", () => {
-  assert.equal(describeItem({ type: "commandExecution", command: ["forge3d", "make"] }), "forge3d make");
+  assert.equal(describeItem({ type: "commandExecution", command: ["dimensio", "make"] }), "dimensio make");
   assert.equal(describeItem({ type: "mcpToolCall", server: "blender", tool: "get_scene_info" }), "blender · get_scene_info");
-  assert.equal(presentItem({ type: "commandExecution", command: "forge3d models run triposplat ref.png" }).phase, "generate");
+  assert.equal(presentItem({ type: "commandExecution", command: "dimensio models run triposplat ref.png" }).phase, "generate");
   assert.equal(presentItem({ type: "imageGeneration" }).name, "Prepare reference");
   const manifest = { steps: [] };
-  assert.equal(applyStep(manifest, "started", { id: "t1", type: "commandExecution", command: "forge3d validate x.glb" }, "T0"), true);
-  assert.equal(applyStep(manifest, "completed", { id: "t1", type: "commandExecution", command: "forge3d validate x.glb", status: "completed" }, "T1"), true);
+  assert.equal(applyStep(manifest, "started", { id: "t1", type: "commandExecution", command: "dimensio validate x.glb" }, "T0"), true);
+  assert.equal(applyStep(manifest, "completed", { id: "t1", type: "commandExecution", command: "dimensio validate x.glb", status: "completed" }, "T1"), true);
   assert.deepEqual(manifest.steps, [{ item_id: "t1", name: "Check quality", status: "completed", started_at: "T0", phase: "validate", detail: "Checking output quality", completed_at: "T1" }]);
   assert.equal(applyStep(manifest, "started", { id: "t2", type: "agentTool", name: "Read" }), false, "reading a file is not a step");
   assert.equal(manifest.steps.length, 1);
 });
 
 test("run.json keeps the agent, its session and turns; old runs' Codex threads are still read", async () => {
-  const store = new RunStore(temp("forge3d-agent-runs-"));
+  const store = new RunStore(temp("dimensio-agent-runs-"));
   const run = await store.create({ prompt: "Make a crate" });
   assert.deepEqual(run.agent, { id: null, session_id: null, turn_ids: [] });
   assert.equal(run.codex, undefined);

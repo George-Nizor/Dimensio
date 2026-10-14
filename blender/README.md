@@ -1,17 +1,17 @@
-# Forge3D Blender tasks
+# Dimensio Blender tasks
 
-`forge3d_task.py` is the reproducible Blender side of Forge3D. It runs with
+`dimensio_task.py` is the reproducible Blender side of Dimensio. It runs with
 Blender 5.0's bundled Python and has no third-party Python dependencies.
 
 ```powershell
 & "C:\Program Files\Blender Foundation\Blender 5.0\blender.exe" `
   --background --factory-startup `
-  --python .\blender\forge3d_task.py -- `
+  --python .\blender\dimensio_task.py -- `
   procedural --recipe crate --output .\output\crate\source.blend
 ```
 
 Every invocation prints exactly one machine-readable line beginning with
-`FORGE3D_RESULT=`. Add `--report path.json` to persist the full report.
+`DIMENSIO_RESULT=`. Add `--report path.json` to persist the full report.
 
 ## Task surface
 
@@ -43,7 +43,7 @@ are not replaced unless `--force` explicitly names that same path.
 
 ```powershell
 $blender = "C:\Program Files\Blender Foundation\Blender 5.0\blender.exe"
-$task = ".\blender\forge3d_task.py"
+$task = ".\blender\dimensio_task.py"
 
 & $blender --background --factory-startup --python $task -- `
   procedural --recipe crate --seed 42 --output .\work\01_generated.blend
@@ -62,7 +62,7 @@ $task = ".\blender\forge3d_task.py"
   --roughness 0.38 --output .\work\source.blend
 
 & $blender --background --factory-startup --python $task -- `
-  turntable --input .\work\source.blend --objects "Forge3D_Crate" `
+  turntable --input .\work\source.blend --objects "Dimensio_Crate" `
   --output .\work\preview.png
 
 & $blender --background --factory-startup --python $task -- `
@@ -133,13 +133,16 @@ separate and requires `--copy-root-location --root-source ... --root-target ...`
 
 - Existing output files are refused unless `--force` is present.
 - An input file is never overwritten implicitly.
-- Generated collections carry a Forge3D ownership marker. A same-named,
+- Generated collections carry a Dimensio ownership marker. A same-named,
   artist-owned collection is not deleted or reused.
 - Scene clearing occurs only for a new procedural build in an unsaved in-memory
   scene. `--input` and already-open `.blend` scenes are preserved.
 - Reports contain paths and reproducibility metadata, but no credentials.
-- Retarget constraints are prefixed `FORGE3D_RETARGET_` and only those
+- Retarget constraints are prefixed `DIMENSIO_RETARGET_` and only those
   constraints are removed by the task.
+- Files made under Dimensio's earlier name, Forge3D, are treated the same way:
+  their `forge3d_*` markers, `FORGE3D_RETARGET_` constraints and
+  `forge3d.humanoid-retarget-profile.v1` profiles are read as Dimensio's own.
 
 ## Smoke tests
 

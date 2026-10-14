@@ -8,16 +8,16 @@ from dataclasses import replace
 from pathlib import Path
 from unittest.mock import patch
 
-from forge3d.errors import Forge3DError
-from forge3d.models import (
+from dimensio.errors import DimensioError
+from dimensio.models import (
     MODELS,
     ModelManager,
     _image_command,
     cloud_estimate,
     get_model,
 )
-from forge3d.paths import manual_windows_to_wsl
-from forge3d.process import CommandResult
+from dimensio.paths import manual_windows_to_wsl
+from dimensio.process import CommandResult
 
 
 class FakeWSL:
@@ -63,13 +63,13 @@ class ModelCatalogTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             fake = FakeWSL()
             manager = ModelManager(root=Path(temporary), wsl=fake)  # type: ignore[arg-type]
-            with self.assertRaisesRegex(Forge3DError, "explicit acceptance"):
+            with self.assertRaisesRegex(DimensioError, "explicit acceptance"):
                 manager.install(get_model("spar3d"))
             self.assertEqual(fake.scripts, [])
 
             manager.install(get_model("spar3d"), accept_license=True)
             record = (
-                Path(temporary) / ".forge3d" / "licenses" / "spar3d.json"
+                Path(temporary) / ".dimensio" / "licenses" / "spar3d.json"
             )
             self.assertTrue(record.is_file())
             self.assertEqual(json.loads(record.read_text())["model"], "spar3d")
@@ -93,7 +93,7 @@ class ModelCatalogTests(unittest.TestCase):
             manager = ModelManager(
                 root=root, wsl=FakeWSL()  # type: ignore[arg-type]
             )
-            with self.assertRaisesRegex(Forge3DError, "explicit acceptance"):
+            with self.assertRaisesRegex(DimensioError, "explicit acceptance"):
                 manager.run_image(
                     get_model("triposg"),
                     image,
@@ -108,7 +108,7 @@ class ModelCatalogTests(unittest.TestCase):
             manager = ModelManager(
                 root=root, wsl=FakeWSL()  # type: ignore[arg-type]
             )
-            with self.assertRaisesRegex(Forge3DError, "multiple of 32"):
+            with self.assertRaisesRegex(DimensioError, "multiple of 32"):
                 manager.run_image(
                     get_model("triposplat"),
                     image,
@@ -135,13 +135,13 @@ class ModelCatalogTests(unittest.TestCase):
 
         splat_script = manager.install_plan(get_model("triposplat"), "main")
         self.assertIn("/models/TripoSplat", splat_script)
-        self.assertIn(".forge3d_run.py", splat_script)
+        self.assertIn(".dimensio_run.py", splat_script)
         self.assertIn("VAST-AI/TripoSplat", splat_script)
-        self.assertIn(".forge3d-install-complete", splat_script)
+        self.assertIn(".dimensio-install-complete", splat_script)
 
     def test_unsafe_revision_is_rejected(self) -> None:
         manager = ModelManager(root=Path.cwd(), wsl=FakeWSL())  # type: ignore[arg-type]
-        with self.assertRaisesRegex(Forge3DError, "Unsafe git revision"):
+        with self.assertRaisesRegex(DimensioError, "Unsafe git revision"):
             manager.install_plan(get_model("triposplat"), "main; touch /tmp/no")
 
     def test_image_commands_match_upstream_interfaces(self) -> None:
@@ -200,7 +200,7 @@ class ModelCatalogTests(unittest.TestCase):
             ),
             "/home/george/file.glb",
         )
-        with self.assertRaises(Forge3DError):
+        with self.assertRaises(DimensioError):
             manual_windows_to_wsl(r"\\server\share\file.glb")
 
     def test_cloud_estimate_has_no_network_or_submission_path(self) -> None:

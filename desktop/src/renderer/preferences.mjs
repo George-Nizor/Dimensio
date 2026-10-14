@@ -24,7 +24,7 @@ export function normalizeRunSettings(value = {}) {
   return result;
 }
 
-export function readRunSettings(storage, key = "forge3d.runSettings.v1") {
+export function readRunSettings(storage, key = "dimensio.runSettings.v1") {
   try {
     const raw = storage?.getItem?.(key);
     return normalizeRunSettings(raw ? JSON.parse(raw) : {});
@@ -33,7 +33,7 @@ export function readRunSettings(storage, key = "forge3d.runSettings.v1") {
   }
 }
 
-export function writeRunSettings(storage, value, key = "forge3d.runSettings.v1") {
+export function writeRunSettings(storage, value, key = "dimensio.runSettings.v1") {
   const normalized = normalizeRunSettings(value);
   try { storage?.setItem?.(key, JSON.stringify(normalized)); } catch { /* preferences are optional */ }
   return normalized;

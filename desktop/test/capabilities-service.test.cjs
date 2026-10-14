@@ -18,7 +18,7 @@ function fake(outcomes) {
 
 test("caches a good report and refetches on force", async () => {
   const { impl, calls } = fake([{ stdout: JSON.stringify(report) }, { stdout: JSON.stringify(report) }]);
-  const service = createCapabilitiesService({ command: "forge3d", execFileImpl: impl });
+  const service = createCapabilitiesService({ command: "dimensio", execFileImpl: impl });
   assert.equal((await service.get()).ok, true);
   await service.get();
   assert.equal(calls.length, 1);
@@ -29,14 +29,14 @@ test("caches a good report and refetches on force", async () => {
 
 test("concurrent calls share one probe", async () => {
   const { impl, calls } = fake([{ stdout: JSON.stringify(report) }]);
-  const service = createCapabilitiesService({ command: "forge3d", execFileImpl: impl });
+  const service = createCapabilitiesService({ command: "dimensio", execFileImpl: impl });
   await Promise.all([service.get(), service.get()]);
   assert.equal(calls.length, 1);
 });
 
 test("failures resolve to ok:false and are not cached", async () => {
   const { impl, calls } = fake([{ error: new Error("spawn ENOENT"), stderr: "not found" }, { stdout: "not json" }, { stdout: JSON.stringify(report) }]);
-  const service = createCapabilitiesService({ command: "forge3d", execFileImpl: impl });
+  const service = createCapabilitiesService({ command: "dimensio", execFileImpl: impl });
   const first = await service.get();
   assert.equal(first.ok, false);
   assert.match(first.error, /not found/);
@@ -55,7 +55,7 @@ test("rejects an unknown schema or state", async () => {
 test("the probe asks about the agent chosen at the time, and invalidate drops the old answer", async () => {
   const { impl, calls } = fake([{ stdout: JSON.stringify(report) }, { stdout: JSON.stringify(report) }]);
   let agent = "claude";
-  const service = createCapabilitiesService({ command: "forge3d", execFileImpl: impl, args: () => ["capabilities", "--json", "--agent", agent] });
+  const service = createCapabilitiesService({ command: "dimensio", execFileImpl: impl, args: () => ["capabilities", "--json", "--agent", agent] });
   await service.get();
   agent = "codex";
   service.invalidate();

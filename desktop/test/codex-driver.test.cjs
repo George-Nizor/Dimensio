@@ -103,7 +103,7 @@ test("rejects unsupported server requests with a JSON-RPC method error", () => {
   });
 });
 
-test("turn input invokes Forge3D skill, attaches local images, and disables network by default", async () => {
+test("turn input invokes Dimensio skill, attaches local images, and disables network by default", async () => {
   const client = new CodexAppServerClient();
   let request = null;
   client.request = async (method, params) => {
@@ -114,11 +114,11 @@ test("turn input invokes Forge3D skill, attaches local images, and disables netw
     threadId: "thr-1",
     prompt: "Make a lantern",
     cwd: "C:\\runs\\lantern",
-    skill: { path: "C:\\plugin\\skills\\forge3d\\SKILL.md" },
+    skill: { path: "C:\\plugin\\skills\\dimensio\\SKILL.md" },
     images: ["C:\\runs\\lantern\\attachments\\reference.png"],
   });
   assert.equal(request.method, "turn/start");
-  assert.equal(request.params.input[0].text, "$forge3d Make a lantern");
+  assert.equal(request.params.input[0].text, "$dimensio Make a lantern");
   assert.equal(request.params.input[1].type, "skill");
   assert.equal(request.params.input[2].type, "localImage");
   assert.equal(request.params.sandboxPolicy.networkAccess, false);
@@ -196,11 +196,11 @@ test("Codex notifications become tool, message, step and done events for the act
   await driver.send("go");
   const notify = (method, params) => clients[0].emit("notification", { method, params: { threadId: "thr-1", ...params } });
   notify("turn/started", {});
-  notify("item/started", { item: { id: "i1", type: "commandExecution", command: "forge3d make crate" } });
+  notify("item/started", { item: { id: "i1", type: "commandExecution", command: "dimensio make crate" } });
   notify("item/agentMessage/delta", { delta: "Building." });
   notify("item/commandExecution/outputDelta", { delta: "ok" });
   clients[0].emit("notification", { method: "item/started", params: { threadId: "other", item: { id: "x", type: "commandExecution" } } });
-  notify("item/completed", { item: { id: "i1", type: "commandExecution", command: "forge3d make crate", status: "completed" } });
+  notify("item/completed", { item: { id: "i1", type: "commandExecution", command: "dimensio make crate", status: "completed" } });
   notify("turn/completed", { turn: { status: "completed" } });
   assert.deepEqual(events.map((event) => [event.type, event.method]), [
     ["step", "turn/started"], ["tool", "item/started"], ["message", "item/agentMessage/delta"], ["log", "item/commandExecution/outputDelta"],

@@ -207,14 +207,14 @@ function findBlender({
 
 /**
  * Where dimensio_check.py and dimensio_starter.py live: the `toolkitDir`
- * option, then the packaged copy (resources/forge3d-toolkit/blender, which
+ * option, then the packaged copy (resources/dimensio-toolkit/blender, which
  * desktop/package.json's extraResources fills from ../blender), then the
  * repository's blender/ folder.
  */
 function resolveToolkitDir({ toolkitDir, resourcesPath = process.resourcesPath, fs = nodeFs } = {}) {
   if (toolkitDir) return toolkitDir;
   if (resourcesPath) {
-    const packaged = path.join(resourcesPath, "forge3d-toolkit", "blender");
+    const packaged = path.join(resourcesPath, "dimensio-toolkit", "blender");
     if (fs.existsSync(path.join(packaged, "dimensio_check.py"))) return packaged;
   }
   return path.resolve(__dirname, "..", "..", "..", "blender");

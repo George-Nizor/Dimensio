@@ -8,7 +8,7 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { SparkRenderer, SplatMesh } from "@sparkjsdev/spark";
 import { filmstripArtifacts, selectedArtifactForRun } from "./preview-routing.mjs";
 import { normalizeRunSettings, readRunSettings, writeRunSettings } from "./preferences.mjs";
-import { displayFolder, fileMenuModel, projectTitle, shortcutCommand } from "./project-view.mjs";
+import { displayFolder, fileMenuModel, projectTitle, setupRequested, shortcutCommand, startScreenVisible } from "./project-view.mjs";
 import { summarizeRunSteps } from "./run-presentation.mjs";
 import { agentChoices, deriveReadiness, isImagePath, runGate, setupHeadline, splitFix, statusEntries, toolVersionsFromReport, formatElapsed, sentenceCase } from "./readiness.mjs";
 import { stageState } from "./stage-state.mjs";
@@ -16,9 +16,9 @@ import { icon, themeIcon } from "./icons.mjs";
 
 // Brand v2 cube from Instrumenta's icon library (a UMD file; the bundler hands over its exports). Built from presentation
 // attributes only, so it is safe under this window's Content-Security-Policy.
-const brandIcon = (size, label = "") => InstrumentaIcons.render("forge3d", { size, label });
+const brandIcon = (size, label = "") => InstrumentaIcons.render("dimensio", { size, label });
 
-const api = window.forge3d;
+const api = window.dimensio;
 const app = document.querySelector("#app");
 
 // project: undefined until the main process has answered, then null (the start screen) or the open project.
@@ -34,7 +34,7 @@ let viewportApi = null;
 // { ok: false, error, fix }. capsChecking is true while a check is in flight; the last answer stays on screen meanwhile.
 let capabilities = null;
 let capsChecking = false;
-// window.forge3d.agentStatus(): { agent, statuses: { claude: {...}, codex: {...} } }, for the agent choice on the setup card.
+// window.dimensio.agentStatus(): { agent, statuses: { claude: {...}, codex: {...} } }, for the agent choice on the setup card.
 let agentStatuses = null;
 let composing = false; // New run: no run is selected until one is picked or started
 let showSetup = false; // the person opened the readiness card from the status bar or the Run chip
@@ -52,8 +52,8 @@ function readPreference(key, fallback) {
 function writePreference(key, value) {
   try { localStorage.setItem(key, JSON.stringify(value)); } catch { /* preferences are optional */ }
 }
-Object.assign(panels, readPreference("forge3d.panels", panels));
-Object.assign(viewportTools, readPreference("forge3d.viewport", viewportTools));
+Object.assign(panels, readPreference("dimensio.panels", panels));
+Object.assign(viewportTools, readPreference("dimensio.viewport", viewportTools));
 
 const selectOptions = {
   workflow: [["auto", "Auto route"], ["authored-blender", "Authored Blender"], ["image-to-mesh", "Image to mesh"], ["gaussian-splat", "Gaussian splat"], ["process", "Process existing"], ["rig", "Rig"], ["animate", "Animate"], ["retarget", "Retarget"], ["validate", "Validate"]],
@@ -69,14 +69,14 @@ function optionMarkup(name) {
 app.innerHTML = `
   <header class="topbar">
     <div class="topbar-lead">
-      <div class="brand ii-hover" id="brand" aria-label="Forge3D"><span class="brand-icon">${brandIcon(36)}</span><strong>Forge3D</strong></div>
+      <div class="brand ii-hover" id="brand" aria-label="Dimensio"><span class="brand-icon">${brandIcon(36)}</span><strong>Dimensio</strong></div>
       <button id="file-menu" class="ghost-action file-button" type="button" aria-haspopup="menu" aria-expanded="false" title="Projects: new, open, save">File${icon("chevronDown", 16)}</button>
       <span id="project-name" class="project-name hidden"></span>
     </div>
 
     <div class="omnibox">
       <div class="omnibox-field">
-        <textarea id="prompt" rows="1" aria-label="Forge3D prompt" placeholder="Describe the asset or change…"></textarea>
+        <textarea id="prompt" rows="1" aria-label="Workshop prompt" placeholder="Describe the asset or change…"></textarea>
         <button id="gate-chip" class="gate-chip hidden" type="button"></button>
         <kbd title="Ctrl + Enter runs the prompt">Ctrl ↵</kbd>
       </div>
@@ -200,7 +200,7 @@ const elements = Object.fromEntries([
 const THEME_ORDER = ["system", "light", "dark"];
 const THEME_NAMES = { system: "System", light: "Light", dark: "Dark" };
 const THEME_GLYPHS = { system: "monitor", light: "sun", dark: "moon" };
-let themeChoice = THEME_ORDER.includes(readPreference("forge3d.theme", "system")) ? readPreference("forge3d.theme", "system") : "system";
+let themeChoice = THEME_ORDER.includes(readPreference("dimensio.theme", "system")) ? readPreference("dimensio.theme", "system") : "system";
 let viewportRefresh = null;
 
 // Resolves a colour token (which may be a light-dark() pair) to the colour in use right now, for three.js.
@@ -227,7 +227,7 @@ function applyTheme({ announce = true } = {}) {
 
 document.querySelector("#theme-toggle").addEventListener("click", () => {
   themeChoice = THEME_ORDER[(THEME_ORDER.indexOf(themeChoice) + 1) % THEME_ORDER.length];
-  writePreference("forge3d.theme", themeChoice);
+  writePreference("dimensio.theme", themeChoice);
   applyTheme();
 });
 matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => viewportRefresh?.());
@@ -266,7 +266,7 @@ function applyRunSettings(settings) {
 /* ── helpers ────────────────────────────────────────────────── */
 
 function artifactUrl(runId, relativePath) {
-  return `forge3d-artifact://${runId}/${relativePath.split("/").map(encodeURIComponent).join("/")}`;
+  return `dimensio-artifact://${runId}/${relativePath.split("/").map(encodeURIComponent).join("/")}`;
 }
 
 function escapeHtml(value) {
@@ -401,7 +401,7 @@ function openMenu(box, items, { align = "right", label = "", onClose = null } = 
   return menu;
 }
 
-function askDialog({ eyebrow = "Forge3D", title, body = "", detail = "", input = null, confirmLabel = "Continue", danger = false }) {
+function askDialog({ eyebrow = "Workshop", title, body = "", detail = "", input = null, confirmLabel = "Continue", danger = false }) {
   return new Promise((resolve) => {
     const scrim = document.createElement("div");
     scrim.className = "scrim";
@@ -466,7 +466,7 @@ function renderDependencies() {
   const readiness = currentReadiness();
   const overall = capsChecking && !capabilities ? "checking" : readiness.phase;
   const tools = statusEntries(readiness, state.tools);
-  elements.dependencyStrip.title = "Show what Forge3D checked on this machine";
+  elements.dependencyStrip.title = "Show what the Workshop checked on this machine";
   elements.dependencyStrip.setAttribute("aria-pressed", String(showSetup));
   elements.dependencyStrip.innerHTML = `<span class="status-item ${OVERALL_DOTS[overall]}"><i></i>${OVERALL_LABELS[overall]}</span><span class="status-divider"></span>${
     tools.map(({ name, id, state: toolState }) => {
@@ -494,10 +494,10 @@ async function checkCapabilities(force = false) {
   refreshReadiness();
   let result;
   try {
-    if (typeof api.capabilities !== "function") throw new Error("This build of Forge3D has no capability check.");
+    if (typeof api.capabilities !== "function") throw new Error("This build of Dimensio has no capability check.");
     result = await api.capabilities({ force });
   } catch (error) {
-    result = { ok: false, error: error.message, fix: "Update or reinstall Forge3D." };
+    result = { ok: false, error: error.message, fix: "Update or reinstall Dimensio." };
   }
   capabilities = result && typeof result === "object" ? result : { ok: false, error: "The capability check returned nothing.", fix: "" };
   state.toolVersions = capabilities.ok ? toolVersionsFromReport(capabilities) : {};
@@ -548,7 +548,10 @@ function refreshReadiness() {
 
 function openSetup(open = true) {
   showSetup = open;
+  // Closed after arriving at workshop.html#setup: drop the hash so a reload shows the Workshop as usual.
+  if (!open && setupRequested(location.hash)) history.replaceState(null, "", `${location.pathname}${location.search}`);
   renderDependencies();
+  renderStartScreen();
   renderPreview();
   if (open) elements.preview.querySelector("[data-recheck]")?.focus();
 }
@@ -611,7 +614,7 @@ function renderRuns() {
           <button class="run-more" data-run-menu="${escapeHtml(run.run_id)}" title="Run actions" aria-label="Run actions">${icon("more", 16)}</button>
         </div>`).join("")}
     </section>`).join("")
-    : `<div class="empty-list">${icon("search", 48)}<span>${query ? "No runs match that search." : "No runs yet. Describe an asset to forge the first one."}</span></div>`;
+    : `<div class="empty-list">${icon("search", 48)}<span>${query ? "No runs match that search." : "No runs yet. Describe a model in the prompt bar to start the first one."}</span></div>`;
 
   elements.runList.querySelectorAll("[data-run-id]").forEach((card) => {
     card.addEventListener("click", (event) => { if (!event.target.closest("[data-run-menu]")) selectRun(card.dataset.runId); });
@@ -856,7 +859,7 @@ function renderInspector() {
       agent: "Assistant",
       log: "Tool output",
       activity: "Tool activity",
-      event: "Forge3D",
+      event: "Workshop",
       "approval-request": "Approval needed",
       "approval-decision": "Approval",
       "app-server-stderr": "App Server",
@@ -1107,8 +1110,8 @@ function emptyViewport() {
   return `<div class="viewport-empty" aria-label="Empty viewport">
     <div class="empty-body">
       <span class="empty-icon">${brandIcon(108)}</span>
-      <h2>What shall we forge?</h2>
-      <p>Describe an asset in the prompt bar. Forge3D routes it, builds it locally, and shows the result here.</p>
+      <h2>Describe a model</h2>
+      <p>Type what you want in the prompt bar. The agent builds it on this computer, and the result shows here.</p>
     </div>
   </div>`;
 }
@@ -1171,7 +1174,7 @@ function agentChoiceGroup() {
 function setupCard(forced) {
   const readiness = currentReadiness();
   const firstRun = !state.runs.length;
-  const head = setupHeadline(readiness, { firstRun });
+  const head = setupHeadline(readiness, { firstRun, noProject: !state.project });
   const tone = readiness.phase === "blocked" ? "blocked" : readiness.phase === "ready" ? "ready" : readiness.phase === "checking" ? "checking" : "warn";
   const checking = capsChecking;
   const reportError = readiness.phase === "error";
@@ -1234,7 +1237,7 @@ function runningCard(stateInfo, run) {
     <div class="state-rail unknown" title="Length not known"></div>
     <p class="state-progress"><strong>${escapeHtml(detail)}</strong>
       <span>${stateInfo.done} action${stateInfo.done === 1 ? "" : "s"} done${stateInfo.startedAt ? ` · ${elapsedMarkup(stateInfo.startedAt)}` : ""}</span></p>
-    <p class="state-note">Forge3D cannot tell how far along a build is, so it shows the step and the time instead of a percentage.</p>
+    <p class="state-note">The Workshop cannot tell how far along a build is, so it shows the step and the time instead of a percentage.</p>
     <div class="state-actions"><button class="btn ghost" data-state-action="logs">Open logs</button></div>
   </section></div>`;
 }
@@ -1355,7 +1358,7 @@ function captureViewport() {
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = `forge3d-viewport-${Date.now()}.png`;
+      link.download = `dimensio-viewport-${Date.now()}.png`;
       link.click();
       setTimeout(() => URL.revokeObjectURL(url), 10000);
       toast("Viewport captured");
@@ -1376,6 +1379,7 @@ function syncProject() {
   const project = state.project;
   const key = project === undefined ? undefined : project ? project.id : null;
   if (key === projectKey) return;
+  const firstKnown = projectKey === undefined; // the first state from the main process since the page loaded
   projectKey = key;
   if (key === undefined) return;
   composing = false;
@@ -1387,7 +1391,8 @@ function syncProject() {
   selectedArtifactPath = project?.view?.selected_artifact || null;
   sentView = JSON.stringify({ selected_run_id: selectedRunId, selected_artifact: selectedArtifactPath });
   if (project && Object.keys(project.settings || {}).length) applyRunSettings({ ...runSettings, ...project.settings });
-  showSetup = false;
+  // Another project closes the setup card; the page's first state keeps it open when the page came for it (#setup).
+  showSetup = firstKnown && showSetup && setupRequested(location.hash);
 }
 
 // Where the person is in the project travels with it (saved with the project, never making it unsaved).
@@ -1426,7 +1431,7 @@ function recentRow(entry) {
 }
 
 function renderStartScreen() {
-  const visible = state.project === null;
+  const visible = startScreenVisible({ project: state.project, setupOpen: showSetup });
   elements.startScreen.classList.toggle("hidden", !visible);
   if (!visible) { elements.startScreen.innerHTML = ""; return; }
   const recent = state.recent || [];
@@ -1436,7 +1441,7 @@ function renderStartScreen() {
       <header class="start-head">
         <span class="empty-icon">${brandIcon(84)}</span>
         <div>
-          <h1>Forge3D</h1>
+          <h1>Workshop</h1>
           <p>Each project keeps its own runs, files and run settings in one folder.</p>
         </div>
       </header>
@@ -1446,7 +1451,7 @@ function renderStartScreen() {
       </div>
       ${recoverable.length ? `<section class="start-section recovered">
         <h2>Unsaved work</h2>
-        <p class="start-note">Forge3D closed before these untitled projects were saved. Recover one, then save it.</p>
+        <p class="start-note">Dimensio closed before these untitled projects were saved. Recover one, then save it.</p>
         <ul class="recent-list">${recoverable.map((item) => `<li class="recent-row"><button class="recent-open" data-recover="${escapeHtml(item.id)}">
           <span class="recent-icon">${icon("resume", 24)}</span>
           <span class="recent-lines"><strong>Untitled project</strong><small>Last changed ${escapeHtml(formatDate(item.modified_at))}</small></span>
@@ -1457,7 +1462,7 @@ function renderStartScreen() {
         ${recent.length ? `<ul class="recent-list">${recent.map(recentRow).join("")}</ul>`
           : '<p class="start-note">Projects you open or save appear here.</p>'}
       </section>
-      <label class="check start-reopen"><input type="checkbox" id="reopen-last" ${state.preferences?.reopenLast ? "checked" : ""} /> Reopen the last project when Forge3D starts</label>
+      <label class="check start-reopen"><input type="checkbox" id="reopen-last" ${state.preferences?.reopenLast ? "checked" : ""} /> Reopen the last project when Dimensio starts</label>
     </div>`;
   elements.startScreen.querySelectorAll("[data-start]").forEach((button) => button.addEventListener("click", () => projectCommand(button.dataset.start)));
   elements.startScreen.querySelectorAll("[data-open-recent]").forEach((button) => button.addEventListener("click", () => projectCommand("open", { path: button.dataset.openRecent })));
@@ -1489,7 +1494,7 @@ let projectBusy = false;
 async function projectCommand(command, payload = {}) {
   if (projectBusy) return;
   const project = api.project;
-  if (!project) return toast("This build of Forge3D has no project support", "error");
+  if (!project) return toast("This build of Dimensio has no project support", "error");
   projectBusy = true;
   try {
     let result = null;
@@ -1565,7 +1570,7 @@ function renderComposer() {
   elements.gateChip.classList.toggle("hidden", !showChip);
   elements.gateChip.className = `gate-chip ${gate.level}${showChip ? "" : " hidden"}`;
   elements.gateChip.textContent = gate.chip;
-  elements.gateChip.title = `${gate.message} Click to see what Forge3D checked.`;
+  elements.gateChip.title = `${gate.message} Click to see what the Workshop checked.`;
   elements.cancel.classList.toggle("hidden", !active);
   elements.topbarProgress.classList.toggle("on", Boolean(active));
   // The cube lifts its lid for a few seconds when a job starts, then rests again.
@@ -1594,7 +1599,7 @@ function renderApproval() {
       : approval.method.includes("fileChange") ? "Approve file changes" : "Approve command";
   const detail = network ? `${network.protocol || "network"} access${network.port ? ` on port ${network.port}` : ""}`
     : request.message || params.command || params.reason || JSON.stringify(params, null, 2);
-  const explanation = isMcp ? "A local Forge3D tool is ready to perform this action." : params.reason || "Forge3D needs your decision before continuing.";
+  const explanation = isMcp ? "A local Workshop tool is ready to perform this action." : params.reason || "The Workshop needs your decision before it continues.";
   elements.approvalLayer.innerHTML = `
     <div class="scrim">
       <section class="modal" role="dialog" aria-modal="true">
@@ -1654,7 +1659,7 @@ function setPanel(name, open) {
   panels[name] = open;
   elements[name].dataset.open = String(open);
   elements[`${name}Toggle`].setAttribute("aria-expanded", String(open));
-  writePreference("forge3d.panels", panels);
+  writePreference("dimensio.panels", panels);
   updateDockOffset();
 }
 
@@ -1679,7 +1684,7 @@ function paintRail() {
 
 function setViewportTool(key, value) {
   viewportTools[key] = value;
-  writePreference("forge3d.viewport", viewportTools);
+  writePreference("dimensio.viewport", viewportTools);
   document.querySelectorAll(`[data-${key === "transform" ? "transform" : key === "shading" ? "shading" : "toggle"}]`).forEach((button) => {
     if (key === "grid") button.classList.toggle("active", Boolean(value));
     else button.classList.toggle("active", button.dataset[key] === value);
@@ -1781,7 +1786,7 @@ async function decideApproval(decision) {
 async function repairPlugin() {
   const agreed = await askDialog({
     eyebrow: `${agentName()} plugin`,
-    title: `Repair the Forge3D plugin for ${agentName()}?`,
+    title: `Repair the Dimensio plugin for ${agentName()}?`,
     body: "The plugin is reinstalled from this application bundle. The current plugin directory is preserved as a timestamped backup.",
     confirmLabel: "Repair plugin",
   });
@@ -1790,7 +1795,7 @@ async function repairPlugin() {
     const result = await api.repairPlugin();
     state.skill = result.skill;
     renderDependencies();
-    toast(`Forge3D plugin ${result.version} is ready`, "success");
+    toast(`Dimensio plugin ${result.version} is ready`, "success");
   } catch (error) {
     toast(error.message, "error");
   }
@@ -1948,7 +1953,7 @@ document.addEventListener("keydown", (event) => {
   const command = shortcutCommand(event);
   if (command) {
     event.preventDefault();
-    if (document.querySelector(".scrim")) return; // a Forge3D dialog is open
+    if (document.querySelector(".scrim")) return; // a Workshop dialog is open
     closeMenu();
     if ((command === "save" || command === "save-as") && !state.project) return;
     projectCommand(command);
@@ -1991,6 +1996,9 @@ updateStatusTime();
 setInterval(updateStatusTime, 30000);
 renderAll();
 checkCapabilities(false); // not awaited: a cold WSL can take seconds, and the window must not wait for it
+// The course app's Settings links to workshop.html#setup to choose and sign in to the agent.
+if (setupRequested(location.hash)) openSetup(true);
+addEventListener("hashchange", () => { if (setupRequested(location.hash)) openSetup(true); });
 
 api.onState((next) => { state = { ...state, ...next }; renderAll({ preview: !state.activeJob }); });
 api.onEvent(() => scheduleRefresh());

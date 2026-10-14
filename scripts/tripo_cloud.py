@@ -1,7 +1,7 @@
 """One-shot, explicitly approved Tripo image-to-model job.
 
 The host CLI launches this script through ``uv run --with tripo3d==0.4.2`` so
-the cloud SDK never becomes a Forge3D or Blender Python dependency.
+the cloud SDK never becomes a Dimensio or Blender Python dependency.
 """
 
 from __future__ import annotations
