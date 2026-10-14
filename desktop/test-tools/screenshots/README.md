@@ -1,6 +1,6 @@
 # Renderer screenshot harness
 
-A visual check for the Forge3D renderer, not a unit test. `harness.cjs` serves a built renderer, injects a
+A visual check for the Workshop's renderer, not a unit test. `harness.cjs` serves a built renderer, injects a
 mocked `window.dimensio` bridge with invented runs, and shoots named scenes in headless Chromium
 (SwiftShader WebGL). The run data shapes are guesses taken from `main.js`; the real Electron shell,
 title-bar overlay, ClearType and real IPC timing are not covered.
