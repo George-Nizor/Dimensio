@@ -1,4 +1,4 @@
-# Forge3D run schema v2
+# Dimensio run schema v2
 
 Every run directory contains one atomically written `run.json`. User runs are outside source control,
 inside the open project at `<project folder>\runs\<timestamp>-<slug>-<id>` (see
