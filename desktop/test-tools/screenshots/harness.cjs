@@ -1,4 +1,4 @@
-// Screenshot harness for the Forge3D renderer. It serves a built desktop/dist (or SITE), injects a mocked
+// Screenshot harness for the Dimensio renderer. It serves a built desktop/dist (or SITE), injects a mocked
 // window.dimensio bridge with invented runs, and shoots named scenes in headless Chromium (SwiftShader WebGL).
 // It is a visual check, not a test: the data shapes are guesses from main.js. See README.md.
 //
@@ -35,7 +35,7 @@ const root = path.resolve(__dirname, "..", "..", "..");           // repository 
 const refs = path.join(root, "references");
 const dir = path.resolve(process.env.SITE || path.join(__dirname, "..", "..", "dist"));
 const out = path.resolve(process.env.OUT || path.join(__dirname, "shots"));
-const work = fs.mkdtempSync(path.join(os.tmpdir(), "forge3d-shots-"));
+const work = fs.mkdtempSync(path.join(os.tmpdir(), "dimensio-shots-"));
 fs.mkdirSync(out, { recursive: true });
 
 // A small neutral-grey pedestal with a taller block on it, as a GLB, so the viewport lighting is judged on a
@@ -147,9 +147,9 @@ srv.listen(0, "127.0.0.1", async () => {
         ...(over.capabilities || {}),
       };
       const route = (label, state, blocked_by = [], degraded_by = [], optional = false) => ({ label, state, optional, reason: state === "ready" ? "" : (capabilities[(blocked_by[0] || degraded_by[0])] || {}).reason || "", requires: [], soft: [], blocked_by, degraded_by });
-      return { ok: true, schema: 1, forge3d_version: "0.3.0", generated_at: new Date().toISOString(), platform: { system: "windows" }, agent: { id: "claude", name: "Claude Code" }, capabilities,
+      return { ok: true, schema: 1, dimensio_version: "0.3.0", generated_at: new Date().toISOString(), platform: { system: "windows" }, agent: { id: "claude", name: "Claude Code" }, capabilities,
         routes: over.routes || { splat: route("Gaussian splat", "ready"), blender: route("Blender", "ready"), export: route("Export", "ready"), godot: route("Godot", "ready", [], [], true) },
-        versions: { forge3d: "0.3.0", agent: "2.1.299", blender: "5.0.1", godot: "4.6.2", uv: "0.8.3", node: "22.1.0", cuda: "12.9", wsl_distro: "Ubuntu-24.04", ...(over.versions || {}) } };
+        versions: { dimensio: "0.3.0", agent: "2.1.299", blender: "5.0.1", godot: "4.6.2", uv: "0.8.3", node: "22.1.0", cuda: "12.9", wsl_distro: "Ubuntu-24.04", ...(over.versions || {}) } };
     };
     const route = (label, state, blocked_by = [], degraded_by = [], reason = "", optional = false) => ({ label, state, optional, reason, requires: [], soft: [], blocked_by, degraded_by });
     let capsResult = report();
@@ -161,12 +161,12 @@ srv.listen(0, "127.0.0.1", async () => {
     if (sc === "failed") runs = [failed, done];
     if (sc === "blocked") {
       // Gaussian splat chosen in Run settings, and TripoSplat is not installed in WSL.
-      localStorage.setItem("forge3d.runSettings.v1", JSON.stringify({ workflow: "gaussian-splat" }));
+      localStorage.setItem("dimensio.runSettings.v1", JSON.stringify({ workflow: "gaussian-splat" }));
       runs = [done];
       capsResult = report({
         capabilities: {
           cuda: cap("cuda", "NVIDIA GPU in WSL", "degraded", { version: "12.9", reason: "Only 3.1 GB of VRAM is free right now (8 GB needed).", fix: "Close other GPU programs, then check again.", gates: ["splat"] }),
-          triposplat: cap("triposplat", "TripoSplat", "missing", { reason: "TripoSplat is not installed in WSL.", fix: "Run `forge3d models install triposplat` in a terminal, then check again.", gates: ["splat"] }),
+          triposplat: cap("triposplat", "TripoSplat", "missing", { reason: "TripoSplat is not installed in WSL.", fix: "Run `dimensio models install triposplat` in a terminal, then check again.", gates: ["splat"] }),
           triposplat_weights: cap("triposplat_weights", "TripoSplat weights", "missing", { reason: "No model weights found under TripoSplat/ckpts.", fix: "Install TripoSplat first; it downloads the weights.", gates: ["splat"] }),
           godot: cap("godot", "Godot 4", "optional_missing", { optional: true, reason: "Godot 4 was not found.", fix: "Install it from godotengine.org if you want to review assets in a game scene.", gates: ["godot"] }),
         },
@@ -183,7 +183,7 @@ srv.listen(0, "127.0.0.1", async () => {
     }
     if (sc === "degraded") {
       runs = [done];
-      localStorage.setItem("forge3d.runSettings.v1", JSON.stringify({ workflow: "authored-blender" }));
+      localStorage.setItem("dimensio.runSettings.v1", JSON.stringify({ workflow: "authored-blender" }));
       capsResult = report({
         capabilities: { blender: cap("blender", "Blender", "degraded", { version: "4.0.2", reason: "Blender 4.0.2 is older than 4.2, so extensions such as KIRI cannot load.", fix: "Install Blender 4.2 or later from blender.org.", gates: ["blender", "export"] }) },
         routes: { splat: route("Gaussian splat", "ready"), blender: route("Blender", "degraded", [], ["blender"], "Blender 4.0.2 is older than 4.2."), export: route("Export", "degraded", [], ["blender"], "Blender 4.0.2 is older than 4.2."), godot: route("Godot", "ready", [], [], "", true) },
@@ -191,14 +191,14 @@ srv.listen(0, "127.0.0.1", async () => {
       });
     }
     if (sc === "ready") { runs = []; }
-    if (sc === "blockedrun") { localStorage.setItem("forge3d.runSettings.v1", JSON.stringify({ workflow: "gaussian-splat" })); capsResult = report({ capabilities: { triposplat: cap("triposplat", "TripoSplat", "missing", { reason: "TripoSplat is not installed in WSL.", fix: "Run `forge3d models install triposplat` in a terminal.", gates: ["splat"] }) }, routes: { splat: route("Gaussian splat", "blocked", ["triposplat"], [], "TripoSplat is not installed in WSL."), blender: route("Blender", "ready"), export: route("Export", "ready"), godot: route("Godot", "ready", [], [], "", true) } }); runs = [done]; }
+    if (sc === "blockedrun") { localStorage.setItem("dimensio.runSettings.v1", JSON.stringify({ workflow: "gaussian-splat" })); capsResult = report({ capabilities: { triposplat: cap("triposplat", "TripoSplat", "missing", { reason: "TripoSplat is not installed in WSL.", fix: "Run `dimensio models install triposplat` in a terminal.", gates: ["splat"] }) }, routes: { splat: route("Gaussian splat", "blocked", ["triposplat"], [], "TripoSplat is not installed in WSL."), blender: route("Blender", "ready"), export: route("Export", "ready"), godot: route("Godot", "ready", [], [], "", true) } }); runs = [done]; }
     if (sc === "capserror") {
       runs = [done];
-      capsResult = { ok: false, error: "The capability check failed: 'forge3d' is not recognized as an internal or external command.", fix: "Reinstall Forge3D, or run `forge3d capabilities --json` in a terminal to see the error." };
+      capsResult = { ok: false, error: "The capability check failed: 'dimensio' is not recognized as an internal or external command.", fix: "Reinstall Dimensio, or run `dimensio capabilities --json` in a terminal to see the error." };
     }
     if (sc === "stopped") { runs = [{ ...failed, run_id: "r4", status: "interrupted", failure: null, name: "Pod", prompt: "A sci-fi medical pod" }, done]; }
     if (sc === "plugin") { runs = [done]; skill = { state: "version-mismatch", installedVersion: "0.2.0", bundledVersion: "0.2.2" }; tools = { codex: true, blender: true, godot: false, wsl: true }; }
-    localStorage.setItem("forge3d.panels", JSON.stringify({ library: !["first", "checking", "offline", "ready", "blockedrun"].includes(sc), inspector: true }));
+    localStorage.setItem("dimensio.panels", JSON.stringify({ library: !["first", "checking", "offline", "ready", "blockedrun"].includes(sc), inspector: true }));
     // The app loads artifacts from dimensio-artifact://<run>/<path>, a scheme only Electron serves. Map it onto the
     // harness's /artifacts/ route for fetch() (models, text) and for <img> (thumbnails, previews).
     const mapUrl = (u) => (typeof u === "string" && u.startsWith("dimensio-artifact://") ? "/artifacts/" + u.split("/").slice(3).join("/") : u);
@@ -209,11 +209,13 @@ srv.listen(0, "127.0.0.1", async () => {
       .observe(document, { subtree: true, childList: true, attributes: true, attributeFilter: ["src"] });
     const noop = () => () => {};
     // Projects: the start screen has none open; every other scene works inside one.
-    const home = "C:\\Users\\George\\Documents\\Forge3D";
+    const home = "C:\\Users\\George\\Documents\\Dimensio";
+    // Earlier runs is Forge3D's run library, adopted where it was.
+    const earlier = "C:\\Users\\George\\Documents\\Forge3D";
     const recent = [
-      { path: `${home}\\Projects\\Medical pod\\Medical pod.forge3d`, name: "Medical pod", folder: `${home}\\Projects\\Medical pod`, opened_at: iso(70), missing: false },
-      { path: `${home}\\Earlier runs.forge3d`, name: "Earlier runs", folder: home, opened_at: iso(60 * 30), missing: false },
-      { path: "D:\\Art\\Controller\\Controller.forge3d", name: "Controller", folder: "D:\\Art\\Controller", opened_at: iso(60 * 24 * 6), missing: true },
+      { path: `${home}\\Projects\\Medical pod\\Medical pod.dimensio`, name: "Medical pod", folder: `${home}\\Projects\\Medical pod`, opened_at: iso(70), missing: false },
+      { path: `${earlier}\\Earlier runs.dimensio`, name: "Earlier runs", folder: earlier, opened_at: iso(60 * 30), missing: false },
+      { path: "D:\\Art\\Controller\\Controller.dimensio", name: "Controller", folder: "D:\\Art\\Controller", opened_at: iso(60 * 24 * 6), missing: true },
     ];
     const project = ["start", "startempty"].includes(sc) ? null
       : { id: "p1", name: sc === "untitled" ? "Untitled project" : "Medical pod", file: sc === "untitled" ? null : recent[0].path, folder: recent[0].folder, untitled: sc === "untitled", dirty: ["untitled", "filemenu"].includes(sc), settings: {}, view: {} };

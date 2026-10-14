@@ -16,7 +16,7 @@ function shortName(text, limit = 60) {
 }
 
 // The message box for a run in progress. Stopping keeps what the run wrote, and the run can be resumed.
-function stopRunQuestion({ agentName = "The agent", runName = "", doing = "closing Forge3D" } = {}) {
+function stopRunQuestion({ agentName = "The agent", runName = "", doing = "closing Dimensio" } = {}) {
   const name = shortName(runName);
   return {
     type: "warning",

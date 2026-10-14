@@ -39,6 +39,7 @@ const { createCapabilitiesService } = require("./lib/capabilities-service.cjs");
 const { closeAction, stopRunQuestion } = require("./lib/close-guard.cjs");
 const {
   PROJECT_EXTENSION,
+  PROJECT_EXTENSIONS,
   RecentProjects,
   UNTITLED_NAME,
   adoptLegacyLibrary,
@@ -66,7 +67,7 @@ const {
 } = require("./lib/project-store.cjs");
 const { APP_ORIGIN, APP_PRIVILEGES, isAppUrl, openHttps, registerAppProtocol } = require("./lib/app-protocol.cjs");
 const { registerCourseIpc } = require("./lib/course-ipc.cjs");
-const { envSetting } = require("./lib/forge3d-compat.cjs");
+const { carryForge3DSettings, envSetting, legacyFolders } = require("./lib/forge3d-compat.cjs");
 
 // One Forge3D at a time. A second launch hands its command line to this one, which comes to the front and opens a
 // project named there.
@@ -263,7 +264,7 @@ async function confirmLeave(doing) {
 }
 
 function projectsDirectory() {
-  return path.join(app.getPath("documents"), "Forge3D", "Projects");
+  return path.join(app.getPath("documents"), "Dimensio", "Projects");
 }
 
 async function saveProject() {
@@ -283,10 +284,10 @@ async function saveProjectAs() {
   const defaultDirectory = project.untitled ? projectsDirectory() : path.dirname(project.folder);
   fs.mkdirSync(defaultDirectory, { recursive: true });
   const result = await dialog.showSaveDialog(mainWindow, {
-    title: project.untitled ? "Save Forge3D project" : "Save Forge3D project as",
+    title: project.untitled ? "Save project" : "Save project as",
     defaultPath: path.join(defaultDirectory, `${suggested}${PROJECT_EXTENSION}`),
     buttonLabel: "Save project",
-    filters: [{ name: "Forge3D project", extensions: [PROJECT_EXTENSION.slice(1)] }],
+    filters: [{ name: "Dimensio project", extensions: [PROJECT_EXTENSION.slice(1)] }],
     properties: ["createDirectory", "showOverwriteConfirmation"],
   });
   if (result.canceled || !result.filePath) return false;
@@ -332,10 +333,11 @@ async function openProject(payload = {}) {
   if (!file) {
     fs.mkdirSync(projectsDirectory(), { recursive: true });
     const result = await dialog.showOpenDialog(mainWindow, {
-      title: "Open Forge3D project",
+      title: "Open project",
       defaultPath: project?.folder ? path.dirname(project.folder) : projectsDirectory(),
       buttonLabel: "Open project",
-      filters: [{ name: "Forge3D project", extensions: [PROJECT_EXTENSION.slice(1)] }],
+      // Forge3D's .forge3d projects open too.
+      filters: [{ name: "Dimensio project", extensions: PROJECT_EXTENSIONS.map((extension) => extension.slice(1)) }],
       properties: ["openFile"],
     });
     if (result.canceled || !result.filePaths.length) return { canceled: true, ...currentState() };
@@ -1053,10 +1055,14 @@ function registerIpc() {
 
 app.whenReady().then(async () => {
   if (!singleInstance) return;
-  const legacyLibrary = path.join(app.getPath("documents"), "Forge3D");
-  const localStateRoot = path.join(process.env.LOCALAPPDATA || app.getPath("appData"), "Instrumenta", "Forge3D");
+  const localAppData = process.env.LOCALAPPDATA || app.getPath("appData");
+  const localStateRoot = path.join(localAppData, "Instrumenta", "Dimensio");
   const resourceBase = app.isPackaged ? process.resourcesPath : path.join(repoRoot, "desktop");
   runtimeState = ensureRuntimeState(localStateRoot, resourceBase);
+  // Forge3D, the earlier name, kept its settings in folders of its own. The first start copies them across and
+  // leaves Forge3D's folders as they are (lib/forge3d-compat.cjs).
+  const forge3d = legacyFolders({ localAppData, appData: app.getPath("appData"), documents: app.getPath("documents") });
+  carryForge3DSettings({ from: forge3d, to: { stateRoot: runtimeState.root, userData: app.getPath("userData") } });
   if (!app.isPackaged && !fs.existsSync(path.join(runtimeState.godot, GODOT_TEMPLATE_MARKER))) {
     fs.cpSync(path.join(repoRoot, "godot"), runtimeState.godot, { recursive: true, force: true, filter: (item) => !item.includes(`${path.sep}.godot${path.sep}`) });
     fs.writeFileSync(path.join(runtimeState.godot, GODOT_TEMPLATE_MARKER), `${BUNDLE_VERSION}\n`, "utf8");
@@ -1065,11 +1071,11 @@ app.whenReady().then(async () => {
   agentSettings = new AgentSettings(path.join(runtimeState.root, "config", "settings.json"));
   if (!recentProjects.legacyAdopted()) {
     try {
-      const adopted = adoptLegacyLibrary(legacyLibrary, { appVersion: BUNDLE_VERSION });
+      const adopted = adoptLegacyLibrary(forge3d.library, { appVersion: BUNDLE_VERSION });
       if (adopted) recentProjects.add(adopted);
       recentProjects.markLegacyAdopted();
     } catch (error) {
-      console.error(`Forge3D could not adopt the earlier run library: ${error.message}`);
+      console.error(`Dimensio could not adopt Forge3D's run library: ${error.message}`);
     }
   }
   refreshRecoverable();

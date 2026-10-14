@@ -52,8 +52,8 @@ function readPreference(key, fallback) {
 function writePreference(key, value) {
   try { localStorage.setItem(key, JSON.stringify(value)); } catch { /* preferences are optional */ }
 }
-Object.assign(panels, readPreference("forge3d.panels", panels));
-Object.assign(viewportTools, readPreference("forge3d.viewport", viewportTools));
+Object.assign(panels, readPreference("dimensio.panels", panels));
+Object.assign(viewportTools, readPreference("dimensio.viewport", viewportTools));
 
 const selectOptions = {
   workflow: [["auto", "Auto route"], ["authored-blender", "Authored Blender"], ["image-to-mesh", "Image to mesh"], ["gaussian-splat", "Gaussian splat"], ["process", "Process existing"], ["rig", "Rig"], ["animate", "Animate"], ["retarget", "Retarget"], ["validate", "Validate"]],
@@ -200,7 +200,7 @@ const elements = Object.fromEntries([
 const THEME_ORDER = ["system", "light", "dark"];
 const THEME_NAMES = { system: "System", light: "Light", dark: "Dark" };
 const THEME_GLYPHS = { system: "monitor", light: "sun", dark: "moon" };
-let themeChoice = THEME_ORDER.includes(readPreference("forge3d.theme", "system")) ? readPreference("forge3d.theme", "system") : "system";
+let themeChoice = THEME_ORDER.includes(readPreference("dimensio.theme", "system")) ? readPreference("dimensio.theme", "system") : "system";
 let viewportRefresh = null;
 
 // Resolves a colour token (which may be a light-dark() pair) to the colour in use right now, for three.js.
@@ -227,7 +227,7 @@ function applyTheme({ announce = true } = {}) {
 
 document.querySelector("#theme-toggle").addEventListener("click", () => {
   themeChoice = THEME_ORDER[(THEME_ORDER.indexOf(themeChoice) + 1) % THEME_ORDER.length];
-  writePreference("forge3d.theme", themeChoice);
+  writePreference("dimensio.theme", themeChoice);
   applyTheme();
 });
 matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => viewportRefresh?.());
@@ -1654,7 +1654,7 @@ function setPanel(name, open) {
   panels[name] = open;
   elements[name].dataset.open = String(open);
   elements[`${name}Toggle`].setAttribute("aria-expanded", String(open));
-  writePreference("forge3d.panels", panels);
+  writePreference("dimensio.panels", panels);
   updateDockOffset();
 }
 
@@ -1679,7 +1679,7 @@ function paintRail() {
 
 function setViewportTool(key, value) {
   viewportTools[key] = value;
-  writePreference("forge3d.viewport", viewportTools);
+  writePreference("dimensio.viewport", viewportTools);
   document.querySelectorAll(`[data-${key === "transform" ? "transform" : key === "shading" ? "shading" : "toggle"}]`).forEach((button) => {
     if (key === "grid") button.classList.toggle("active", Boolean(value));
     else button.classList.toggle("active", button.dataset[key] === value);

@@ -109,7 +109,7 @@ test("themes: dark default on the family neutrals, a derived light, following th
   assert.match(styles, /--accent-deep: #7d331b/);
   assert.match(styles, /--accent-text: light-dark\(var\(--accent-deep\), var\(--accent\)\)/);
   assert.match(styles, /:root\[data-theme="light"\] \{ color-scheme: light; \}/);
-  assert.match(renderer, /forge3d\.theme/);
+  assert.match(renderer, /dimensio\.theme/);
   assert.match(renderer, /id="theme-toggle"/);
 });
 

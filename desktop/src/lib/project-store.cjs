@@ -1,12 +1,15 @@
 "use strict";
 
-// Forge3D projects. A project is a folder holding one `<Name>.forge3d` manifest and a `runs/` directory of
+// Workshop projects. A project is a folder holding one `<Name>.dimensio` manifest and a `runs/` directory of
 // ordinary run folders (run-store.cjs). Runs keep writing to disk as they go, exactly as before; the manifest holds
 // what belongs to the project as a whole: its identity, its default run settings and where the person left off.
 //
 //   My bottle/
-//     My bottle.forge3d     this file (format "forge3d-project", schema 1)
-//     runs/<run folders>    run.json + artifacts, written live by Codex and the local tools
+//     My bottle.dimensio    this file (format "dimensio-project", schema 1)
+//     runs/<run folders>    run.json + artifacts, written live by the agent and the local tools
+//
+// A project made by Forge3D, Dimensio's earlier name, is `<Name>.forge3d` with format "forge3d-project". It opens
+// as it is, and saving it keeps that name and format, so nothing about it changes but what the person changed.
 //
 // A new project starts untitled in a scratch folder under the local state root and is moved into place by its first
 // Save. Nothing here touches Electron, so every rule can be tested with plain Node.
@@ -17,9 +20,13 @@ const path = require("node:path");
 const { atomicWriteJson, renameWithRetry } = require("./run-store.cjs");
 const { resolveContained } = require("./path-policy.cjs");
 
-const PROJECT_FORMAT = "forge3d-project";
+const PROJECT_FORMAT = "dimensio-project";
 const PROJECT_SCHEMA = 1;
-const PROJECT_EXTENSION = ".forge3d";
+const PROJECT_EXTENSION = ".dimensio";
+// Forge3D's project files, read and written in their own format.
+const LEGACY_PROJECT_FORMAT = "forge3d-project";
+const LEGACY_PROJECT_EXTENSION = ".forge3d";
+const PROJECT_EXTENSIONS = [PROJECT_EXTENSION, LEGACY_PROJECT_EXTENSION];
 const RUNS_DIRECTORY = "runs";
 const UNTITLED_NAME = "Untitled project";
 const LEGACY_PROJECT_NAME = "Earlier runs";
@@ -28,10 +35,19 @@ const SETTING_KEYS = ["workflow", "quality", "target", "tool", "model", "effort"
 const RUN_ID = /^[0-9a-f-]{36}$/i;
 // Left in an untitled project's scratch folder that was saved but could not be removed (a file in it was still
 // open). Such a folder is a stale copy, never "Unsaved work".
-const SAVED_MARKER = ".forge3d-saved.json";
+const SAVED_MARKER = ".dimensio-saved.json";
 
 function timestamp() {
   return new Date().toISOString();
+}
+
+function isProjectFile(file) {
+  return PROJECT_EXTENSIONS.includes(path.extname(String(file)).toLowerCase());
+}
+
+// The format a project file is written in: Forge3D's for a .forge3d file, Dimensio's otherwise.
+function formatFor(file) {
+  return path.extname(String(file)).toLowerCase() === LEGACY_PROJECT_EXTENSION ? LEGACY_PROJECT_FORMAT : PROJECT_FORMAT;
 }
 
 function samePath(left, right) {
@@ -87,13 +103,13 @@ function newManifest({ settings = {}, view = {}, appVersion = "" } = {}) {
 }
 
 function validateProject(data, file) {
-  if (!data || typeof data !== "object" || Array.isArray(data) || data.format !== PROJECT_FORMAT) {
-    throw new Error(`Not a Forge3D project: ${file}`);
+  if (!data || typeof data !== "object" || Array.isArray(data) || ![PROJECT_FORMAT, LEGACY_PROJECT_FORMAT].includes(data.format)) {
+    throw new Error(`Not a Dimensio project: ${file}`);
   }
-  if (data.schema_version !== PROJECT_SCHEMA) throw new Error(`Unsupported Forge3D project schema ${data.schema_version}: ${file}`);
+  if (data.schema_version !== PROJECT_SCHEMA) throw new Error(`Unsupported project schema ${data.schema_version}: ${file}`);
   if (data.runs_directory !== undefined && data.runs_directory !== RUNS_DIRECTORY) throw new Error(`Unsupported runs directory in ${file}`);
   return {
-    format: PROJECT_FORMAT,
+    format: formatFor(file),
     schema_version: PROJECT_SCHEMA,
     project_id: typeof data.project_id === "string" ? data.project_id : crypto.randomUUID(),
     created_at: typeof data.created_at === "string" ? data.created_at : timestamp(),
@@ -106,7 +122,7 @@ function validateProject(data, file) {
 }
 
 function readProject(file) {
-  if (path.extname(file).toLowerCase() !== PROJECT_EXTENSION) throw new Error(`Forge3D projects end in ${PROJECT_EXTENSION}: ${file}`);
+  if (!isProjectFile(file)) throw new Error(`Dimensio projects end in ${PROJECT_EXTENSION}: ${file}`);
   const stat = fs.lstatSync(file);
   if (!stat.isFile() || stat.isSymbolicLink()) throw new Error(`Not a regular project file: ${file}`);
   let data;
@@ -119,7 +135,7 @@ function readProject(file) {
 }
 
 function writeProject(file, manifest) {
-  const next = { ...validateProject({ ...manifest, format: PROJECT_FORMAT, schema_version: PROJECT_SCHEMA }, file), updated_at: timestamp() };
+  const next = { ...validateProject({ ...manifest, format: formatFor(file), schema_version: PROJECT_SCHEMA }, file), updated_at: timestamp() };
   if (manifest.app_version) next.app_version = manifest.app_version;
   atomicWriteJson(file, next);
   return next;
@@ -145,7 +161,7 @@ function hasRuns(folder) {
 function projectFilesIn(folder) {
   if (!fs.existsSync(folder)) return [];
   return fs.readdirSync(folder, { withFileTypes: true })
-    .filter((entry) => entry.isFile() && path.extname(entry.name).toLowerCase() === PROJECT_EXTENSION)
+    .filter((entry) => entry.isFile() && isProjectFile(entry.name))
     .map((entry) => path.join(folder, entry.name));
 }
 
@@ -153,23 +169,26 @@ function isEmptyDirectory(folder) {
   return fs.existsSync(folder) && fs.statSync(folder).isDirectory() && fs.readdirSync(folder).length === 0;
 }
 
-// Turns what a Save dialog returned into the folder and manifest the project will use. "D:\Art\Bottle.forge3d"
-// becomes "D:\Art\Bottle\Bottle.forge3d", so a project never spills its runs/ beside unrelated files. Picking a file
-// inside an empty folder of the same name ("D:\Art\Bottle\Bottle.forge3d") uses that folder as it is.
-// A project name as typed: trimmed, without a trailing .forge3d, and usable as a Windows file and folder name.
+// A project name as typed: trimmed, without a trailing .dimensio (or Forge3D's .forge3d), and usable as a Windows
+// file and folder name.
 function projectStem(name) {
   let stem = String(name ?? "").trim();
-  if (stem.toLowerCase().endsWith(PROJECT_EXTENSION)) stem = stem.slice(0, -PROJECT_EXTENSION.length).trim();
+  const extension = PROJECT_EXTENSIONS.find((item) => stem.toLowerCase().endsWith(item));
+  if (extension) stem = stem.slice(0, -extension.length).trim();
   if (!stem || stem === "." || stem === ".." || /[<>:"/\\|?*\u0000-\u001f]/.test(stem)) throw new Error("Choose a project name without path characters");
   if (/[. ]$/.test(stem)) throw new Error("A project name cannot end with a dot or a space");
   if (stem.length > 120) throw new Error("Choose a project name of 120 characters or fewer");
   return stem;
 }
 
+// Turns what a Save dialog returned into the folder and manifest the project will use. "D:\Art\Bottle.dimensio"
+// becomes "D:\Art\Bottle\Bottle.dimensio", so a project never spills its runs/ beside unrelated files. Picking a
+// file inside an empty folder of the same name ("D:\Art\Bottle\Bottle.dimensio") uses that folder as it is. A
+// project saved anywhere is a .dimensio project, whatever it was before.
 function layoutForSavePath(chosen) {
   if (typeof chosen !== "string" || !path.isAbsolute(chosen)) throw new Error("A project location must be an absolute path");
   const extension = path.extname(chosen);
-  const stem = projectStem(extension.toLowerCase() === PROJECT_EXTENSION ? path.basename(chosen, extension) : path.basename(chosen));
+  const stem = projectStem(isProjectFile(chosen) ? path.basename(chosen, extension) : path.basename(chosen));
   const parent = path.dirname(path.resolve(chosen));
   const parentNamed = path.basename(parent).toLowerCase() === stem.toLowerCase();
   const reuseParent = parentNamed && !projectFilesIn(parent).length && !fs.existsSync(path.join(parent, RUNS_DIRECTORY));
@@ -208,38 +227,40 @@ function materializeProject(layout, { sourceFolder = null, move = false, manifes
 
 /* ── renaming and deleting a saved project ─────────────────── */
 
-// Renames a saved project: its .forge3d file, and its folder too when the folder carries the project's name (the
-// layout Save makes). An adopted library such as Documents\Forge3D keeps its folder name. Returns the new
-// { file, folder, name }. Nothing is left half-renamed: a folder that cannot be renamed puts the file back.
+// Renames a saved project: its project file, and its folder too when the folder carries the project's name (the
+// layout Save makes). An adopted library such as Documents\Forge3D keeps its folder name, and a Forge3D project
+// keeps its .forge3d extension. Returns the new { file, folder, name }. Nothing is left half-renamed: a folder that
+// cannot be renamed puts the file back.
 function renameProject(file, name) {
   const stem = projectStem(name);
   const folder = path.dirname(file);
   const oldStem = projectName(file);
   if (stem === oldStem) return { file, folder, name: stem };
+  const extension = path.extname(file);
   const ownsFolder = path.basename(folder).toLowerCase() === oldStem.toLowerCase();
   const nextFolder = ownsFolder ? path.join(path.dirname(folder), stem) : folder;
   if (ownsFolder && !samePath(nextFolder, folder) && fs.existsSync(nextFolder)) {
     throw new Error(`A folder named "${stem}" already exists beside this project. Choose another name.`);
   }
-  const renamedFile = path.join(folder, `${stem}${PROJECT_EXTENSION}`);
-  if (!samePath(renamedFile, file) && fs.existsSync(renamedFile)) throw new Error(`"${stem}${PROJECT_EXTENSION}" already exists in the project folder. Choose another name.`);
+  const renamedFile = path.join(folder, `${stem}${extension}`);
+  if (!samePath(renamedFile, file) && fs.existsSync(renamedFile)) throw new Error(`"${stem}${extension}" already exists in the project folder. Choose another name.`);
   renameWithRetry(file, renamedFile);
   if (nextFolder !== folder) {
     try {
       renameWithRetry(folder, nextFolder);
     } catch (error) {
       try { renameWithRetry(renamedFile, file); } catch { /* reported below */ }
-      throw new Error(`Forge3D could not rename the project folder: ${error.message}`);
+      throw new Error(`Dimensio could not rename the project folder: ${error.message}`);
     }
   }
-  return { file: path.join(nextFolder, `${stem}${PROJECT_EXTENSION}`), folder: nextFolder, name: stem };
+  return { file: path.join(nextFolder, `${stem}${extension}`), folder: nextFolder, name: stem };
 }
 
 const IGNORABLE_FILES = new Set(["desktop.ini", "thumbs.db", ".ds_store"]);
 
 // What deleting a project moves to the Recycle Bin: the whole folder when it holds nothing but the project (its
-// .forge3d file and runs/), so it comes back in one piece; otherwise only those two, so other files in the folder
-// (Documents\Forge3D also holds Projects\) stay where they are.
+// project file and runs/), so it comes back in one piece; otherwise only those two, so other files in the folder
+// (Documents\Forge3D, an adopted library, also holds Projects\) stay where they are.
 function projectTrashTargets(file) {
   const folder = path.dirname(file);
   const runs = path.join(folder, RUNS_DIRECTORY);
@@ -300,8 +321,9 @@ function scratchFolder(stateRoot, id) {
 
 /* ── the first start after projects arrived ────────────────── */
 
-// Before projects, every run lived in Documents\Forge3D\runs. That folder already has the project layout, so it
-// becomes a project by gaining a manifest beside it. Nothing is moved, and it happens once.
+// Before projects, Forge3D kept every run in Documents\Forge3D\runs. That folder already has the project layout, so
+// it becomes a project, "Earlier runs", by gaining a manifest beside it; a manifest already there (Forge3D's own
+// Earlier runs.forge3d) is used as it is. Nothing is moved, and it happens once.
 function adoptLegacyLibrary(libraryFolder, { appVersion = "" } = {}) {
   if (!fs.existsSync(path.join(libraryFolder, RUNS_DIRECTORY)) || !hasRuns(libraryFolder)) return null;
   const existing = projectFilesIn(libraryFolder);
@@ -398,18 +420,22 @@ class RecentProjects {
 /* ── presentation ──────────────────────────────────────────── */
 
 function windowTitle(project) {
-  if (!project) return "Forge3D";
-  return `${project.dirty ? "● " : ""}${project.name} — Forge3D`;
+  if (!project) return "Dimensio";
+  return `${project.dirty ? "● " : ""}${project.name} — Dimensio`;
 }
 
-// Command-line arguments that name a project file (a double-clicked .forge3d, or `Forge3D.exe path\to\x.forge3d`).
+// Command-line arguments that name a project file (a double-clicked .dimensio or .forge3d, or
+// `Dimensio.exe path\to\x.dimensio`).
 function projectFromArgv(argv = []) {
-  return argv.find((item) => typeof item === "string" && path.extname(item).toLowerCase() === PROJECT_EXTENSION && path.isAbsolute(item) && fs.existsSync(item)) || null;
+  return argv.find((item) => typeof item === "string" && isProjectFile(item) && path.isAbsolute(item) && fs.existsSync(item)) || null;
 }
 
 module.exports = {
+  LEGACY_PROJECT_EXTENSION,
+  LEGACY_PROJECT_FORMAT,
   LEGACY_PROJECT_NAME,
   PROJECT_EXTENSION,
+  PROJECT_EXTENSIONS,
   PROJECT_FORMAT,
   PROJECT_SCHEMA,
   RUNS_DIRECTORY,
@@ -419,6 +445,7 @@ module.exports = {
   adoptLegacyLibrary,
   createScratch,
   hasRuns,
+  isProjectFile,
   layoutForSavePath,
   materializeProject,
   newManifest,

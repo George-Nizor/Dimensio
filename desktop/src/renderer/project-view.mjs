@@ -68,10 +68,10 @@ export function shortcutCommand(event = {}) {
   return null;
 }
 
-/** The window title: "● Name — Forge3D" while unsaved, the bare app name on the start screen. */
+/** The window title: "● Name — Dimensio" while unsaved, the bare app name on the start screen. */
 export function projectTitle(project) {
-  if (!project) return "Forge3D";
-  return `${project.dirty ? "● " : ""}${project.name} — Forge3D`;
+  if (!project) return "Dimensio";
+  return `${project.dirty ? "● " : ""}${project.name} — Dimensio`;
 }
 
 /** A short location for a recent entry: the folder, with the user profile shortened to ~. */

@@ -36,7 +36,7 @@ const splashSeen = () => {
 
 // The Workshop keeps its theme in localStorage under this key. The course app writes it too, so the
 // two pages of the window agree, and the window's own chrome follows through window.dimensio.setTheme.
-const SHARED_THEME = 'forge3d.theme';
+const SHARED_THEME = 'dimensio.theme';
 const THEMES: Theme[] = ['system', 'light', 'dark'];
 
 function readSharedTheme(): Theme | null {

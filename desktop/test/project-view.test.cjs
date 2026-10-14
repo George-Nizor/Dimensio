@@ -10,13 +10,13 @@ async function view() {
 }
 
 const recent = [
-  { path: "C:\\Users\\G\\Documents\\Forge3D\\Projects\\Bottle\\Bottle.forge3d", name: "Bottle", folder: "C:\\Users\\G\\Documents\\Forge3D\\Projects\\Bottle", missing: false },
-  { path: "D:\\Art\\Pod\\Pod.forge3d", name: "Pod", folder: "D:\\Art\\Pod", missing: true },
+  { path: "C:\\Users\\G\\Documents\\Dimensio\\Projects\\Bottle\\Bottle.dimensio", name: "Bottle", folder: "C:\\Users\\G\\Documents\\Dimensio\\Projects\\Bottle", missing: false },
+  { path: "D:\\Art\\Pod\\Pod.dimensio", name: "Pod", folder: "D:\\Art\\Pod", missing: true },
 ];
 
 test("the File menu offers New, Open, recent projects, Save, Save as and Close", async () => {
   const { fileMenuModel } = await view();
-  const items = fileMenuModel({ project: { name: "Spoon", file: "D:\\Spoon\\Spoon.forge3d" }, recent });
+  const items = fileMenuModel({ project: { name: "Spoon", file: "D:\\Spoon\\Spoon.dimensio" }, recent });
   const ids = items.filter((item) => item !== "-" && !item.heading).map((item) => item.id);
   assert.deepEqual(ids.filter((id) => !id.startsWith("recent:")), ["new", "open", "clear-recent", "save", "save-as", "rename", "reveal", "close", "delete"]);
   assert.equal(items.find((item) => item.id === "new").hint, "Ctrl+N");
@@ -34,7 +34,7 @@ test("with no project open, only New, Open and the recent list work", async () =
 
 test("a run in flight blocks switching projects but not saving", async () => {
   const { fileMenuModel } = await view();
-  const items = fileMenuModel({ project: { name: "Spoon", file: "D:\\Spoon\\Spoon.forge3d" }, recent, busy: true });
+  const items = fileMenuModel({ project: { name: "Spoon", file: "D:\\Spoon\\Spoon.dimensio" }, recent, busy: true });
   const state = Object.fromEntries(items.filter((item) => item.id).map((item) => [item.id, Boolean(item.disabled)]));
   assert.equal(state.new, true);
   assert.equal(state.open, true);
@@ -63,16 +63,16 @@ test("Ctrl+N, Ctrl+O, Ctrl+S and Ctrl+Shift+S are the project shortcuts", async 
 
 test("titles and folders read the way the main process writes them", async () => {
   const { displayFolder, projectTitle } = await view();
-  assert.equal(projectTitle(null), "Forge3D");
-  assert.equal(projectTitle({ name: "Untitled project", dirty: true }), "● Untitled project — Forge3D");
-  assert.equal(displayFolder("C:\\Users\\George\\Documents\\Forge3D"), "~\\Documents\\Forge3D");
+  assert.equal(projectTitle(null), "Dimensio");
+  assert.equal(projectTitle({ name: "Untitled project", dirty: true }), "● Untitled project — Dimensio");
+  assert.equal(displayFolder("C:\\Users\\George\\Documents\\Dimensio"), "~\\Documents\\Dimensio");
   assert.equal(displayFolder("D:\\Art"), "D:\\Art");
 });
 
 test("rename and delete are for a saved project with no run in flight", async () => {
   const { fileMenuModel } = await view();
   const state = (options) => Object.fromEntries(fileMenuModel(options).filter((item) => item.id).map((item) => [item.id, Boolean(item.disabled)]));
-  const saved = { name: "Spoon", file: "D:\\Spoon\\Spoon.forge3d", untitled: false };
+  const saved = { name: "Spoon", file: "D:\\Spoon\\Spoon.dimensio", untitled: false };
   assert.deepEqual([state({ project: saved }).rename, state({ project: saved }).delete], [false, false]);
   const untitled = { name: "Untitled project", file: null, untitled: true };
   assert.deepEqual([state({ project: untitled }).rename, state({ project: untitled }).delete], [true, true]);
