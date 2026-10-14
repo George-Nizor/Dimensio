@@ -261,7 +261,7 @@ def main():
         match = overlay(attempt_renders[view], reference_renders[view], os.path.join(dev_dir, name))
         silhouette[view] = {"match": match, "overlay": name}
     report = mesh_report(parts, "stool.blend", {view: f"{view}.png" for view in VIEWS}, silhouette)
-    with open(os.path.join(dev_dir, "report.json"), "w", encoding="utf-8") as handle:
+    with open(os.path.join(dev_dir, "report.json"), "w", encoding="utf-8", newline="\n") as handle:
         json.dump(report, handle, indent=2)
         handle.write("\n")
 

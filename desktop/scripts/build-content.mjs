@@ -4,8 +4,9 @@
 // docs/course/WRITING.md. Ported from Delineare's scripts/build-content.mjs; the changes are the
 // ones docs/course/PLAN.md lists under "The lesson format".
 //
-//   node scripts/build-content.mjs           check and write public/content.json
-//   node scripts/build-content.mjs --check   check only
+//   node scripts/build-content.mjs                    check and write public/content.json
+//   node scripts/build-content.mjs --check            check only
+//   node scripts/build-content.mjs --check --content <dir>   check another content folder
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -14,8 +15,9 @@ import { marked } from 'marked';
 import { isKeys, lintProse, words } from './copy-rules.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const repo = path.resolve(root, '..');
-const contentDir = path.join(repo, 'content');
+const contentFlag = process.argv.indexOf('--content');
+const contentDir = contentFlag > 0 ? path.resolve(process.argv[contentFlag + 1]) : path.join(root, '..', 'content');
+const repo = path.dirname(contentDir);
 const publicDir = path.join(root, 'public');
 const startersDir = path.join(repo, 'blender', 'starters');
 const METRICS = JSON.parse(fs.readFileSync(path.join(root, 'src', 'course', 'engine', 'metrics.json'), 'utf8'));
@@ -93,12 +95,29 @@ function checkProse(where, text, budget) {
 
 const lib = await import(pathToFileURL(path.join(contentDir, 'diagrams', 'lib.mjs')).href);
 
-async function diagram(folder, slug, name, alt, where) {
-  const file = path.join(folder, 'diagrams', `${name}.mjs`);
-  if (!ID.test(name) || !fs.existsSync(file)) {
-    fail(where, `diagram "${name}" has no diagrams/${name}.mjs`);
+// A diagram is named by its script in the lesson's diagrams/ folder ("numpad"), or by another
+// lesson's folder and name ("001-viewport-navigation/numpad"). "diagrams/" and ".mjs" may be
+// written out. Its id is the owning lesson's slug and the name, so it stays the same when lessons
+// are renumbered.
+function diagramFile(folder, ref) {
+  const clean = String(ref ?? '').trim().replace(/^\.\//, '').replace(/\.mjs$/, '');
+  let match = /^(?:diagrams\/)?([a-z0-9-]+)$/.exec(clean);
+  if (match) return { folder, name: match[1] };
+  match = /^(?:\.\.\/)?(\d{3}-[a-z0-9-]+)\/(?:diagrams\/)?([a-z0-9-]+)$/.exec(clean);
+  if (match) return { folder: path.join(lessonsDir, match[1]), name: match[2] };
+  return null;
+}
+
+async function diagram(lessonFolder, ref, alt, where) {
+  const found = diagramFile(lessonFolder, ref);
+  const folder = found?.folder;
+  const name = found?.name ?? String(ref);
+  const file = found ? path.join(folder, 'diagrams', `${name}.mjs`) : '';
+  if (!found || !fs.existsSync(file)) {
+    fail(where, `diagram "${ref}" has no ${found && folder !== lessonFolder ? `${path.basename(folder)}/` : ''}diagrams/${name}.mjs`);
     return null;
   }
+  const slug = path.basename(folder).replace(/^\d{3}-/, '');
   const module = await import(`${pathToFileURL(file).href}?v=${fs.statSync(file).mtimeMs}`);
   const svg = module.default(lib);
   if (typeof svg !== 'string' || !svg.startsWith('<svg') || /<script|on\w+=/i.test(svg)) {
@@ -157,7 +176,7 @@ async function readLesson(folder, entry, diagrams) {
   // An optional example picture follows the introduction.
   if (rest[0]?.type === 'paragraph' && images([rest[0]]).length) {
     const exampleImage = images([rest[0]])[0];
-    const art = await diagram(folder, slug, exampleImage.name, exampleImage.alt, where);
+    const art = await diagram(folder, exampleImage.name, exampleImage.alt, where);
     if (art) diagrams.set(art.id, art);
     lesson.example = art?.id ?? null;
     rest = rest.slice(1);
@@ -189,7 +208,7 @@ async function readLesson(folder, entry, diagrams) {
         const text = more.length ? [...parsed.text, { t: 'text', v: ' ' }, ...more] : parsed.text;
         prose += checkProse(`${where}, step "${parsed.title}"`, `${parsed.title}. ${plain(text)}`, BUDGET.step);
         const image = images(item.tokens)[0];
-        const art = image ? await diagram(folder, slug, image.name, image.alt, where) : null;
+        const art = image ? await diagram(folder, image.name, image.alt, where) : null;
         if (art) diagrams.set(art.id, art);
         lesson.steps.push({ title: parsed.title, text, diagram: art?.id ?? null });
       }
@@ -203,7 +222,7 @@ async function readLesson(folder, entry, diagrams) {
   if (sections.has('Common mistake')) {
     const mistake = sections.get('Common mistake');
     const mistakeImage = images(mistake)[0];
-    const mistakeArt = mistakeImage ? await diagram(folder, slug, mistakeImage.name, mistakeImage.alt, where) : null;
+    const mistakeArt = mistakeImage ? await diagram(folder, mistakeImage.name, mistakeImage.alt, where) : null;
     if (mistakeArt) diagrams.set(mistakeArt.id, mistakeArt);
     const mistakeText = mistake.filter((token) => token.type === 'paragraph' && !images([token]).length);
     if (!mistakeText.length) fail(where, 'Common mistake needs a paragraph saying what goes wrong');
@@ -304,7 +323,7 @@ async function readPractice(folder, lesson, diagrams, practice) {
 
     let reference = { type: 'none' };
     if (raw.reference?.diagram) {
-      const art = await diagram(folder, lesson.slug, raw.reference.diagram, raw.reference.alt, at);
+      const art = await diagram(folder, raw.reference.diagram, raw.reference.alt, at);
       if (art) {
         const alt = art.alt || diagrams.get(art.id)?.alt || '';
         if (!alt) fail(at, `reference diagram "${raw.reference.diagram}" needs "alt:" because the lesson page does not describe it`);
@@ -457,10 +476,17 @@ function readPrompts() {
 // ---- Course -----------------------------------------------------------------------------------
 
 const course = readYaml(path.join(contentDir, 'course.yaml'));
+// A written lesson is a folder named NNN-slug: three digits, its place in course.yaml.
 const lessonsDir = path.join(contentDir, 'lessons');
-const folders = new Map((fs.existsSync(lessonsDir) ? fs.readdirSync(lessonsDir, { withFileTypes: true }) : [])
-  .filter((entry) => entry.isDirectory() && /^\d{2}-/.test(entry.name))
-  .map((entry) => [entry.name.slice(3), path.join(lessonsDir, entry.name)]));
+const folders = new Map();
+for (const entry of (fs.existsSync(lessonsDir) ? fs.readdirSync(lessonsDir, { withFileTypes: true }) : [])
+  .filter((item) => item.isDirectory() && !/^[._]/.test(item.name))
+  .sort((a, b) => a.name.localeCompare(b.name))) {
+  const match = /^(\d{3})-([a-z0-9-]+)$/.exec(entry.name);
+  if (!match) { fail(`content/lessons/${entry.name}`, 'a lesson folder is named NNN-slug, with three digits: 007-extrude'); continue; }
+  if (folders.has(match[2])) { fail(`content/lessons/${entry.name}`, `a second folder for "${match[2]}"`); continue; }
+  folders.set(match[2], { folder: path.join(lessonsDir, entry.name), number: Number(match[1]) });
+}
 
 const parts = [];
 const lessons = {};
@@ -487,10 +513,11 @@ for (const [index, part] of (course.parts || []).entries()) {
     checkProse(`${at}, title`, raw.title || '');
     if (!raw.summary) fail(at, 'summary is required: one plain sentence for the course page');
     checkProse(`${at}, summary`, raw.summary || '', BUDGET.summary);
-    const folder = folders.get(raw.slug);
-    if (folder) {
-      const expectedFolder = `${String(number).padStart(2, '0')}-${raw.slug}`;
-      if (path.basename(folder) !== expectedFolder) fail(`content/lessons/${path.basename(folder)}`, `folder should be named ${expectedFolder}`);
+    const found = folders.get(raw.slug);
+    const folder = found?.folder;
+    if (found) {
+      const expectedFolder = `${String(number).padStart(3, '0')}-${raw.slug}`;
+      if (found.number !== number) fail(`content/lessons/${path.basename(folder)}`, `this is lesson ${number} in course.yaml, so the folder is ${expectedFolder}`);
       const { lesson, prose } = await readLesson(folder, entry, diagrams);
       const exerciseWords = await readPractice(folder, lesson, diagrams, practice);
       const total = prose + exerciseWords;
@@ -503,7 +530,8 @@ for (const [index, part] of (course.parts || []).entries()) {
   parts.push({ number: index + 1, title: part.title, lessons: entries });
 }
 
-for (const slug of folders.keys()) if (!slugs.has(slug)) fail(`content/lessons/*-${slug}`, 'folder has no entry in course.yaml');
+for (const [slug, found] of folders) if (!slugs.has(slug)) fail(`content/lessons/${path.basename(found.folder)}`, 'folder has no entry in course.yaml');
+if (number > 999) fail('content/course.yaml', 'more than 999 lessons do not fit three-digit folders');
 for (const lesson of Object.values(lessons)) {
   for (const need of lesson.needs) if (!slugs.has(need)) fail(`lesson ${lesson.slug}`, `needs unknown lesson "${need}"`);
   for (const id of lesson.watch) if (!resources.has(id)) fail(`lesson ${lesson.slug}`, `watch lists unknown resource "${id}"`);
