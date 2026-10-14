@@ -10,7 +10,7 @@ import { filmstripArtifacts, selectedArtifactForRun } from "./preview-routing.mj
 import { normalizeRunSettings, readRunSettings, writeRunSettings } from "./preferences.mjs";
 import { displayFolder, fileMenuModel, projectTitle, shortcutCommand } from "./project-view.mjs";
 import { summarizeRunSteps } from "./run-presentation.mjs";
-import { deriveReadiness, runGate, setupHeadline, splitFix, statusEntries, toolVersionsFromReport, formatElapsed, sentenceCase } from "./readiness.mjs";
+import { agentChoices, deriveReadiness, isImagePath, runGate, setupHeadline, splitFix, statusEntries, toolVersionsFromReport, formatElapsed, sentenceCase } from "./readiness.mjs";
 import { stageState } from "./stage-state.mjs";
 import { icon, themeIcon } from "./icons.mjs";
 
@@ -34,6 +34,8 @@ let viewportApi = null;
 // { ok: false, error, fix }. capsChecking is true while a check is in flight; the last answer stays on screen meanwhile.
 let capabilities = null;
 let capsChecking = false;
+// window.forge3d.agentStatus(): { agent, statuses: { claude: {...}, codex: {...} } }, for the agent choice on the setup card.
+let agentStatuses = null;
 let composing = false; // New run: no run is selected until one is picked or started
 let showSetup = false; // the person opened the readiness card from the status bar or the Run chip
 let previewKind = "";
@@ -168,7 +170,7 @@ app.innerHTML = `
       <label class="field"><span>Quality</span><select id="quality">${optionMarkup("quality")}</select></label>
       <label class="field"><span>Target</span><select id="target">${optionMarkup("target")}</select></label>
       <label class="field"><span>Tool / model</span><select id="tool">${optionMarkup("tool")}</select></label>
-      <label class="field"><span>Codex model</span><select id="model"><option value="auto">Codex default</option></select></label>
+      <label class="field"><span>Model</span><select id="model"><option value="auto">Default</option></select></label>
       <label class="field"><span>Reasoning</span><select id="effort">${optionMarkup("effort")}</select></label>
     </div>
   </section>
@@ -443,13 +445,17 @@ function currentSettings() {
 }
 
 function currentReadiness() {
-  return deriveReadiness({ capabilities, settings: currentSettings(), appServerError: state.appServerError || "" });
+  return deriveReadiness({ capabilities, settings: currentSettings(), appServerError: state.appServerError || "", agent: state.agent || undefined, hasImage: attachments.some(isImagePath) });
+}
+
+function agentName() {
+  return state.agent?.name || "the agent";
 }
 
 // Tool versions are shown only when the capability report carries a real one (state.toolVersions.blender = "5.0.1").
 // Until it does, the name stands alone; an older build printed made-up numbers.
-function toolVersion(name) {
-  const value = state.toolVersions?.[name.toLowerCase()];
+function toolVersion(id) {
+  const value = state.toolVersions?.[id];
   return typeof value === "string" ? value.trim() : "";
 }
 
@@ -463,8 +469,8 @@ function renderDependencies() {
   elements.dependencyStrip.title = "Show what Forge3D checked on this machine";
   elements.dependencyStrip.setAttribute("aria-pressed", String(showSetup));
   elements.dependencyStrip.innerHTML = `<span class="status-item ${OVERALL_DOTS[overall]}"><i></i>${OVERALL_LABELS[overall]}</span><span class="status-divider"></span>${
-    tools.map(({ name, state: toolState }) => {
-      const version = toolState === "checking" || toolState === "unset" ? "" : toolVersion(name);
+    tools.map(({ name, id, state: toolState }) => {
+      const version = toolState === "checking" || toolState === "unset" ? "" : toolVersion(id);
       return `<span class="status-item ${toolState}"><i></i>${name}${version ? ` <span class="mono">${escapeHtml(version)}</span>` : ""}</span>`;
     }).join("")}`;
 
@@ -495,9 +501,41 @@ async function checkCapabilities(force = false) {
   }
   capabilities = result && typeof result === "object" ? result : { ok: false, error: "The capability check returned nothing.", fix: "" };
   state.toolVersions = capabilities.ok ? toolVersionsFromReport(capabilities) : {};
+  await loadAgentStatuses(force);
   capsChecking = false;
   refreshReadiness();
   if (keepFocus) elements.preview.querySelector("[data-recheck]")?.focus();
+}
+
+async function loadAgentStatuses(force = false) {
+  try {
+    if (typeof api.agentStatus === "function") agentStatuses = await api.agentStatus({ force });
+  } catch { agentStatuses = null; }
+}
+
+// Choosing the agent on the setup card. The setup check, the models and the agent choices are read again for it.
+async function chooseAgent(id) {
+  try {
+    const result = await api.setAgent(id);
+    state.agent = { id: result.agent, name: result.name };
+    await loadModels();
+    renderAll({ preview: false });
+    await checkCapabilities(true);
+    toast(`Runs now use ${result.name}`, "success");
+  } catch (error) {
+    toast(error.message.replace(/^Error invoking remote method '[^']+': (Error: )?/, ""), "error");
+  }
+}
+
+async function loadModels() {
+  try {
+    const result = await api.models?.({});
+    if (result) {
+      state.models = result.models || [];
+      state.modelDefaults = { model: result.defaultModel || "", effort: result.defaultEffort || "" };
+    }
+  } catch { /* the picker keeps Default only */ }
+  renderModelOptions();
 }
 
 // Everything that depends on the report or on the settings that choose the route.
@@ -515,11 +553,17 @@ function openSetup(open = true) {
   if (open) elements.preview.querySelector("[data-recheck]")?.focus();
 }
 
+// The chosen agent's models. "Default" names the agent's own default when it has one (Claude Code: Opus, medium).
 function renderModelOptions() {
   const current = runSettings.model || elements.model.value;
-  elements.model.innerHTML = '<option value="auto">Codex default</option>' + (state.models || [])
+  const models = state.models || [];
+  const defaults = state.modelDefaults || {};
+  const defaultModel = models.find((model) => model.id === defaults.model);
+  elements.model.innerHTML = `<option value="auto">${defaultModel ? `Default (${escapeHtml(defaultModel.label)})` : "Default"}</option>` + models
     .map((model) => `<option value="${escapeHtml(model.id || model.model)}">${escapeHtml(model.label || model.displayName || model.id || model.model)}</option>`).join("");
-  if ([...elements.model.options].some((option) => option.value === current)) elements.model.value = current;
+  elements.model.value = [...elements.model.options].some((option) => option.value === current) ? current : "auto";
+  const effortDefault = elements.effort.querySelector('option[value="auto"]');
+  if (effortDefault) effortDefault.textContent = defaults.effort ? `Default (${sentenceCase(defaults.effort)})` : "Model default";
 }
 
 /* ── run library ────────────────────────────────────────────── */
@@ -816,6 +860,7 @@ function renderInspector() {
       "approval-request": "Approval needed",
       "approval-decision": "Approval",
       "app-server-stderr": "App Server",
+      "agent-stderr": "Agent log",
       error: "Error",
       user: "Prompt",
       "user-steer": "Steering note",
@@ -1101,6 +1146,28 @@ function setupGroup(title, rows) {
   </section>`;
 }
 
+function agentChoiceRow(choice) {
+  const problem = choice.state !== "ready";
+  return `<li class="setup-row ${escapeHtml(choice.state)}">
+    <i class="setup-dot" aria-hidden="true"></i>
+    <div class="setup-text">
+      <div class="setup-line"><strong>${escapeHtml(choice.name)}</strong>${choice.version ? `<span class="mono">${escapeHtml(choice.version)}</span>` : ""}<span class="setup-state">${escapeHtml(choice.stateWord)}</span>${choice.chosen ? '<span class="setup-tag">In use</span>' : ""}</div>
+      <p class="setup-reason">${escapeHtml(choice.images)}</p>
+      ${problem && choice.reason ? `<p class="setup-reason">${escapeHtml(choice.reason)}</p>` : ""}
+      ${problem && choice.fix ? `<p class="setup-fix">${fixMarkup(choice.fix)}</p>` : ""}
+      ${choice.chosen ? "" : `<p><button class="btn ghost" data-use-agent="${escapeHtml(choice.id)}" ${state.activeJob ? "disabled" : ""}>Use ${escapeHtml(choice.name)}</button></p>`}
+    </div>
+  </li>`;
+}
+
+function agentChoiceGroup() {
+  const choices = agentChoices(agentStatuses);
+  if (!choices.length) return "";
+  return `<section class="setup-group"><h3>Agent<span class="mono">${escapeHtml(agentName())}</span></h3>
+    <ul class="setup-rows">${choices.map(agentChoiceRow).join("")}</ul>
+  </section>`;
+}
+
 function setupCard(forced) {
   const readiness = currentReadiness();
   const firstRun = !state.runs.length;
@@ -1121,7 +1188,7 @@ function setupCard(forced) {
       <button class="btn ${tone === "blocked" || reportError ? "primary" : ""}" data-recheck ${checking ? "disabled" : ""}>${checking ? "Checking…" : "Check again"}</button>
       ${forced || state.runs.length ? '<button class="btn ghost" data-close-setup>Close</button>' : ""}
     </div>
-    ${readiness.checked ? `<div class="setup-groups">${setupGroup("Required", readiness.required)}${setupGroup("Optional", readiness.optional)}</div>` : ""}
+    ${readiness.checked || agentStatuses ? `<div class="setup-groups">${agentChoiceGroup()}${readiness.checked ? `${setupGroup("Required", readiness.required)}${setupGroup("Optional", readiness.optional)}` : ""}</div>` : ""}
   </section></div>`;
 }
 
@@ -1156,7 +1223,7 @@ function stoppedCard(stateInfo, run) {
 }
 
 function runningCard(stateInfo, run) {
-  const detail = stateInfo.starting ? "Starting Codex and routing the request" : stateInfo.activity ? sentenceCase(stateInfo.activity) : "Waiting for the next step";
+  const detail = stateInfo.starting ? `Starting ${agentName()} and routing the request` : stateInfo.activity ? sentenceCase(stateInfo.activity) : "Waiting for the next step";
   return `<div class="viewport-empty state-wrap"><section class="state-card running" aria-label="Run in progress" aria-busy="true">
     <header class="state-head">
       <span class="empty-icon small">${brandIcon(64)}</span>
@@ -1201,6 +1268,7 @@ async function onStateAction(action) {
 function bindStateCard() {
   elements.preview.querySelector("[data-recheck]")?.addEventListener("click", () => checkCapabilities(true));
   elements.preview.querySelector("[data-close-setup]")?.addEventListener("click", () => openSetup(false));
+  elements.preview.querySelectorAll("[data-use-agent]").forEach((button) => button.addEventListener("click", () => chooseAgent(button.dataset.useAgent)));
   elements.preview.querySelectorAll("[data-state-action]").forEach((button) => button.addEventListener("click", () => onStateAction(button.dataset.stateAction)));
   elements.preview.querySelectorAll("[data-copy]").forEach((button) => button.addEventListener("click", async () => {
     try {
@@ -1456,6 +1524,7 @@ function renderAttachments() {
   elements.attachments.querySelectorAll("[data-remove-attachment]").forEach((button) => button.addEventListener("click", () => {
     attachments.splice(Number(button.dataset.removeAttachment), 1);
     renderAttachments();
+    refreshReadiness();
   }));
 }
 
@@ -1523,7 +1592,7 @@ function renderApproval() {
     <div class="scrim">
       <section class="modal" role="dialog" aria-modal="true">
         <div class="modal-head">
-          <small>Codex approval</small>
+          <small>${escapeHtml(agentName())} approval</small>
           <h2>${escapeHtml(title)}</h2>
           <p>${escapeHtml(explanation)}</p>
         </div>
@@ -1704,8 +1773,8 @@ async function decideApproval(decision) {
 
 async function repairPlugin() {
   const agreed = await askDialog({
-    eyebrow: "Codex plugin",
-    title: "Repair the Forge3D Codex plugin?",
+    eyebrow: `${agentName()} plugin`,
+    title: `Repair the Forge3D plugin for ${agentName()}?`,
     body: "The plugin is reinstalled from this application bundle. The current plugin directory is preserved as a timestamped backup.",
     confirmLabel: "Repair plugin",
   });
@@ -1725,10 +1794,13 @@ async function runAction(action) {
   if (!run) return toast("Select a run first", "warn");
   try {
     if (action === "continue") {
+      const ownSession = (run.agent?.session_id ? run.agent.id : run.codex?.thread_id ? "codex" : null) === state.agent?.id;
       const text = await askDialog({
         eyebrow: "Resume run",
         title: "Continue this run",
-        body: "Codex resumes from the saved thread and the artifacts already on disk.",
+        body: ownSession
+          ? `${agentName()} continues in this run's session, with the files already on disk.`
+          : `${agentName()} starts a new session with this run's prompt and the files already on disk.`,
         input: { value: "Continue from the saved state, inspect existing artifacts, and finish the run." },
         confirmLabel: "Resume",
       });
@@ -1821,6 +1893,7 @@ elements.attach.addEventListener("click", async () => {
     const picked = await api.pickAttachments();
     attachments = [...new Set([...attachments, ...picked])].slice(0, 12);
     renderAttachments();
+    refreshReadiness();
   } catch (error) {
     toast(error.message, "error");
   }
@@ -1918,7 +1991,7 @@ api.onApproval((request) => { approval = request; renderApproval(); });
 api.onError((message) => toast(message, "error"));
 
 try {
-  // The project and the recent list come back at once; bootstrap waits for Codex App Server, which can take seconds.
+  // The project and the recent list come back at once; bootstrap may wait for the agent (Codex starts its App Server).
   state = { ...state, ...(await api.refreshTools({})) };
   renderAll();
 } catch { /* bootstrap below reports a failure */ }

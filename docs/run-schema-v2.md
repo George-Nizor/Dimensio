@@ -15,7 +15,10 @@ inside the open project at `<project folder>\runs\<timestamp>-<slug>-<id>` (see
 - compatibility `outputs` map
 - relative `artifacts` descriptors
 - `validation` results and detected `tools`
-- `codex.thread_id` and ordered `codex.turn_ids`
+- `agent.id` (`claude` or `codex`), `agent.session_id`, ordered `agent.turn_ids`, and optional
+  `agent.usage` (`cost_usd`, `input_tokens`, `output_tokens`, `turns`, as Claude Code reports them).
+  Runs written before agents became a choice hold `codex.thread_id` and `codex.turn_ids` instead;
+  both are read.
 - persistent `transcript` and optional `failure`
 
 An artifact descriptor contains `name`, relative `path`, `media_type`, `preview_role`,
@@ -37,7 +40,7 @@ map. Unknown schemas are rejected. Disposable historical test runs are not migra
 Python workflows retain detailed domain states such as `awaiting_blender_review` or
 `awaiting_codex`. The desktop orchestration uses prepared, launching, running, cancelling, completed,
 interrupted, and failed. On process restart, transient desktop states become interrupted with a
-recovery message; stored thread and turn IDs allow an explicit continuation.
+recovery message; the stored agent session allows an explicit continuation.
 
 ## File actions
 

@@ -51,7 +51,7 @@ RUNNABLE_IMAGE_MODEL_KEYS = tuple(
 def parser() -> argparse.ArgumentParser:
     result = argparse.ArgumentParser(
         prog="forge3d",
-        description="Lean local 3D workflow helpers for Codex, Blender, and Godot.",
+        description="Lean local 3D workflow helpers for Blender and Godot, driven by Claude Code or Codex.",
     )
     result.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     commands = result.add_subparsers(dest="command", required=True)
@@ -65,6 +65,10 @@ def parser() -> argparse.ArgumentParser:
         help="Report what is installed and which routes (splat, blender, export, godot) can run",
     )
     caps.add_argument("--json", action="store_true", dest="as_json")
+    caps.add_argument(
+        "--agent", choices=("claude", "codex"),
+        help="The agent the routes need (default: FORGE3D_AGENT, else claude)",
+    )
     caps.set_defaults(handler=_capabilities)
 
     make = commands.add_parser("make", help="Create a procedural or image-derived asset")
@@ -300,7 +304,7 @@ def _doctor(args: argparse.Namespace) -> int:
 
 
 def _capabilities(args: argparse.Namespace) -> int:
-    report = collect_capabilities()
+    report = collect_capabilities(agent=args.agent)
     if args.as_json:
         _print_json(report)
     else:

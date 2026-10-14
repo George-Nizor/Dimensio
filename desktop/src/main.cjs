@@ -410,6 +410,7 @@ function capabilitiesService() {
     const binDirectory = app.isPackaged ? path.join(process.resourcesPath, "bin") : path.join(repoRoot, ".venv", "Scripts");
     capabilitiesServiceInstance = createCapabilitiesService({
       command: path.join(binDirectory, process.platform === "win32" ? "forge3d.exe" : "forge3d"),
+      args: () => ["capabilities", "--json", "--agent", agentSettings.agent()],
       env: { ...process.env, FORGE3D_TOOLKIT_ROOT: bundledToolkit(), FORGE3D_PLUGIN_ROOT: bundledPlugin() },
     });
   }
@@ -722,8 +723,8 @@ function registerIpc() {
     } catch (error) {
       appServerError = error.message;
     }
-    const { models } = await agentModels();
-    return { ...currentState(), models };
+    const info = await agentModels();
+    return { ...currentState(), models: info.models, modelDefaults: { model: info.defaultModel || "", effort: info.defaultEffort || "" } };
   });
 
   handle("forge3d:pick-attachments", async () => {
