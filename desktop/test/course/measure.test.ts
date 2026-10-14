@@ -73,6 +73,27 @@ describe('measurements as plain facts', () => {
   });
 });
 
+describe('size, modifiers and outline', () => {
+  const sized: MeasureReport = { ...report([part('Crate', { modifiers: ['BEVEL'] })]), bounds: { min: [-0.5, -0.5, 0], max: [0.5, 0.5, 1.04], size: [1, 1, 1.04] } };
+  it('gives sizes in metres', () => {
+    expect(evaluate(sized, { metric: 'height', max: 1.1, label: 'At most 1.1 m tall' })).toEqual({ label: 'At most 1.1 m tall', fact: 'At most 1.1 m tall (1.04 m)', held: true });
+    expect(evaluate(sized, { metric: 'width', min: 1.2, label: 'At least 1.2 m wide' }).held).toBe(false);
+  });
+  it('finds a modifier on any part', () => {
+    expect(evaluate(sized, { metric: 'modifier', equals: 'BEVEL', label: 'A Bevel modifier' })).toMatchObject({ fact: 'A Bevel modifier (on Crate)', held: true });
+    expect(evaluate(sized, { metric: 'modifier', equals: 'MIRROR', label: 'A Mirror modifier' })).toMatchObject({ fact: 'A Mirror modifier (not on any part)', held: false });
+  });
+  it('says where the outline differs, never the figure', () => {
+    const traced: MeasureReport = { ...sized, silhouette: { front: { match: 0.93 }, right: { match: 0.62 }, top: { match: 0.88 } } };
+    const close = evaluate(traced, { metric: 'outline', min: 0.6, label: "Close to the example's outline" });
+    const far = evaluate(traced, { metric: 'outline', min: 0.8, label: "Close to the example's outline" });
+    expect(close).toMatchObject({ fact: "Close to the example's outline (from every side)", held: true });
+    expect(far).toMatchObject({ fact: "Close to the example's outline (differs most from the right)", held: false });
+    expect(`${close.fact} ${far.fact}`).not.toMatch(/0\.|%|\d/);
+    expect(evaluate(sized, { metric: 'outline', min: 0.8, label: 'Outline' }).fact).toBe('Outline (no example to compare with)');
+  });
+});
+
 describe('resource lines', () => {
   it('name the Blender version only when it is older than 5.0', () => {
     expect(olderBlender({ blender: '4.0' })).toBe('Blender 4.0');

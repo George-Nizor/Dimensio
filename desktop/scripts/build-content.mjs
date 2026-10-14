@@ -303,6 +303,9 @@ function readMeasure(at, raw) {
   if (metric.kind === 'flag' && (limit !== 'equals' || typeof value !== 'boolean')) fail(at, `measure "${raw.metric}" takes equals: true or equals: false`);
   if (metric.kind === 'text' && (limit !== 'equals' || !metric.values.includes(value))) fail(at, `measure "${raw.metric}" takes equals: ${metric.values.join(' or ')}`);
   if ((metric.kind === 'size' || metric.kind === 'problem') && !(Number.isInteger(value) && value >= 0)) fail(at, `measure "${raw.metric}" needs a whole number limit`);
+  if (metric.kind === 'length' && (limit === 'equals' || !(typeof value === 'number' && value > 0))) fail(at, `measure "${raw.metric}" takes min or max in metres, such as max: 1.2`);
+  if (metric.kind === 'includes' && (limit !== 'equals' || !/^[A-Z_]+$/.test(String(value)))) fail(at, `measure "${raw.metric}" takes equals: a Blender modifier type in capitals, such as MIRROR or BEVEL`);
+  if (metric.kind === 'match' && (limit !== 'min' || !(typeof value === 'number' && value > 0 && value < 1))) fail(at, `measure "${raw.metric}" takes min: a number between 0 and 1, such as 0.8, and needs an example model to compare with`);
   const label = String(raw.label || '');
   if (!label) fail(at, `measure "${raw.metric}" needs a label, a plain fact such as "No n-gons"`);
   else if (words(label) > 8) fail(at, `measure label "${label}" is over 8 words`);

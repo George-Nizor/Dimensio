@@ -35,6 +35,8 @@ export interface MeasureReport {
   units?: { system: string; scaleLength: number };
   objects: ReportObject[];
   totals?: Counts & { objects?: number; meshes?: number; base?: Counts };
+  // The model's bounding box in metres: lowest corner, highest corner and size along X, Y and Z.
+  bounds?: { min: number[]; max: number[]; size: number[] };
   renders?: Partial<Record<View, string>>;
   silhouette?: Partial<Record<View, { match?: number; overlay?: string }>>;
   // Sentences from the check about the file, such as "Nothing was rendered: the scene has no
@@ -43,12 +45,16 @@ export interface MeasureReport {
 }
 
 interface MetricDefinition {
-  from: 'totals' | 'sum' | 'fewest' | 'every';
-  kind: 'size' | 'problem' | 'flag' | 'text';
+  from: 'totals' | 'sum' | 'fewest' | 'every' | 'bounds' | 'any' | 'silhouette';
+  kind: 'size' | 'problem' | 'flag' | 'text' | 'length' | 'includes' | 'match';
   one?: string;
   many?: string;
   values?: string[];
+  axis?: number;
 }
+
+const VIEW_NAMES: Record<string, string> = { front: 'the front', right: 'the right', top: 'the top', persp: 'the three-quarter view' };
+const metres = (value: number) => `${Number(value.toFixed(2))} m`;
 
 const DEFINITIONS = METRICS as Record<string, MetricDefinition>;
 
@@ -83,6 +89,31 @@ export function evaluate(report: MeasureReport, measure: Measure): MeasureResult
   const parts = meshes(report);
   const { label } = measure;
   if (!definition || (before && definition.from !== 'sum')) return { label, fact: `${label} (not measured)`, held: false };
+
+  if (definition.from === 'bounds') {
+    // The size of the whole model along one axis, as Blender's Dimensions shows it.
+    const size = report.bounds?.size?.[definition.axis ?? 0];
+    if (typeof size !== 'number' || !parts.length) return { label, fact: `${label} (no mesh objects found)`, held: false };
+    return { label, fact: `${label} (${metres(size)})`, held: compare(size, measure) };
+  }
+
+  if (definition.from === 'any') {
+    // A modifier type, such as MIRROR, on at least one part of the model.
+    const wanted = String(measure.equals ?? '');
+    const with_ = parts.filter((object) => (object.modifiers ?? []).includes(wanted)).map((object) => object.name);
+    if (!parts.length) return { label, fact: `${label} (no mesh objects found)`, held: false };
+    return with_.length ? { label, fact: `${label} (on ${names(with_)})`, held: true } : { label, fact: `${label} (not on any part)`, held: false };
+  }
+
+  if (definition.from === 'silhouette') {
+    // How closely the outline follows the example's. The figure is never shown: the fact names the
+    // side that differs most, and the overlay pictures show where.
+    const views = Object.entries(report.silhouette ?? {}).filter(([, entry]) => typeof entry?.match === 'number') as [string, { match: number }][];
+    if (!views.length) return { label, fact: `${label} (no example to compare with)`, held: false };
+    const [worstView, worst] = views.reduce((low, entry) => (entry[1].match < low[1].match ? entry : low));
+    const held = worst.match >= (measure.min ?? 0);
+    return { label, fact: held ? `${label} (from every side)` : `${label} (differs most from ${VIEW_NAMES[worstView] ?? worstView})`, held };
+  }
 
   if (definition.from === 'every') {
     const wanted = measure.equals;

@@ -68,7 +68,16 @@ No other sections.
   Leave it out when there's nothing to show.
 - `starter: <id>` names a starter scene, when the exercise begins from a prepared file.
 - `measure:` lists checks Dimensio runs on the learner's `.blend` after they've ticked their own.
-  Each one is `{ metric, max | min | equals, label }`, using the metrics in PLAN.md. Use them
+  Each one is `{ metric, max | min | equals, label }`. The metrics are in
+  `desktop/src/course/engine/metrics.json`:
+  - counts (`tris`, `ngons`, `nonManifoldEdges`, `doubles`, `flippedFaces` and the rest, with
+    `base.<count>` for before modifiers), `objects`, `meshes`, `materials`, `uvLayers`;
+  - `scaleApplied`, `rotationApplied` (equals true or false), `shading` (equals flat or smooth);
+  - `width`, `depth`, `height`: the model's size in metres (min or max);
+  - `modifier`: a modifier type on any part (equals MIRROR, BEVEL, SUBSURF, SOLIDIFY and so on);
+  - `outline`: how closely the model's outline follows the example model's from every side (min
+    between 0 and 1, about 0.8 for a careful copy). It needs `reference: { model: ... }`, and the
+    learner never sees the figure, only whether it holds and which side differs most. Use them
   wherever COURSE.md names them and they test what the lesson teaches.
 - Quote any value that has a comma or colon.
 

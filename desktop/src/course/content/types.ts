@@ -97,7 +97,10 @@ export type CountMetric = 'verts' | 'edges' | 'faces' | 'tris' | 'quads' | 'ngon
 
 export type MetricName =
   | CountMetric | `base.${CountMetric}` | 'objects' | 'meshes'
-  | 'materials' | 'uvLayers' | 'scaleApplied' | 'rotationApplied' | 'shading';
+  | 'materials' | 'uvLayers' | 'scaleApplied' | 'rotationApplied' | 'shading'
+  // The model's size in metres along X, Y and Z, a modifier type on any part ("MIRROR"), and how
+  // closely its outline follows the example's from every side (0 to 1, never shown).
+  | 'width' | 'depth' | 'height' | 'modifier' | 'outline';
 
 // One measurement to run on a learner's model after they tick their own checks.
 export interface Measure {

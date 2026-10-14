@@ -16,5 +16,12 @@
   "uvLayers": { "from": "fewest", "kind": "size", "one": "UV map", "many": "UV maps" },
   "scaleApplied": { "from": "every", "kind": "flag" },
   "rotationApplied": { "from": "every", "kind": "flag" },
-  "shading": { "from": "every", "kind": "text", "values": ["flat", "smooth"] }
+  "shading": { "from": "every", "kind": "text", "values": [
+      "flat",   "smooth"
+    ] },
+  "width": { "from": "bounds", "kind": "length", "axis": 0 },
+  "depth": { "from": "bounds", "kind": "length", "axis": 1 },
+  "height": { "from": "bounds", "kind": "length", "axis": 2 },
+  "modifier": { "from": "any", "kind": "includes" },
+  "outline": { "from": "silhouette", "kind": "match" }
 }
