@@ -235,3 +235,22 @@ test("fix 2: a scratch folder that could not be removed after saving is never of
   assert.equal(retireScratch(removable, "D:\\x.forge3d"), true);
   assert.equal(fs.existsSync(removable), false);
 });
+
+test("fix 3: closing the window during a run always asks, even with nothing unsaved", () => {
+  const { closeAction, stopRunQuestion } = require("../src/lib/close-guard.cjs");
+  assert.equal(closeAction({ running: true, project: { untitled: false }, dirty: false }), "ask");
+  assert.equal(closeAction({ running: false, project: { untitled: false }, dirty: false }), "close");
+  assert.equal(closeAction({ running: false, project: { untitled: true }, dirty: true }), "ask");
+  assert.equal(closeAction({ running: false, project: null }), "close");
+  const question = stopRunQuestion({ agentName: "Claude Code", runName: "A brass lantern with a glass chimney and a handle on top that swings", doing: "closing Forge3D" });
+  assert.equal(question.message, "Stop the run before closing Forge3D?");
+  assert.match(question.detail, /^Claude Code is still working on "A brass lantern .*…"\. Stopping it keeps the files/);
+  assert.deepEqual(question.buttons, ["Stop the run", "Cancel"]);
+  assert.equal(question.cancelId, 1);
+  assert.equal(question.defaultId, 1, "Enter does not stop a run");
+  assert.doesNotMatch(JSON.stringify(question), /[“”—–]/);
+  const close = body("onWindowClose");
+  assert.match(close, /closeAction\(\{ running, project, dirty: projectDirty\(\) \}\)/);
+  assert.ok(close.indexOf("confirmStopRun") < close.indexOf("confirmLeave"), "the run is asked about before saving");
+  assert.match(body("stopActiveRun"), /setStatus\(job\.runId, "interrupted", reason\)/);
+});

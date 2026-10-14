@@ -25,7 +25,8 @@ version, `runs_directory: "runs"`, the run settings, and the selected run and ar
 - **Unsaved changes.** An untitled project with runs, or changed run settings in a saved one. The
   selection is written to a saved project's file as it changes, and never makes it unsaved. New, Open, Close and closing the
   window ask Save / Don't save / Cancel through a native message box. Don't save on an untitled
-  project moves its folder to the Recycle Bin.
+  project moves its folder to the Recycle Bin. Closing the window during a run first asks whether to
+  stop the run, even when nothing is unsaved; stopping keeps its files and the run can be resumed.
 - **Busy.** New, Open, Save as and Close are refused while a job is running, because the agent's
   writable root is inside the project.
 - **Agent.** Claude Code runs in the run's own folder, one process per run. Codex's App Server is

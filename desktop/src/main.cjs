@@ -35,6 +35,7 @@ const { resolveContained } = require("./lib/path-policy.cjs");
 const { automaticApproval } = require("./lib/approval-policy.cjs");
 const { exportArtifact, exportFormatsForArtifact } = require("./lib/export-service.cjs");
 const { createCapabilitiesService } = require("./lib/capabilities-service.cjs");
+const { closeAction, stopRunQuestion } = require("./lib/close-guard.cjs");
 const {
   PROJECT_EXTENSION,
   RecentProjects,
@@ -362,23 +363,58 @@ async function closeProject() {
   return currentState();
 }
 
+// Closing the window. A run in progress is asked about first, even when the project has nothing unsaved: closing
+// used to end the agent with no warning. Then the usual save question.
 function onWindowClose(event) {
-  if (allowWindowClose || !project) return;
-  if (!projectDirty()) {
-    if (project.untitled) leaveSession();
+  if (allowWindowClose) return;
+  const running = Boolean(activeJob);
+  if (closeAction({ running, project, dirty: projectDirty() }) === "close") {
+    if (project?.untitled) leaveSession();
     return;
   }
   event.preventDefault();
-  confirmLeave("closing Forge3D").then(async ({ proceed, discard }) => {
-    if (!proceed) return;
-    if (discard && activeJob) {
-      jobAgent().close().catch(() => {});
-      activeJob = null;
+  (async () => {
+    if (running) {
+      if (!(await confirmStopRun("closing Forge3D"))) return;
+      await stopActiveRun("Stopped because Forge3D was closed during the run.");
     }
+    const { proceed, discard } = await confirmLeave("closing Forge3D");
+    if (!proceed) return;
     await leaveSession({ discard });
     allowWindowClose = true;
     mainWindow.close();
-  }).catch((error) => send("forge3d:error", error.message));
+  })().catch((error) => send("forge3d:error", error.message));
+}
+
+async function confirmStopRun(doing) {
+  if (!activeJob) return true;
+  let runName = "";
+  try { runName = store().find(activeJob.runId, false).manifest.prompt; } catch { /* the question still works */ }
+  const { response } = await dialog.showMessageBox(mainWindow, stopRunQuestion({ agentName: agentInfo(activeJob.agent).name, runName, doing }));
+  return response === 0;
+}
+
+// Interrupts the active run and waits up to five seconds for the agent to report it stopped. An agent that does
+// not answer is closed, and the run is marked interrupted with the reason, so it can be resumed later.
+async function stopActiveRun(reason) {
+  if (!activeJob) return;
+  const job = activeJob;
+  const driver = jobAgent();
+  try {
+    queueRunEvent(job.runId, { kind: "event", text: reason });
+    store().setStatus(job.runId, "cancelling");
+  } catch { /* the run folder may be gone */ }
+  try { await driver.interrupt(); } catch { /* closed below */ }
+  const deadline = Date.now() + 5000;
+  while (activeJob === job && Date.now() < deadline) await new Promise((resolve) => setTimeout(resolve, 100));
+  if (activeJob !== job) return;
+  activeJob = null;
+  await driver.close().catch(() => {});
+  try {
+    flushRunEvents();
+    store().setStatus(job.runId, "interrupted", reason);
+  } catch { /* the run folder may be gone */ }
+  sendState();
 }
 
 function queueRunEvent(runId, event) {
