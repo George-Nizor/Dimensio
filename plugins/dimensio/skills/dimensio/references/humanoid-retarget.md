@@ -12,7 +12,7 @@ Use this workflow for chibi, segmented, rigid-piece, pixel-rendered, or heavily 
 6. Run:
 
    ```text
-   forge3d humanoid-retarget <target-tpose.blend> <human-control.glb> --profile <profile.json> --output-dir <new-folder>
+   dimensio humanoid-retarget <target-tpose.blend> <human-control.glb> --profile <profile.json> --output-dir <new-folder>
    ```
 
 7. Inspect both `review/control_*.png` and `review/target_*.png`, then play the baked action through Blender MCP. Structural success is not visual approval.

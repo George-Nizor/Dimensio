@@ -1,16 +1,16 @@
 ---
-name: forge3d
-description: Create, repair, texture, rig, animate, retarget, inspect, and export game-ready 3D assets through the local Forge3D CLI, Blender task library, Blender MCP, and Godot MCP. Use for natural-language requests to make or modify models, characters, materials, rigs, animations, collisions, LODs, Blender files, GLB/glTF assets, or Godot-ready 3D content.
+name: dimensio
+description: Create, repair, texture, rig, animate, retarget, inspect, and export game-ready 3D assets through the local Dimensio CLI, Blender task library, Blender MCP, and Godot MCP. Use for natural-language requests to make or modify models, characters, materials, rigs, animations, collisions, LODs, Blender files, GLB/glTF assets, or Godot-ready 3D content.
 ---
 
-# Forge3D
+# Dimensio
 
 Turn the request into the best practical asset, not a description of how one might be made. Keep an editable `.blend` as the source of truth and validate game-facing output in Godot.
 
 ## Required workflow
 
 1. Read [workflow-routing.md](references/workflow-routing.md). Load [mcp-review.md](references/mcp-review.md) before the first Blender or Godot review in a task.
-2. When the Forge3D desktop started the run (`FORGE3D_STATE_ROOT` is set), it has already checked this machine and put the tool paths in the environment (`BLENDER_EXECUTABLE`, `GODOT_EXECUTABLE`, `FORGE3D_WSL_MODELS_DIR`). Do not run `forge3d doctor` or `forge3d capabilities` then; start production. Outside the desktop, run `forge3d capabilities --json` once and resolve actionable local failures before expensive work. If either required MCP is unavailable, report that constraint instead of claiming an MCP inspection occurred.
+2. When the Dimensio Workshop started the run (`DIMENSIO_STATE_ROOT` is set), it has already checked this machine and put the tool paths in the environment (`BLENDER_EXECUTABLE`, `GODOT_EXECUTABLE`, `DIMENSIO_WSL_MODELS_DIR`). Do not run `dimensio doctor` or `dimensio capabilities` then; start production. Outside the Workshop, run `dimensio capabilities --json` once and resolve actionable local failures before expensive work. If either required MCP is unavailable, report that constraint instead of claiming an MCP inspection occurred.
 3. Clarify only an ambiguity that would materially change the asset. Otherwise infer scale, art direction, and sensible game budgets from the request and record them in the run.
 4. Select the leanest capable route:
    - Build structured props, architecture, and mechanical forms procedurally in Blender.
@@ -22,11 +22,11 @@ Turn the request into the best practical asset, not a description of how one mig
    - Use image generation plus an explicitly selected conventional mesh backend
      only for organic or sculptural forms that genuinely suit image-to-mesh. A
      generated concept remains reference-only for structured hard-surface assets.
-   - Use `forge3d process` for an existing model.
-   - Use `forge3d rig`, `forge3d animate`, or `forge3d retarget` for character work.
+   - Use `dimensio process` for an existing model.
+   - Use `dimensio rig`, `dimensio animate`, or `dimensio retarget` for character work.
    - For a stylized, chibi, rigid-piece, or pixel-rendered humanoid driven by an
      existing human animation, read [humanoid-retarget.md](references/humanoid-retarget.md)
-     and use `forge3d humanoid-retarget` instead of local constraint copying.
+     and use `dimensio humanoid-retarget` instead of local constraint copying.
 5. Work in a new versioned output folder. Never overwrite an artist-owned `.blend`.
 6. Use deterministic Blender tasks for repeatable mesh, UV, material, rig, animation, LOD, collision, and export operations.
 7. Inspect the real result through Blender MCP. Review scene structure and a
@@ -34,7 +34,7 @@ Turn the request into the best practical asset, not a description of how one mig
    opposite side and underside (or capture a recorded turntable); use
    additional animation poses when deformation affects quality.
 8. Fix visible or structural defects and inspect again. Do not accept raw image-to-mesh output as game-ready.
-9. Export GLB and run `forge3d validate`. For game-facing work, use Godot MCP to run or inspect the Forge3D review project and capture engine evidence.
+9. Export GLB and run `dimensio validate`. For game-facing work, use Godot MCP to run or inspect the Dimensio review project and capture engine evidence.
 10. Return direct paths to the `.blend`, `.glb`, textures, preview, and validation report. State remaining visible limitations plainly.
 
 ## Quality priorities
@@ -67,7 +67,7 @@ SPAR3D is the preferred local textured-reconstruction candidate only
 after the user confirms current Stability Community License eligibility,
 commercial registration, gated-model access, the revenue condition, and
 AUP/attribution obligations. TripoSG and PartCrafter are
-non-commercial/evaluation-only in Forge3D's bundled workflows because they
+non-commercial/evaluation-only in Dimensio's bundled workflows because they
 load BRIA RMBG-1.4. If no eligible local route exists, model in Blender.
 
 ## Safety and external services
@@ -75,6 +75,6 @@ load BRIA RMBG-1.4. If no eligible local route exists, model in Blender.
 - Save or duplicate the Blender working file before any broad MCP code execution.
 - Prefer reviewed Blender task scripts. Use Blender MCP arbitrary Python only for a scoped operation that existing tasks cannot perform.
 - Keep Blender MCP bound to `127.0.0.1` with telemetry disabled.
-- Forge3D is local only. Never invoke Blender MCP's hosted image-to-3D or provider tools, never run `forge3d models cloud-run` or `cloud-estimate`, and never upload an asset or input anywhere.
+- Dimensio is local only. Never invoke Blender MCP's hosted image-to-3D or provider tools, never run `dimensio models cloud-run` or `cloud-estimate`, and never upload an asset or input anywhere.
 - Do not expose secrets in prompts, reports, Blender text blocks, or committed files.
 - Run one VRAM-heavy local inference job at a time. Check free VRAM rather than assuming a GPU size.

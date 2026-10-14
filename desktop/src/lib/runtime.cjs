@@ -180,13 +180,13 @@ function generatedMcpConfig(runtimeState) {
 
 function repairForgePlugin({ bundledPlugin, runtimeState, codexExecutable = findCodexExecutable() }) {
   const source = path.resolve(bundledPlugin);
-  if (!fs.existsSync(path.join(source, ".codex-plugin", "plugin.json"))) throw new Error("The bundled Forge3D plugin is missing");
+  if (!fs.existsSync(path.join(source, ".codex-plugin", "plugin.json"))) throw new Error("The bundled Dimensio plugin is missing");
   const pluginParent = path.join(os.homedir(), "plugins");
-  const target = path.join(pluginParent, "forge3d");
+  const target = path.join(pluginParent, "dimensio");
   fs.mkdirSync(pluginParent, { recursive: true });
   let backup = null;
   if (fs.existsSync(target)) {
-    backup = path.join(pluginParent, `forge3d.backup-${new Date().toISOString().replace(/[:.]/g, "-")}`);
+    backup = path.join(pluginParent, `dimensio.backup-${new Date().toISOString().replace(/[:.]/g, "-")}`);
     fs.renameSync(target, backup);
   }
   try {
@@ -198,16 +198,16 @@ function repairForgePlugin({ bundledPlugin, runtimeState, codexExecutable = find
       ? JSON.parse(fs.readFileSync(marketplacePath, "utf8"))
       : { name: "personal", interface: { displayName: "Personal" }, plugins: [] };
     if (!Array.isArray(marketplace.plugins)) throw new Error("Personal marketplace has an invalid plugins list");
-    marketplace.plugins = marketplace.plugins.filter((entry) => entry?.name !== "forge3d");
+    marketplace.plugins = marketplace.plugins.filter((entry) => entry?.name !== "dimensio");
     marketplace.plugins.push({
-      name: "forge3d",
-      source: { source: "local", path: "./plugins/forge3d" },
+      name: "dimensio",
+      source: { source: "local", path: "./plugins/dimensio" },
       policy: { installation: "AVAILABLE", authentication: "ON_INSTALL" },
       category: "Productivity",
     });
     atomicWriteJson(marketplacePath, marketplace);
-    const result = spawnSync(codexExecutable, ["plugin", "add", "forge3d@personal"], { windowsHide: true, encoding: "utf8" });
-    if (result.status !== 0) throw new Error(result.stderr.trim() || "Codex could not enable forge3d@personal");
+    const result = spawnSync(codexExecutable, ["plugin", "add", "dimensio@personal"], { windowsHide: true, encoding: "utf8" });
+    if (result.status !== 0) throw new Error(result.stderr.trim() || "Codex could not enable dimensio@personal");
     return { target, backup, version: BUNDLE_VERSION };
   } catch (error) {
     if (fs.existsSync(target)) fs.rmSync(target, { recursive: true, force: true });

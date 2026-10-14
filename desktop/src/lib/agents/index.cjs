@@ -6,7 +6,7 @@
 //   status({ force })      -> { installed, signedIn, version, path, reason, fix }
 //   models()               -> { models: [{ id, label }], defaultModel, defaultEffort, efforts }
 //   prepare(context)       -> starts whatever must run before a session (Codex: the App Server); throws if it cannot
-//   skill(context)         -> the forge3d skill's state ({ state: "ready" | "missing" | ..., path })
+//   skill(context)         -> the dimensio skill's state ({ state: "ready" | "missing" | ..., path })
 //   startSession({ cwd, workspace, env, project, mcp, skillDir, model, effort, resume }) -> { sessionId, resumed }
 //   send(text, attachments) -> { turnId }       attachments: [{ path, relative, mediaType }]
 //   steer(text)            -> { mode }           "mid-turn": the note joins the running turn

@@ -100,7 +100,7 @@ const pendingRunEvents = new Map();
 const repoRoot = path.resolve(__dirname, "..", "..");
 const bundledPlugin = () => app.isPackaged
   ? path.join(process.resourcesPath, "forge3d-plugin")
-  : path.join(repoRoot, "plugins", "forge3d");
+  : path.join(repoRoot, "plugins", "dimensio");
 const bundledToolkit = () => app.isPackaged
   ? path.join(process.resourcesPath, "forge3d-toolkit")
   : repoRoot;
@@ -976,7 +976,7 @@ function registerIpc() {
   });
 
   handle("forge3d:repair-plugin", async () => {
-    if (agentSettings.agent() !== "codex") throw new Error("Claude Code loads the Forge3D plugin from this app each run, so there is nothing to repair.");
+    if (agentSettings.agent() !== "codex") throw new Error("Claude Code loads the Dimensio plugin from this app each run, so there is nothing to repair.");
     const result = repairForgePlugin({ bundledPlugin: bundledPlugin(), runtimeState });
     await refreshSkill(true);
     sendState();

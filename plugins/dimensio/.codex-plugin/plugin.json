@@ -1,5 +1,5 @@
 {
-  "name": "forge3d",
+  "name": "dimensio",
   "version": "0.3.0",
   "description": "Prompt-first local workflows for creating game-ready 3D assets with Blender and Godot.",
   "author": {
@@ -16,7 +16,7 @@
   "skills": "./skills/",
   "mcpServers": "./.mcp.json",
   "interface": {
-    "displayName": "Forge3D",
+    "displayName": "Dimensio",
     "shortDescription": "Create and refine game-ready 3D assets.",
     "longDescription": "Turns natural-language requests into editable Blender masters and validated Godot assets using local models, deterministic Blender tasks, and direct Blender and Godot MCP review.",
     "developerName": "George Nizor",

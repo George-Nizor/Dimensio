@@ -14,8 +14,8 @@ RELEASE_VERSION = "0.3.0"
 def test_release_identity_is_consistent() -> None:
     assert __version__ == RELEASE_VERSION
     assert json.loads((ROOT / "instrumenta" / "product.json").read_text(encoding="utf-8"))["version"] == RELEASE_VERSION
-    assert json.loads((ROOT / "plugins" / "forge3d" / ".codex-plugin" / "plugin.json").read_text(encoding="utf-8"))["version"] == RELEASE_VERSION
-    assert json.loads((ROOT / "plugins" / "forge3d" / ".claude-plugin" / "plugin.json").read_text(encoding="utf-8"))["version"] == RELEASE_VERSION
+    assert json.loads((ROOT / "plugins" / "dimensio" / ".codex-plugin" / "plugin.json").read_text(encoding="utf-8"))["version"] == RELEASE_VERSION
+    assert json.loads((ROOT / "plugins" / "dimensio" / ".claude-plugin" / "plugin.json").read_text(encoding="utf-8"))["version"] == RELEASE_VERSION
     desktop = json.loads((ROOT / "desktop" / "package.json").read_text(encoding="utf-8"))
     assert desktop["version"] == RELEASE_VERSION
     assert desktop["build"]["win"]["icon"] == "assets/icon.ico"

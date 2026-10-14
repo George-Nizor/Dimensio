@@ -9,9 +9,9 @@
 //   --restricted                     drops code-running tools unless --tools names them, ignores user, project and
 //                                    local settings files (no personal hooks or permission rules), confines the
 //                                    file tools to the working directories
-//   --strict-mcp-config --mcp-config <file>   only Forge3D's Blender and Godot MCP servers (the plugin's own
+//   --strict-mcp-config --mcp-config <file>   only Dimensio's Blender and Godot MCP servers (the plugin's own
 //                                    .mcp.json is ignored: observed, its servers do not appear in system/init)
-//   --plugin-dir <plugin>            the bundled Forge3D plugin; its skill is forge3d:forge3d
+//   --plugin-dir <plugin>            the bundled Dimensio plugin; its skill is dimensio:dimensio
 //   --tools ... --allowedTools ...   see allowedTools() below
 //   --permission-mode dontAsk --permission-prompts none   nothing waits for a person; anything not allowed is refused
 //   --session-id <uuid> | --resume <uuid>
@@ -49,12 +49,12 @@ function fixMissing(platform) {
     : "Install Claude Code: run `curl -fsSL https://claude.ai/install.sh | bash`, then run `claude` once to sign in. Press Check again when it is done.";
 }
 const FIX_SIGNED_OUT = "Run `claude` in a terminal and sign in with your Claude account, then press Check again.";
-const FIX_GIT_BASH = "Claude Code runs commands in PowerShell, which Forge3D supports. Install Git for Windows (https://git-scm.com/download/win) only if you want it to use Bash.";
+const FIX_GIT_BASH = "Claude Code runs commands in PowerShell, which Dimensio supports. Install Git for Windows (https://git-scm.com/download/win) only if you want it to use Bash.";
 
 const SYSTEM_PROMPT = [
-  "You are working for the Forge3D Workshop. Your working directory is this run's folder.",
-  "Load the forge3d skill (forge3d:forge3d) before anything else and follow it.",
-  "Run Forge3D's command-line tool as `forge3d ...` in the shell. Other shell commands are refused, so read and search files with Read, Glob and Grep, and write files with Write and Edit inside the run folder.",
+  "You are working for the Dimensio Workshop. Your working directory is this run's folder.",
+  "Load the dimensio skill (dimensio:dimensio) before anything else and follow it.",
+  "Run Dimensio's command-line tool as `dimensio ...` in the shell. Other shell commands are refused, so read and search files with Read, Glob and Grep, and write files with Write and Edit inside the run folder.",
   "You cannot make images. A Gaussian splat needs a reference image that is already in the run folder (attachments/). Without one, build the asset in Blender.",
   "Nobody can answer questions during a run. Make sensible choices, write them down in the run folder, and finish.",
 ].join("\n");
@@ -78,7 +78,7 @@ function searchPath(name, { env = process.env, platform = process.platform, exis
     .map((directory) => join(directory, name)).filter((candidate) => exists(candidate));
 }
 
-// Where Claude Code may be, in the order Forge3D tries: DIMENSIO_CLAUDE_EXE, the native installer's
+// Where Claude Code may be, in the order Dimensio tries: DIMENSIO_CLAUDE_EXE, the native installer's
 // %USERPROFILE%\.local\bin\claude.exe, claude.exe or claude.cmd on PATH, then npm's global claude.cmd.
 function claudeCandidates({ env = process.env, platform = process.platform, homedir = os.homedir(), exists = fileExists } = {}) {
   const list = [];
@@ -118,7 +118,7 @@ function launchFor(found, { env = process.env, platform = process.platform, exis
 }
 
 // Claude Code's Bash tool on Windows needs Git Bash. Without it Claude Code runs commands through its PowerShell
-// tool instead, which Forge3D allows too, so a missing Git Bash is a note and never blocks a run.
+// tool instead, which Dimensio allows too, so a missing Git Bash is a note and never blocks a run.
 function findGitBash({ env = process.env, platform = process.platform, exists = fileExists } = {}) {
   if (platform !== "win32") return null;
   const configured = env.CLAUDE_CODE_GIT_BASH_PATH;
@@ -169,20 +169,20 @@ function permissionPath(directory, platform = process.platform) {
   return `/${posix.replace(/\/+$/, "")}/**`;
 }
 
-// What the agent may do without asking (nobody is there to ask): the forge3d CLI in the shell, the Blender and
+// What the agent may do without asking (nobody is there to ask): the dimensio CLI in the shell, the Blender and
 // Godot MCP tools, reading and searching the folders it was given, writing inside the run folder only (an Edit rule
-// covers Write too), and loading the forge3d skill. Anything else is refused by dontAsk.
+// covers Write too), and loading the dimensio skill. Anything else is refused by dontAsk.
 function allowedTools({ runDir, platform = process.platform }) {
   const shells = platform === "win32" ? ["Bash", "PowerShell"] : ["Bash"];
   return [
-    ...shells.flatMap((shell) => [`${shell}(forge3d *)`, ...(platform === "win32" ? [`${shell}(forge3d.exe *)`] : [])]),
+    ...shells.flatMap((shell) => [`${shell}(dimensio *)`, ...(platform === "win32" ? [`${shell}(dimensio.exe *)`] : [])]),
     "mcp__blender",
     "mcp__godot",
     "Read",
     "Glob",
     "Grep",
     `Edit(${permissionPath(runDir, platform)})`,
-    "Skill(forge3d:forge3d)",
+    "Skill(dimensio:dimensio)",
   ];
 }
 
@@ -368,7 +368,7 @@ class ClaudeDriver extends EventEmitter {
   // The plugin is loaded per session with --plugin-dir, so it is ready whenever the bundle carries it.
   async skill({ bundledPlugin } = {}) {
     const manifest = bundledPlugin ? path.join(bundledPlugin, ".claude-plugin", "plugin.json") : "";
-    const skillPath = bundledPlugin ? path.join(bundledPlugin, "skills", "forge3d", "SKILL.md") : "";
+    const skillPath = bundledPlugin ? path.join(bundledPlugin, "skills", "dimensio", "SKILL.md") : "";
     try {
       const installedVersion = JSON.parse(fs.readFileSync(manifest, "utf8")).version || null;
       if (!fs.existsSync(skillPath)) throw new Error("no SKILL.md");
@@ -440,7 +440,7 @@ class ClaudeDriver extends EventEmitter {
     child.stdin.on("error", () => { /* the process went away; its exit is reported below */ });
     readline.createInterface({ input: child.stdout }).on("line", (line) => {
       if (child !== this.child) return;
-      try { this._onLine(line); } catch (error) { this._report({ message: `Forge3D could not read Claude Code's output: ${error.message}`, method: "claude/output" }); }
+      try { this._onLine(line); } catch (error) { this._report({ message: `Dimensio could not read Claude Code's output: ${error.message}`, method: "claude/output" }); }
     });
     child.stderr.on("data", (chunk) => {
       const text = chunk.toString("utf8");
@@ -457,7 +457,7 @@ class ClaudeDriver extends EventEmitter {
   }
 
   // fresh: what to send instead if a resumed session turns out to be gone (Claude Code keeps sessions on disk, but
-  // they can be deleted). Forge3D then starts a new session with the run's whole brief.
+  // they can be deleted). Dimensio then starts a new session with the run's whole brief.
   send(text, attachments = [], { fresh = null } = {}) {
     const content = messageContent(text, attachments);
     this.lastSend = { text, attachments, fresh };
@@ -531,7 +531,7 @@ class ClaudeDriver extends EventEmitter {
         this.emit("tool", { phase: "completed", method: "item/completed", item: { ...item, status: event.isError ? "failed" : "completed" } });
         if (item.type === "commandExecution" && event.text) this.emit("log", { method: "claude/commandOutput", text: `${event.text.slice(-20000)}\n` });
       } else if (event.kind === "denied") {
-        this._report({ method: "claude/permission", message: `Forge3D refused a ${event.tool} call from Claude Code that its allowlist does not cover.` });
+        this._report({ method: "claude/permission", message: `Dimensio refused a ${event.tool} call from Claude Code that its allowlist does not cover.` });
       } else if (event.kind === "rate_limit" && event.status === "rejected") {
         const when = event.resetsAt ? ` It resets at ${new Date(event.resetsAt * 1000).toLocaleString()}.` : "";
         this._report({ method: "claude/limit", message: `Claude Code reached its usage limit.${when}` });

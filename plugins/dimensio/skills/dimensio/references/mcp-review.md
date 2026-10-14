@@ -27,11 +27,11 @@ For deterministic validation, invoke:
 godot --path <repo>/godot -- --asset=<absolute.glb> --report=<absolute.json> --quit-after-report
 ```
 
-The harness imports the GLB with `GLTFDocument`, computes bounds and mesh/material/rig/animation statistics, auto-frames its camera, selects an animation, writes JSON, and prints a line beginning with `FORGE3D_REVIEW_JSON=`.
+The harness imports the GLB with `GLTFDocument`, computes bounds and mesh/material/rig/animation statistics, auto-frames its camera, selects an animation, writes JSON, and prints a line beginning with `DIMENSIO_REVIEW_JSON=`.
 
 For visual engine review:
 
-1. Open the same review project with `FORGE3D_ASSET` set to the absolute GLB path, or pass `--asset=<absolute.glb>` after Godot's `--` separator.
+1. Open the same review project with `DIMENSIO_ASSET` set to the absolute GLB path, or pass `--asset=<absolute.glb>` after Godot's `--` separator.
 2. Use Godot MCP to verify the editor connection, inspect the running scene, start the project, and capture a screenshot.
 3. Read debugger/import errors and the emitted review JSON.
 4. Return material, transform, rig, or animation defects to Blender; re-export and repeat.

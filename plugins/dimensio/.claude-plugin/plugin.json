@@ -1,6 +1,6 @@
 {
-  "name": "forge3d",
-  "displayName": "Forge3D",
+  "name": "dimensio",
+  "displayName": "Dimensio",
   "version": "0.3.0",
   "description": "Prompt-first local workflows for creating game-ready 3D assets with Blender and Godot.",
   "author": {

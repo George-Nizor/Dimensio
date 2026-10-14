@@ -52,7 +52,7 @@ class CodexAppServerClient extends EventEmitter {
     this.reader.on("line", (line) => this.ingestLine(line));
 
     await this.request("initialize", {
-      clientInfo: { name: "forge3d_desktop", title: "Forge3D", version: require("../../../package.json").version },
+      clientInfo: { name: "dimensio_desktop", title: "Dimensio", version: require("../../../package.json").version },
     });
     this.notify("initialized", {});
     this.started = true;
@@ -139,8 +139,8 @@ class CodexAppServerClient extends EventEmitter {
   }
 
   async startTurn({ threadId, prompt, cwd, skill, images = [], model, effort, allowNetwork = false }) {
-    const input = [{ type: "text", text: `$forge3d ${prompt}` }];
-    if (skill?.path) input.push({ type: "skill", name: "forge3d", path: skill.path });
+    const input = [{ type: "text", text: `$dimensio ${prompt}` }];
+    if (skill?.path) input.push({ type: "skill", name: "dimensio", path: skill.path });
     for (const imagePath of images) input.push({ type: "localImage", path: imagePath });
     const params = {
       threadId,
@@ -317,14 +317,14 @@ class CodexDriver extends EventEmitter {
     return client;
   }
 
-  // The forge3d skill as Codex sees it, or the bundled SKILL.md passed by path when the plugin is not installed.
+  // The dimensio skill as Codex sees it, or the bundled SKILL.md passed by path when the plugin is not installed.
   async skill({ workspace, env, bundledPlugin, force = false } = {}) {
     const client = await this.prepare({ workspace, env });
     const skills = await client.listSkills(workspace, force);
-    const installed = skills.find((skill) => skill.name === "forge3d" && skill.enabled !== false) || null;
+    const installed = skills.find((skill) => skill.name === "dimensio" && skill.enabled !== false) || null;
     let state = inspectForgeSkill(installed);
     if (!installed && bundledPlugin) {
-      state = { ...state, path: path.join(bundledPlugin, "skills", "forge3d", "SKILL.md"), state: "missing", usingBundledFallback: true };
+      state = { ...state, path: path.join(bundledPlugin, "skills", "dimensio", "SKILL.md"), state: "missing", usingBundledFallback: true };
     }
     this.skillState = state;
     return state;
@@ -415,13 +415,13 @@ class CodexDriver extends EventEmitter {
   }
 
   _guard(callback) {
-    try { callback(); } catch (error) { this._report({ message: `Forge3D could not process Codex activity: ${error.message}`, fatal: true, internal: true }); }
+    try { callback(); } catch (error) { this._report({ message: `Dimensio could not process Codex activity: ${error.message}`, fatal: true, internal: true }); }
   }
 
   _onRequest(message) {
     const params = message.params || {};
     if (!APPROVAL_METHODS.has(message.method)) {
-      this.client.reject(message.id, `Forge3D does not support App Server request ${message.method}`);
+      this.client.reject(message.id, `Dimensio does not support App Server request ${message.method}`);
       if (this.turnActive) this._report({ message: "Unsupported App Server request was rejected safely.", method: message.method });
       return;
     }
