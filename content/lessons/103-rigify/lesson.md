@@ -3,11 +3,11 @@ needs: [inverse-kinematics]
 exercise: fit-rigify-rig
 watch: [grant-abbitt-rigify, blender-manual-addons-rigify-basics]
 sources:
-  - Blender 5.2 Manual, "Rigify: Introduction", Enabling Add-on (https://docs.blender.org/manual/en/5.2/addons/rigify/introduction.html), read 2026-10-15
-  - Blender 5.2 Manual, "Rigify: Basic Usage" (https://docs.blender.org/manual/en/5.2/addons/rigify/basics.html), read 2026-10-15
-  - Blender 5.2 Manual, "Rigify: Bone Positioning Guide", Limbs Bones (https://docs.blender.org/manual/en/5.2/addons/rigify/bone_positioning.html), read 2026-10-15
+  - 'Blender 5.2 Manual, "Rigify: Introduction", Enabling Add-on (https://docs.blender.org/manual/en/5.2/addons/rigify/introduction.html), read 2026-10-15'
+  - 'Blender 5.2 Manual, "Rigify: Basic Usage" (https://docs.blender.org/manual/en/5.2/addons/rigify/basics.html), read 2026-10-15'
+  - 'Blender 5.2 Manual, "Rigify: Bone Positioning Guide", Limbs Bones (https://docs.blender.org/manual/en/5.2/addons/rigify/bone_positioning.html), read 2026-10-15'
   - Blender 5.2 Manual, "Add-ons" (https://docs.blender.org/manual/en/5.2/editors/preferences/addons.html), read 2026-10-15
-  - Blender 5.2 Manual, "Object Properties: Viewport Display", In Front (https://docs.blender.org/manual/en/5.2/scene_layout/object/properties/display.html), read 2026-10-15
+  - 'Blender 5.2 Manual, "Object Properties: Viewport Display", In Front (https://docs.blender.org/manual/en/5.2/scene_layout/object/properties/display.html), read 2026-10-15'
   - Blender 5.2 Manual, "Tool Settings", X-Axis Mirror (https://docs.blender.org/manual/en/5.2/animation/armatures/posing/tool_settings.html), read 2026-10-15
   - Blender 5.2 Manual, "Apply" (https://docs.blender.org/manual/en/5.2/scene_layout/object/editing/apply.html), read 2026-10-15
   - Blender 5.2 Manual, "Armature Deform Parent", With Automatic Weights (https://docs.blender.org/manual/en/5.2/animation/armatures/skinning/parenting.html), read 2026-10-15

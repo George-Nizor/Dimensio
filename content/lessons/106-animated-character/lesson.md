@@ -43,7 +43,7 @@ This project takes the character you modelled in lesson 97 all the way into a ga
 
    ![Godot with the character's AnimationPlayer selected, walk playing, and idle marked to play on load.](godot)
 
-Imphenzia's character course follows the same road, from colouring by UVs to looping idle and walk actions.
+Imphenzia's character course covers the same steps, from colouring by UVs to looping idle and walk actions.
 
 ## Common mistake
 

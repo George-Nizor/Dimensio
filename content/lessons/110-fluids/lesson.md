@@ -3,15 +3,15 @@ needs: [rigid-bodies]
 exercise: torch-and-tub
 watch: [olav3d-fire-smoke, ryan-king-fluids]
 sources:
-  - Blender 5.2 Manual, "Fluid: Introduction", Workflow (https://docs.blender.org/manual/en/5.2/physics/fluid/introduction.html), read 2026-10-15
-  - Blender 5.2 Manual, "Physics: Introduction", Quick Effects (https://docs.blender.org/manual/en/5.2/physics/introduction.html), read 2026-10-15
+  - 'Blender 5.2 Manual, "Fluid: Introduction", Workflow (https://docs.blender.org/manual/en/5.2/physics/fluid/introduction.html), read 2026-10-15'
+  - 'Blender 5.2 Manual, "Physics: Introduction", Quick Effects (https://docs.blender.org/manual/en/5.2/physics/introduction.html), read 2026-10-15'
   - Blender 5.2 Manual, "Fluid Domain Settings", Resolution Divisions (https://docs.blender.org/manual/en/5.2/physics/fluid/type/domain/settings.html), read 2026-10-15
   - Blender 5.2 Manual, "Fluid Domain Cache", Type and Bake All (https://docs.blender.org/manual/en/5.2/physics/fluid/type/domain/cache.html), read 2026-10-15
   - Blender 5.2 Manual, "Fluid Flow", Flow Type and Flow Behavior (https://docs.blender.org/manual/en/5.2/physics/fluid/type/flow.html), read 2026-10-15
   - Blender 5.2 Manual, "Fluid Effector", Surface Thickness (https://docs.blender.org/manual/en/5.2/physics/fluid/type/effector.html), read 2026-10-15
-  - Blender 5.2.2, Object > Quick Effects > Quick Smoke and Quick Liquid (5.2/scripts/startup/bl_operators/object_quick_effects.py): Smoke Style Smoke, Fire or Smoke & Fire, Resolution Divisions 32 and cache Type Replay by default; a ball of water dropped into a tub with walls 10 cm thick and baked at 32, checked 2026-10-15
+  - 'Blender 5.2.2, Object > Quick Effects > Quick Smoke and Quick Liquid (5.2/scripts/startup/bl_operators/object_quick_effects.py): Smoke Style Smoke, Fire or Smoke & Fire, Resolution Divisions 32 and cache Type Replay by default; a ball of water dropped into a tub with walls 10 cm thick and baked at 32, checked 2026-10-15'
   - Godot Docs, "Particle systems (3D)" (https://docs.godotengine.org/en/stable/tutorials/3d/particles/index.html), read 2026-10-15
-  - Olav3D Tutorials, "[4.2] Blender Tutorial: Quick And Realistic Fire And Smoke" (https://www.youtube.com/watch?v=RRU4MaqwBow), read 2026-10-15
+  - 'Olav3D Tutorials, "[4.2] Blender Tutorial: Quick And Realistic Fire And Smoke" (https://www.youtube.com/watch?v=RRU4MaqwBow), read 2026-10-15'
 ---
 
 # Fluids, smoke and fire

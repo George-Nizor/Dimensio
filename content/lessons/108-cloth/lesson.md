@@ -3,7 +3,7 @@ needs: [rigid-bodies]
 exercise: drape-a-tablecloth
 watch: [ryan-king-cloth, blender-manual-physics-cloth-introduction]
 sources:
-  - Blender 5.2 Manual, "Cloth: Introduction" (https://docs.blender.org/manual/en/5.2/physics/cloth/introduction.html), read 2026-10-15
+  - 'Blender 5.2 Manual, "Cloth: Introduction" (https://docs.blender.org/manual/en/5.2/physics/cloth/introduction.html), read 2026-10-15'
   - Blender 5.2 Manual, "Cloth Settings", Presets and Quality Steps (https://docs.blender.org/manual/en/5.2/physics/cloth/settings/index.html), read 2026-10-15
   - Blender 5.2 Manual, "Cloth Shape", Pin Group (https://docs.blender.org/manual/en/5.2/physics/cloth/settings/shape.html), read 2026-10-15
   - Blender 5.2 Manual, "Cloth Collisions", Object Collisions and Self-Collisions (https://docs.blender.org/manual/en/5.2/physics/cloth/settings/collisions.html), read 2026-10-15
@@ -11,7 +11,7 @@ sources:
   - Blender 5.2 Manual, "Baking Physics Simulations" (https://docs.blender.org/manual/en/5.2/physics/baking.html), read 2026-10-15
   - Blender 5.2 Manual, "Subdivide" (https://docs.blender.org/manual/en/5.2/modeling/meshes/editing/edge/subdivide.html), read 2026-10-15
   - Blender 5.2 Manual, "Vertex Groups", Assign (https://docs.blender.org/manual/en/5.2/modeling/meshes/properties/vertex_groups/vertex_groups.html), read 2026-10-15
-  - Blender 5.2 Manual, "Modifiers: Introduction", Apply (https://docs.blender.org/manual/en/5.2/modeling/modifiers/introduction.html), read 2026-10-15
+  - 'Blender 5.2 Manual, "Modifiers: Introduction", Apply (https://docs.blender.org/manual/en/5.2/modeling/modifiers/introduction.html), read 2026-10-15'
   - Blender 5.2 release notes, Physics, the experimental Cloth Dynamics modifier (https://developer.blender.org/docs/release_notes/5.2/physics/), read 2026-10-15
   - Blender 5.2.2, the cloth-table starter's tablecloth subdivided with 30 cuts, Cloth with default settings and Self Collisions, Collision on the table and floor, draped by frame 80, checked 2026-10-15
 ---

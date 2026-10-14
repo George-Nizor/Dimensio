@@ -4,7 +4,7 @@ exercise: grass-and-beard
 watch: [bradley-animation-hair-curves, blender-hair-assets]
 sources:
   - Blender 5.2 Manual, "Curve Primitives", Empty Hair (https://docs.blender.org/manual/en/5.2/modeling/curves_new/primitives.html), read 2026-10-15
-  - Blender 5.2 Manual, "Curves Sculpting: Introduction" (https://docs.blender.org/manual/en/5.2/sculpt_paint/curves_sculpting/introduction.html), read 2026-10-15
+  - 'Blender 5.2 Manual, "Curves Sculpting: Introduction" (https://docs.blender.org/manual/en/5.2/sculpt_paint/curves_sculpting/introduction.html), read 2026-10-15'
   - Blender 5.2 Manual, "Curves Sculpting Brushes", Add Curves, Density, Comb Curves, Grow / Shrink Curves and Delete Curves (https://docs.blender.org/manual/en/5.2/sculpt_paint/curves_sculpting/brushes/index.html), read 2026-10-15
   - Blender 5.2 Manual, "Hair Nodes" (https://docs.blender.org/manual/en/5.2/modeling/geometry_nodes/hair/index.html), read 2026-10-15
   - Blender 5.2 release notes, Physics, Hair Dynamics (https://developer.blender.org/docs/release_notes/5.2/physics/), read 2026-10-15

@@ -3,7 +3,7 @@ needs: [keyframes]
 exercise: knock-down-a-wall
 watch: [ryan-king-rigid-body, blender-manual-physics-rigid-body-introduction]
 sources:
-  - Blender 5.2 Manual, "Rigid Body: Introduction", Creating a Rigid Body (https://docs.blender.org/manual/en/5.2/physics/rigid_body/introduction.html), read 2026-10-15
+  - 'Blender 5.2 Manual, "Rigid Body: Introduction", Creating a Rigid Body (https://docs.blender.org/manual/en/5.2/physics/rigid_body/introduction.html), read 2026-10-15'
   - Blender 5.2 Manual, "Rigid Body Settings" (https://docs.blender.org/manual/en/5.2/physics/rigid_body/properties/settings.html), read 2026-10-15
   - Blender 5.2 Manual, "Rigid Body Collisions", Shape and Surface Response (https://docs.blender.org/manual/en/5.2/physics/rigid_body/properties/collisions.html), read 2026-10-15
   - Blender 5.2 Manual, "Rigid Body World", Rigid Body Cache (https://docs.blender.org/manual/en/5.2/physics/rigid_body/world.html), read 2026-10-15
@@ -24,7 +24,7 @@ Rigid body physics works out how solid objects fall, collide and tip over, so yo
 
    ![A wall of active blocks with an arrow pulling them down, on a passive ground, beside the menu paths Add Active for the blocks and Add Passive for the ground.](add)
 
-2. **Choose the shape.** In the Physics tab, set Collisions > Shape. Box fits the blocks. Convex Hull, the default, wraps an object like shrink wrap and fills any notch. Mesh follows every face but is slower and less stable.
+2. **Choose the shape.** Set one block's Collisions > Shape to Box in the Physics tab, then choose Object > Rigid Body > Copy from Active for the rest. Convex Hull, the default, wraps an object like shrink wrap. Mesh follows every face but runs slower.
 
    ![Collision shapes drawn dashed: Box fitting a block, Convex Hull wrapping an L-shaped piece and filling its notch, and Mesh following the notch.](shape)
 
@@ -46,7 +46,7 @@ Ryan King Art smashes a tower with a keyed sphere at the end of his rigid body v
 
 ![Left, Animated off: the ball has passed through the wall and every block stands. Right, Animated on: the wall lies knocked over.](mistake)
 
-A rigid body that you move with keys needs Animated ticked. Without it, the simulation thinks the body never left its first place. Your keyed ball passes through the wall and nothing falls.
+A rigid body that you move with keys needs Animated ticked. Without it, the simulation treats the body as if it never left its first place. Your keyed ball passes through the wall and nothing falls.
 
 ## Checking your model
 

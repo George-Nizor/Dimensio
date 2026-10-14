@@ -1,0 +1,119 @@
+# Teachers' videos and pages for lessons 103 to 114 that are not in catalogue.yaml. Each video was
+# checked on 2026-10-15: oEmbed answered 200 with this title and channel, the watch page said
+# playable in embed, and its description and chapters were read. blender is the release that was
+# current on the upload day, or the version the title names, when older than 5.0.
+
+# Lesson 105, Animations in Godot, and lesson 114, Falling crates
+
+- id: sweet-nanny-goat-godot-multi-animations
+  title: Multi Animations from Blender 5.2 in a Single .glb in Godot
+  teacher: Sweet Nanny Goat
+  url: https://www.youtube.com/watch?v=tJQvalDFeiY
+  kind: video
+  minutes: 27
+  youtube: tJQvalDFeiY
+  cost: free
+  checked: 2026-10-15
+
+- id: chevifier-blender-godot-animations
+  title: Blender to Godot Animations Tips and Tricks
+  teacher: Chevifier
+  url: https://www.youtube.com/watch?v=hM0AzP74ClI
+  kind: video
+  minutes: 7
+  youtube: hM0AzP74ClI
+  blender: "3.6"
+  cost: free
+  checked: 2026-10-15
+
+- id: godot-docs-animation-introduction
+  title: Introduction to the animation features
+  teacher: Godot Docs
+  url: https://docs.godotengine.org/en/stable/tutorials/animation/introduction.html
+  kind: documentation
+  cost: free
+  checked: 2026-10-15
+
+- id: pixxo-rigid-body-keyframes
+  title: Convert Rigid Body Into Keyframes
+  teacher: PIXXO 3D
+  url: https://www.youtube.com/watch?v=0deNiqxS-nk
+  kind: video
+  minutes: 3
+  youtube: 0deNiqxS-nk
+  blender: "4.2"
+  cost: free
+  checked: 2026-10-15
+
+# Lesson 110, Fluids, smoke and fire
+
+- id: olav3d-fire-smoke
+  title: Quick and Realistic Fire and Smoke
+  teacher: Olav3D Tutorials
+  url: https://www.youtube.com/watch?v=RRU4MaqwBow
+  kind: video
+  minutes: 5
+  youtube: RRU4MaqwBow
+  blender: "4.2"
+  cost: free
+  checked: 2026-10-15
+
+- id: godot-docs-3d-particles
+  title: Particle systems (3D)
+  teacher: Godot Docs
+  url: https://docs.godotengine.org/en/stable/tutorials/3d/particles/index.html
+  kind: documentation
+  cost: free
+  checked: 2026-10-15
+
+# Lesson 112, Hair curves
+
+- id: bradley-animation-hair-curves
+  title: "New Hair Curves: Geometry Nodes for Beginners"
+  teacher: Bradley Animation
+  url: https://www.youtube.com/watch?v=FMWw6XEcY4Y
+  kind: video
+  minutes: 5
+  youtube: FMWw6XEcY4Y
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-sculpt-paint-curves-sculpting-brushes
+  title: Curves Sculpting Brushes
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/sculpt_paint/curves_sculpting/brushes/index.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15
+
+# Lesson 113, Simulation nodes
+
+- id: xan3d-simulation-nodes
+  title: How Simulation Nodes Work in Blender
+  teacher: Xan 3D
+  url: https://www.youtube.com/watch?v=_BAFFWPOx5U
+  kind: video
+  minutes: 30
+  youtube: _BAFFWPOx5U
+  blender: "4.2"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-studio-simulation-nodes
+  title: How to Use the New Simulation Nodes in Blender 3.6 LTS
+  teacher: Blender Studio
+  url: https://www.youtube.com/watch?v=RJbLiFTNHnI
+  kind: video
+  minutes: 21
+  youtube: RJbLiFTNHnI
+  blender: "3.6"
+  cost: free
+  checked: 2026-10-15
+
+- id: blender-manual-geometry-nodes-simulation-zone
+  title: Simulation Zone
+  teacher: Blender Manual
+  url: https://docs.blender.org/manual/en/5.2/modeling/geometry_nodes/simulation/simulation_zone.html
+  kind: manual page
+  cost: free
+  checked: 2026-10-15

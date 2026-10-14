@@ -1,0 +1,34 @@
+# Practice for lesson 114. The item marked main is the lesson's exercise.
+
+- id: crates-off-a-cart
+  main: true
+  title: Crates off a cart
+  kind: project
+  minutes: 30
+  text: "Open the exercise: a cart that tips back and six crates on its bed. Make the crates active and the cart a passive, Animated body, and play until the crates tumble off. Bake them to keyframes from frame 1 to 120, export one animation called fall and play it in Godot."
+  steps: [Set up the physics, Play it and adjust, Bake to keyframes, Export one animation, Play it in Godot]
+  starter: crate-cart
+  timer: { minutes: 30 }
+  reference: { diagram: example }
+
+- id: your-own-crates
+  title: Your own crates on the cart
+  kind: drill
+  minutes: 15
+  text: Append your crate from lesson 27 with File > Append, and scale it to 0.4 m. Select the six starter crates, then your crate last, and choose Object > Link/Transfer Data > Link Object Data. Then set up the physics, bake and export as in the lesson.
+  starter: crate-cart
+  timer: { minutes: 15 }
+  check:
+    - All six crates on the cart are your crate.
+    - Godot still lists one animation, fall.
+
+- id: falling-crates-retest
+  title: The falling crates again
+  kind: retest
+  minutes: 30
+  text: A few days after the project, open the exercise again and take the fall to Godot from memory, without the lesson. Compare how the crates land with your first attempt.
+  starter: crate-cart
+  timer: { minutes: 30 }
+  check:
+    - Godot plays one animation that drops every crate.
+    - You opened no lesson while you worked.

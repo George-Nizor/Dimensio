@@ -17,7 +17,7 @@
   title: Change the meta-rig and generate again
   kind: drill
   minutes: 10
-  text: In the same file, select the meta-rig and in Edit Mode make both arms 10 cm longer at the hands. Back in Object Mode, click Re-Generate Rig in the Rigify panel. Rigify updates the rig you made rather than adding a second one.
+  text: In the same file, select the meta-rig and in Edit Mode make both arms 10 cm longer at the hands. Back in Object Mode, click Re-Generate Rig in the Rigify panel. Rigify updates the rig you already have.
   timer: { minutes: 10 }
   check:
     - The Outliner still shows one rig, not two.

@@ -1,4 +1,4 @@
-// The starter scene with its physics set: the crates active with a Box shape, the cart passive
+// The starter scene with its physics set: the crates active with the default Convex Hull shape, the cart passive
 // with Animated ticked and a Mesh shape, so its keys tip it and the crates rest between its rails.
 import { view, drawMesh, plane, join } from '../../../diagrams/mesh.mjs';
 import { cart, stacked } from './scene.mjs';
@@ -11,7 +11,7 @@ export default (kit) => {
     drawMesh(kit, join(cart(0), stacked()), v, { width: 1.2 }),
     `<rect x="290" y="12" width="220" height="74" rx="6" class="d-ui" stroke-width="1"/>`,
     kit.text(300, 30, 'Crates: Add Active', { size: 11 }),
-    field(kit, 296, 40, 208, 'Shape', 'Box', { on: true, labelWidth: 0.4 }),
+    field(kit, 296, 40, 208, 'Shape', 'Convex Hull', { labelWidth: 0.4 }),
     `<rect x="290" y="100" width="220" height="104" rx="6" class="d-ui" stroke-width="1"/>`,
     kit.text(300, 118, 'Cart: Add Passive', { size: 11 }),
     checkbox(kit, 300, 128, 'Animated', true),

@@ -93,3 +93,71 @@ the reference:
 ```text
 blender.exe -b <their.blend> --python blender/dimensio_check.py -- --out <dir> --reference <model.glb>
 ```
+
+## Every starter
+
+Each starter's first docstring paragraph. The docstring itself gives the numbers measuring it should report.
+
+| Id | What it holds |
+| --- | --- |
+| `apply-stretched` | Three boxes shaped in Object Mode, each with a Bevel modifier. |
+| `bake-stone` | A sculpted stone with a low-poly copy to bake onto, and a plank of procedural wood. |
+| `blocky-character` | A low-poly character 1.8 m tall in a T pose, with or without a rig. |
+| `bounce-even` | A ball dropped from 3 m that bounces three times, every bounce 24 frames. |
+| `broken-crate` | The lesson 27 crate with four common faults in it, for lesson 34, Checking your model. |
+| `cart-turret` | A cart that drives past, a target that moves, and a camera and a turret to aim. |
+| `chest-unwrapped` | A chest unwrapped into seven islands that still need arranging. |
+| `cleanup-mess` | A block that should be a plain box, with four things to clean up. |
+| `cloth-table` | A low-poly table with a flat tablecloth held above it, for a cloth drape. |
+| `coin-spout` | A treasure chest, a floor and a small plane where coins will pour from. |
+| `copy-reference` | A model to copy, beside an empty space to build in. |
+| `crate-cart` | A hand cart that tips back, with six crates stacked on its bed. |
+| `curve-pieces` | Three Bézier curves to turn into a rope, a pipe and a rail. |
+| `curve-trace` | Two flat shapes on the ground to trace with Bézier curves, seen from the top. |
+| `dense-rock` | A rock of about 2,000 triangles to make lower levels of detail from. |
+| `door-lamp` | A door that swings open and a hanging lamp that swings once. |
+| `driver-cart` | A cart that rolls 8 m along X, with four wheels that do not turn yet. |
+| `empty-scene` | Blender's default scene: the cube, the camera and the light. |
+| `export-kit` | Four building-kit pieces in a "Kit" collection, ready for an export script. |
+| `fix-ngons` | A stool with three mistakes to fix. |
+| `flipped-faces` | A crate and a barrel with faces turned the wrong way, for lesson 31, Normals. |
+| `godot-material-faults` | Three props whose materials go wrong in Godot. |
+| `grid-ground` | A flat patch of ground to shape, for lesson 29, Proportional editing. |
+| `hinged-door` | A door in a frame, with its origin on the hinge, ready to animate. |
+| `holes-to-fill` | Three objects with holes to fill, for lesson 26, Filling faces. |
+| `house-block` | A small house block, one mesh with no material, ready for material slots. |
+| `house-plot` | An empty 6 x 6 m plot to build a house on, with a figure for scale. |
+| `import-practice` | An empty scene with two model files beside it to import, one at the wrong size. |
+| `knife-wall` | A plain wall to cut into, for lesson 28, The knife tool. |
+| `light-stage` | A crate and a barrel on a floor, with a camera and no lights. |
+| `loop-shapes` | Four meshes with coloured targets for loop, ring, path and linked selection. |
+| `material-spheres` | Six smooth spheres in a row on a checked floor, waiting for materials. |
+| `messy-scene` | A market corner with every object left under its default name. |
+| `missing-textures` | A crate and a barrel whose two texture images have been moved. |
+| `mushroom-parts` | A mushroom's cap and stem as two separate objects that overlap. |
+| `navigation-letters` | Six props on a 20 m floor, each with one letter on a face only one view shows. |
+| `ngon-lamp` | A table lamp with n-gons in the right and wrong places, for lesson 33, Quads, triangles and n-gons. |
+| `not-game-ready` | Three props that break five game-ready rules between them. |
+| `origins-wrong` | A crate, a lamp and a door whose origins are in the wrong places. |
+| `palette-barrel` | A grey barrel and a palette image, ready to be coloured with one material. |
+| `parent-car` | A block car in loose parts, ready to be parented. |
+| `pivot-planks` | Twelve planks to turn into a ring, and a tilted sign to slide. |
+| `props-library` | A small library file of three props to append, link and mark as assets. |
+| `reference-images` | Front and side reference pictures set up for blocking out. |
+| `reference-pictures` | Blender's default scene, with reference pictures saved beside it. |
+| `render-stage` | Three low-poly props on a curved backdrop, lit by three area lights, with a camera. |
+| `rigify-body` | A 1.7 m low-poly body in an A pose, ready for a Rigify meta-rig. |
+| `scatter-hill` | A low-poly hill to scatter on, and a rock and a tree to scatter. |
+| `sculpt-ball` | A ball with even, dense topology, ready to sculpt. |
+| `sculpted-stone` | A sculpted stone of 20,480 triangles to retopologise. |
+| `selection-yard` | A yard of 30 props of five kinds, for practising selection. |
+| `separate-lamp` | A lamp to take apart and a pile of rocks to put together, for lesson 30, Separate and join. |
+| `shading-barrel` | Two flat-shaded barrels to shade two ways, for lesson 32, Flat and smooth shading. |
+| `snapping-blocks` | Three blocks to stack and five posts to set out, for practising snapping. |
+| `textured-wall` | A brick wall waiting for its texture set: three images in the file, none connected. |
+| `transform-targets` | Eight blocks, each to be moved, turned or scaled into a wire outline. |
+| `tree-grey` | A grey low-poly tree to colour with vertex paint. |
+| `turntable` | The render stage's props on a round plinth that turns once, for a turntable. |
+| `unapplied-scale` | A shelf board scaled in Object Mode, with a Bevel modifier. |
+| `unwrap-props` | A crate, a barrel and a rock with a test grid but no UV maps, ready to unwrap. |
+| `uv-three-props` | Three props with ready-made UV maps and a test grid, for reading UV maps. |

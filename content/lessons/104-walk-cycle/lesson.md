@@ -37,7 +37,7 @@ A walk cycle is two steps, one with each foot, that end where they began, so a g
 
    ![The contact pose on frame 1, and the same pose pasted flipped on frame 13 with the other leg in front, joined by Ctrl+C and Shift+Ctrl+V.](flip)
 
-5. **Make it loop.** In the Graph Editor, press `A` to select every curve, then choose Channel > Add F-Curve Modifier > Cycles. Each curve now repeats its keys from 1 to 25 before and after them, so the walk carries on forever.
+5. **Make it loop.** In the Graph Editor, press `A` to select every curve, then choose Channel > Add F-Curve Modifier > Cycles. Each curve now repeats its keys from 1 to 25 before and after them, so the walk keeps going past frame 25.
 
    ![The Graph Editor with the hips' height curve from frame 1 to 25 and dashed copies of it before and after, under Channel, Add F-Curve Modifier, Cycles.](cycles)
 

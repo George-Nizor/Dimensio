@@ -3,12 +3,12 @@ needs: [rigid-bodies]
 exercise: falling-leaves
 watch: [ryan-king-particles, blender-manual-physics-particles-introduction]
 sources:
-  - Blender 5.2 Manual, "Particle System: Introduction" (https://docs.blender.org/manual/en/5.2/physics/particles/introduction.html), read 2026-10-15
+  - 'Blender 5.2 Manual, "Particle System: Introduction" (https://docs.blender.org/manual/en/5.2/physics/particles/introduction.html), read 2026-10-15'
   - Blender 5.2 Manual, "Particle Emission" (https://docs.blender.org/manual/en/5.2/physics/particles/emitter/emission.html), read 2026-10-15
   - Blender 5.2 Manual, "Particle Velocity", Normal (https://docs.blender.org/manual/en/5.2/physics/particles/emitter/velocity.html), read 2026-10-15
   - Blender 5.2 Manual, "Particle Render", Object and Scale (https://docs.blender.org/manual/en/5.2/physics/particles/emitter/render.html), read 2026-10-15
   - Blender 5.2 Manual, "Particle Rotation" (https://docs.blender.org/manual/en/5.2/physics/particles/emitter/rotation.html), read 2026-10-15
-  - Blender 5.2 Manual, "Force Fields: Wind" (https://docs.blender.org/manual/en/5.2/physics/forces/force_fields/types/wind.html), read 2026-10-15
+  - 'Blender 5.2 Manual, "Force Fields: Wind" (https://docs.blender.org/manual/en/5.2/physics/forces/force_fields/types/wind.html), read 2026-10-15'
   - Blender 5.2 Manual, "Collision" (https://docs.blender.org/manual/en/5.2/physics/collision.html), read 2026-10-15
   - Blender 5.2.2, a new particle system's defaults (Number 1000, Frame Start 1, End 200, Lifetime 50, Normal 1 m/s, Scale 0.05) and the Collision panel's Particle settings, and 150 leaves blown by a Wind field of Strength 3 landing on a ground with Damping and Friction 1, checked 2026-10-15
   - Ryan King Art, "Particle Systems for Beginners" (https://www.youtube.com/watch?v=Lj2EBG2_ooQ), read 2026-10-15

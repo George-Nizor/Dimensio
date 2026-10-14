@@ -14,7 +14,7 @@
   title: Loop an animation in Godot
   kind: drill
   minutes: 10
-  text: Open the example character in Blender and export it as a .glb. Its 32 actions sit on NLA tracks, so all of them go. Their names have no -loop, so in Godot double-click the .glb, select walk under the AnimationPlayer, set Loop Mode to Linear and click Reimport.
+  text: Open the example character in Blender and export it as a .glb. Its 32 actions sit on NLA tracks, so all 32 export. Their names have no -loop, so in Godot double-click the .glb, select walk under the AnimationPlayer, set Loop Mode to Linear and click Reimport.
   timer: { minutes: 10 }
   reference: { model: kenney-mini-character }
   check:

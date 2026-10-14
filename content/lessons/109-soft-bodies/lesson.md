@@ -3,12 +3,12 @@ needs: [rigid-bodies]
 exercise: jelly-on-a-plate
 watch: [ryan-king-soft-body, blender-manual-physics-soft-body-introduction]
 sources:
-  - Blender 5.2 Manual, "Soft Body: Introduction", Creating a Soft Body and Tips (https://docs.blender.org/manual/en/5.2/physics/soft_body/introduction.html), read 2026-10-15
+  - 'Blender 5.2 Manual, "Soft Body: Introduction", Creating a Soft Body and Tips (https://docs.blender.org/manual/en/5.2/physics/soft_body/introduction.html), read 2026-10-15'
   - Blender 5.2 Manual, "Soft Body Goal" (https://docs.blender.org/manual/en/5.2/physics/soft_body/settings/goal.html), read 2026-10-15
   - Blender 5.2 Manual, "Soft Body Edges", Pull, Push and Bending (https://docs.blender.org/manual/en/5.2/physics/soft_body/settings/edges.html), read 2026-10-15
   - Blender 5.2 Manual, "Soft Body Collision", Collisions with Other Objects and Good Collisions (https://docs.blender.org/manual/en/5.2/physics/soft_body/collision.html), read 2026-10-15
   - Blender 5.2 Manual, "Baking Physics Simulations" (https://docs.blender.org/manual/en/5.2/physics/baking.html), read 2026-10-15
-  - Blender 5.2.2, a 0.8 m cube with 4 cuts dropped on a filled circle with Collision: Goal on by default at 0.7; with Goal off and default Edges it slumps to 0.1 m; with Bending 3 and Pull and Push 0.8 it keeps its shape, checked 2026-10-15
+  - 'Blender 5.2.2, a 0.8 m cube with 4 cuts dropped on a filled circle with Collision: Goal on by default at 0.7; with Goal off and default Edges it slumps to 0.1 m; with Bending 3 and Pull and Push 0.8 it keeps its shape, checked 2026-10-15'
   - Ryan King Art, "Soft Body Physics for Beginners", chapters Use Enough Geometry, Turn Off Goal and Bending (https://www.youtube.com/watch?v=6Dtwhd1N0bY), read 2026-10-15
 ---
 
@@ -28,7 +28,7 @@ Soft body physics makes a mesh squash, wobble and spring back, like jelly, a rub
 
    ![The Physics tab with Soft Body on and its panels folded, the Goal panel's checkbox unticked.](goal)
 
-3. **Make the plate collide.** Choose Add > Mesh > Circle and set Fill Type to N-Gon for a flat plate under the cube. Click Collision in its Physics tab. A thick, closed plate catches soft bodies less well than a flat face.
+3. **Make the plate collide.** Choose Add > Mesh > Circle and set Fill Type to N-Gon for a flat plate under the cube. Click Collision in its Physics tab. A thin closed plate works worse, because its top and bottom collision zones overlap.
 
    ![The subdivided cube falling toward a flat disc, made with Add, Mesh, Circle and Fill Type N-Gon, which has Collision turned on.](collide)
 
@@ -36,7 +36,7 @@ Soft body physics makes a mesh squash, wobble and spring back, like jelly, a rub
 
    ![Left, the defaults: the cube slumped flat across the plate. Right, Bending 3 with Pull and Push 0.8: it keeps its shape, beside the Edges panel with those values.](shape)
 
-5. **Bake it.** Save the file, set End to 100 in Soft Body > Cache and click Bake. Play it with `Space` to see the cube land, squash and wobble still.
+5. **Bake it.** Save the file, set End to 100 in Soft Body > Cache and click Bake. Play it with `Space` to see the cube land, squash and wobble to a stop.
 
 Ryan King Art turns Goal off and adds Bending first in his soft body video, before he tunes Push and Pull.
 
