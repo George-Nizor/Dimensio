@@ -212,7 +212,7 @@ test("fix 1: the selection is written to a saved project as it changes, without 
   assert.deepEqual(disk.settings, { quality: "draft" }, "the saved settings, not whatever is unsaved");
   assert.equal(next.project_id, saved.project_id);
   // main.cjs writes it from the project-view handler for saved projects.
-  assert.match(main, /handle\("forge3d:project-view"[^]*?writeProjectView\(project\.file, project\.manifest, project\.view\)/);
+  assert.match(main, /handle\("dimensio:project-view"[^]*?writeProjectView\(project\.file, project\.manifest, project\.view\)/);
 });
 
 test("fix 2: saving an untitled project stops the agent before moving its folder", () => {
@@ -322,7 +322,7 @@ test("fix 4: one Forge3D at a time; a second launch focuses the window and opens
 });
 
 test("fix 5: Run checks the agent before it makes a run folder", () => {
-  const handler = main.slice(main.indexOf('handle("forge3d:start-run"'), main.indexOf('handle("forge3d:continue-run"'));
+  const handler = main.slice(main.indexOf('handle("dimensio:start-run"'), main.indexOf('handle("dimensio:continue-run"'));
   assert.ok(handler.indexOf("await ensureAgentReady()") > 0, "the agent is checked");
   assert.ok(handler.indexOf("await ensureAgentReady()") < handler.indexOf("store().create("), "before the run folder exists");
   assert.match(body("ensureAgentReady"), /driver\.prepare\(agentContext\(\)\)/);

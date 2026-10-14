@@ -75,7 +75,7 @@ if (!singleInstance) app.quit();
 
 protocol.registerSchemesAsPrivileged([
   {
-    scheme: "forge3d-artifact",
+    scheme: "dimensio-artifact",
     privileges: { standard: true, secure: true, supportFetchAPI: true, corsEnabled: true, stream: true },
   },
   APP_PRIVILEGES,
@@ -162,7 +162,7 @@ function currentState() {
 
 function sendState() {
   updateWindowTitle();
-  send("forge3d:state", currentState());
+  send("dimensio:state", currentState());
 }
 
 /* ── projects ─────────────────────────────────────────────────── */
@@ -235,7 +235,7 @@ async function leaveSession({ discard = false } = {}) {
       if (hasRuns(leaving.folder)) await shell.trashItem(leaving.folder);
       else fs.rmSync(leaving.folder, { recursive: true, force: true });
     } catch (error) {
-      send("forge3d:error", `Forge3D could not remove the unsaved project folder: ${error.message}`);
+      send("dimensio:error", `Forge3D could not remove the unsaved project folder: ${error.message}`);
     }
   }
   refreshRecoverable();
@@ -430,7 +430,7 @@ function onSecondInstance(argv = []) {
   mainWindow.show();
   mainWindow.focus();
   const file = projectFromArgv(argv.slice(1));
-  if (file) openProject({ path: file }).catch((error) => send("forge3d:error", `Forge3D could not open ${path.basename(file)}: ${error.message}`));
+  if (file) openProject({ path: file }).catch((error) => send("dimensio:error", `Forge3D could not open ${path.basename(file)}: ${error.message}`));
 }
 
 async function closeProject() {
@@ -463,7 +463,7 @@ function onWindowClose(event) {
     await leaveSession({ discard });
     allowWindowClose = true;
     mainWindow.close();
-  })().catch((error) => send("forge3d:error", error.message));
+  })().catch((error) => send("dimensio:error", error.message));
 }
 
 async function confirmStopRun(doing) {
@@ -514,13 +514,13 @@ function flushRunEvents() {
     store().appendEvents(runId, events);
     count += events.length;
   }
-  if (count) send("forge3d:event", { refresh: true, count });
+  if (count) send("dimensio:event", { refresh: true, count });
 }
 
 function failActiveJob(error) {
   const message = `Forge3D could not process the agent's activity: ${error.message}`;
   appServerError = message;
-  send("forge3d:error", message);
+  send("dimensio:error", message);
   try { flushRunEvents(); } catch {}
   if (activeJob) {
     try { store().setStatus(activeJob.runId, "failed", message); } catch {}
@@ -643,7 +643,7 @@ function onAgentApproval(driver, { requestId, method, params, message }) {
     return;
   }
   queueRunEvent(activeJob.runId, { kind: "approval-request", requestId, method, params: compact(params) });
-  send("forge3d:approval", { requestId, method, params: compact(params) });
+  send("dimensio:approval", { requestId, method, params: compact(params) });
   sendState();
 }
 
@@ -662,7 +662,7 @@ function finishActiveJob(driver, { status, error = null, turnId = null }) {
 // notify: a protocol problem worth a toast.
 function onAgentError(driver, { message, fatal = false, method = null, notify = false, internal = false }) {
   const ours = activeJob && activeJob.agent === driver.id;
-  if (notify || internal) send("forge3d:error", message);
+  if (notify || internal) send("dimensio:error", message);
   if (fatal) {
     if (!ours && driver.id !== agentSettings.agent()) return; // an agent no longer in use
     try { flushRunEvents(); } catch {}
@@ -843,7 +843,7 @@ function createWindow() {
 }
 
 function registerIpc() {
-  handle("forge3d:bootstrap", async () => {
+  handle("dimensio:bootstrap", async () => {
     try {
       await refreshSkill(false);
     } catch (error) {
@@ -853,7 +853,7 @@ function registerIpc() {
     return { ...currentState(), models: info.models, modelDefaults: { model: info.defaultModel || "", effort: info.defaultEffort || "" } };
   });
 
-  handle("forge3d:pick-attachments", async () => {
+  handle("dimensio:pick-attachments", async () => {
     const result = await dialog.showOpenDialog(mainWindow, {
       title: "Add Forge3D attachments",
       properties: ["openFile", "multiSelections"],
@@ -867,7 +867,7 @@ function registerIpc() {
 
   // The agent is checked (installed, signed in, started) before the run folder is made, so a missing agent leaves
   // no run behind that never started.
-  handle("forge3d:start-run", async (payload = {}) => {
+  handle("dimensio:start-run", async (payload = {}) => {
     store();
     if (activeJob) throw new Error("Forge3D already has an active job");
     await ensureAgentReady();
@@ -875,13 +875,13 @@ function registerIpc() {
     return beginRun(manifest, payload);
   });
 
-  handle("forge3d:continue-run", async (payload = {}) => {
+  handle("dimensio:continue-run", async (payload = {}) => {
     const loaded = store().find(payload.runId, false).manifest;
     const text = typeof payload.text === "string" && payload.text.trim() ? payload.text.trim() : "Continue this Forge3D run from its saved state, verify existing artifacts, and finish the requested result.";
     return beginRun(loaded, { ...payload, continuation: text });
   });
 
-  handle("forge3d:steer", async (payload = {}) => {
+  handle("dimensio:steer", async (payload = {}) => {
     if (!activeJob || payload.runId !== activeJob.runId) throw new Error("This run is not active");
     if (typeof payload.text !== "string" || !payload.text.trim()) throw new Error("Steering text is required");
     await jobAgent().steer(payload.text.trim());
@@ -889,7 +889,7 @@ function registerIpc() {
     return currentState();
   });
 
-  handle("forge3d:cancel", async (payload = {}) => {
+  handle("dimensio:cancel", async (payload = {}) => {
     if (!activeJob || payload.runId !== activeJob.runId) throw new Error("This run is not active");
     store().setStatus(activeJob.runId, "cancelling");
     await jobAgent().interrupt();
@@ -897,19 +897,19 @@ function registerIpc() {
     return currentState();
   });
 
-  handle("forge3d:approval", async (payload = {}) => {
+  handle("dimensio:approval", async (payload = {}) => {
     if (!activeJob) throw new Error("No active job is awaiting approval");
     jobAgent().decide(payload.requestId, payload.decision);
     store().appendEvent(activeJob.runId, { kind: "approval-decision", requestId: payload.requestId, decision: payload.decision });
     return currentState();
   });
 
-  handle("forge3d:duplicate", async (payload = {}) => store().duplicate(payload.runId));
-  handle("forge3d:archive", async (payload = {}) => {
+  handle("dimensio:duplicate", async (payload = {}) => store().duplicate(payload.runId));
+  handle("dimensio:archive", async (payload = {}) => {
     if (activeJob?.runId === payload.runId) throw new Error("Cancel the active job before archiving it");
     return store().archive(payload.runId);
   });
-  handle("forge3d:trash", async (payload = {}) => {
+  handle("dimensio:trash", async (payload = {}) => {
     if (activeJob?.runId === payload.runId) throw new Error("Cancel the active job before moving it to trash");
     const directory = store().runDirectory(payload.runId);
     await shell.trashItem(directory);
@@ -917,7 +917,7 @@ function registerIpc() {
     return { recoverable: true };
   });
 
-  handle("forge3d:artifact-action", async (payload = {}) => {
+  handle("dimensio:artifact-action", async (payload = {}) => {
     const absolute = store().resolveArtifact(payload.runId, payload.path);
     if (payload.action === "reveal") shell.showItemInFolder(absolute);
     else if (payload.action === "copy") clipboard.writeText(absolute);
@@ -942,7 +942,7 @@ function registerIpc() {
     return { path: absolute };
   });
 
-  handle("forge3d:export-artifact", async (payload = {}) => {
+  handle("dimensio:export-artifact", async (payload = {}) => {
     if (activeJob) throw new Error("Wait for the active run to finish before exporting");
     const manifest = store().find(payload.runId, false).manifest;
     const artifact = (manifest.artifacts || []).find((item) => item.path === payload.path);
@@ -977,33 +977,33 @@ function registerIpc() {
     return result;
   });
 
-  handle("forge3d:repair-plugin", async () => {
+  handle("dimensio:repair-plugin", async () => {
     if (agentSettings.agent() !== "codex") throw new Error("Claude Code loads the Dimensio plugin from this app each run, so there is nothing to repair.");
     const result = repairForgePlugin({ bundledPlugin: bundledPlugin(), runtimeState });
     await refreshSkill(true);
     sendState();
     return { ...result, skill: currentSkill };
   });
-  handle("forge3d:set-theme", async (payload) => {
+  handle("dimensio:set-theme", async (payload) => {
     if (!["system", "light", "dark"].includes(payload)) throw new Error("Unknown theme");
     nativeTheme.themeSource = payload;
     return payload;
   });
   nativeTheme.on("updated", applyChromeColors);
-  handle("forge3d:capabilities", (payload = {}) => capabilitiesService().get({ force: Boolean(payload?.force) }));
-  handle("forge3d:agent-settings", () => agentSettings.get());
-  handle("forge3d:set-agent", (payload) => setAgent(typeof payload === "string" ? payload : payload?.agent));
-  handle("forge3d:agent-status", (payload = {}) => agentStatus(payload));
-  handle("forge3d:models", (payload = {}) => agentModels(payload?.agent));
-  handle("forge3d:project-new", (payload = {}) => newProject(payload));
-  handle("forge3d:project-open", (payload = {}) => openProject(payload));
-  handle("forge3d:project-open-recovered", (payload = {}) => openRecovered(payload));
-  handle("forge3d:project-save", async () => ({ saved: await saveProject(), ...currentState() }));
-  handle("forge3d:project-save-as", async () => ({ saved: await saveProjectAs(), ...currentState() }));
-  handle("forge3d:project-close", () => closeProject());
-  handle("forge3d:project-rename", (payload = {}) => renameOpenProject(payload));
-  handle("forge3d:project-delete", () => deleteOpenProject());
-  handle("forge3d:project-reveal", async () => {
+  handle("dimensio:capabilities", (payload = {}) => capabilitiesService().get({ force: Boolean(payload?.force) }));
+  handle("dimensio:agent-settings", () => agentSettings.get());
+  handle("dimensio:set-agent", (payload) => setAgent(typeof payload === "string" ? payload : payload?.agent));
+  handle("dimensio:agent-status", (payload = {}) => agentStatus(payload));
+  handle("dimensio:models", (payload = {}) => agentModels(payload?.agent));
+  handle("dimensio:project-new", (payload = {}) => newProject(payload));
+  handle("dimensio:project-open", (payload = {}) => openProject(payload));
+  handle("dimensio:project-open-recovered", (payload = {}) => openRecovered(payload));
+  handle("dimensio:project-save", async () => ({ saved: await saveProject(), ...currentState() }));
+  handle("dimensio:project-save-as", async () => ({ saved: await saveProjectAs(), ...currentState() }));
+  handle("dimensio:project-close", () => closeProject());
+  handle("dimensio:project-rename", (payload = {}) => renameOpenProject(payload));
+  handle("dimensio:project-delete", () => deleteOpenProject());
+  handle("dimensio:project-reveal", async () => {
     if (!project) throw new Error("No project is open");
     if (project.file) shell.showItemInFolder(project.file);
     else await shell.openPath(project.folder);
@@ -1011,40 +1011,40 @@ function registerIpc() {
   });
   // Run settings belong to the project and make it unsaved. The selection is written to a saved project's file as
   // it changes, without asking and without making the project unsaved.
-  handle("forge3d:project-settings", (payload = {}) => {
+  handle("dimensio:project-settings", (payload = {}) => {
     if (!project) return null;
     project.settings = sanitizeSettings(payload);
     updateWindowTitle();
     return projectSummary();
   });
-  handle("forge3d:project-view", (payload = {}) => {
+  handle("dimensio:project-view", (payload = {}) => {
     if (!project) return null;
     project.view = sanitizeView(payload);
     if (!project.untitled) {
       try {
         project.manifest = writeProjectView(project.file, project.manifest, project.view);
       } catch (error) {
-        send("forge3d:error", `Forge3D could not keep the selection in the project file: ${error.message}`);
+        send("dimensio:error", `Forge3D could not keep the selection in the project file: ${error.message}`);
       }
     }
     return null;
   });
-  handle("forge3d:recent-remove", (payload = {}) => {
+  handle("dimensio:recent-remove", (payload = {}) => {
     if (typeof payload.path !== "string") throw new Error("A project path is required");
     recentProjects.remove(payload.path);
     sendState();
     return currentState();
   });
-  handle("forge3d:recent-clear", () => {
+  handle("dimensio:recent-clear", () => {
     recentProjects.clear();
     sendState();
     return currentState();
   });
-  handle("forge3d:project-preferences", (payload = {}) => {
+  handle("dimensio:project-preferences", (payload = {}) => {
     recentProjects.setPreferences({ reopenLast: payload.reopenLast });
     return currentState();
   });
-  handle("forge3d:refresh-tools", async (payload = {}) => {
+  handle("dimensio:refresh-tools", async (payload = {}) => {
     if (payload.force) externalTools(true);
     updateWindowTitle();
     return currentState();
@@ -1082,7 +1082,7 @@ app.whenReady().then(async () => {
   }
 
   registerAppProtocol({ protocol, net, session: session.defaultSession, root: path.join(__dirname, "..", "dist") });
-  protocol.handle("forge3d-artifact", (request) => {
+  protocol.handle("dimensio-artifact", (request) => {
     if (!runStore) return new Response("No project is open", { status: 404 });
     const url = new URL(request.url);
     const runId = url.hostname;
@@ -1095,11 +1095,11 @@ app.whenReady().then(async () => {
   registerIpc();
   registerCourseIpc({ handle, getWindow: () => mainWindow });
   createWindow();
-  if (launchError) mainWindow.webContents.once("did-finish-load", () => send("forge3d:error", `Forge3D could not reopen the project: ${launchError}`));
+  if (launchError) mainWindow.webContents.once("did-finish-load", () => send("dimensio:error", `Forge3D could not reopen the project: ${launchError}`));
   const godot = externalTools(true).godot;
   if (godot) {
     godotPrimePromise = primeGodotProject(runtimeState, godot);
-    godotPrimePromise.catch((error) => send("forge3d:error", `Godot project setup failed: ${error.message}`));
+    godotPrimePromise.catch((error) => send("dimensio:error", `Godot project setup failed: ${error.message}`));
   }
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();

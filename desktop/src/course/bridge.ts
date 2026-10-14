@@ -40,8 +40,9 @@ export interface CourseBridge {
 
 declare global {
   interface Window {
-    dimensio?: { course?: CourseBridge };
-    forge3d?: { setTheme?: (theme: string) => Promise<unknown> };
+    // The preload's one object: the course bridge, and setTheme so the window's caption follows
+    // the theme. The Workshop's calls are on it too; the course app does not use them.
+    dimensio?: { course?: CourseBridge; setTheme?: (theme: string) => Promise<unknown> };
   }
 }
 

@@ -2,7 +2,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
 // Two pages: index.html is the course app (React, src/course/), workshop.html is the Workshop
-// (Forge3D's renderer, src/renderer/). Both are served to the window from dimensio-app://app.
+// (src/renderer/). Both are served to the window from dimensio-app://app.
 //
 // Under `vite dev` React's refresh preamble is an inline script and the dev server talks over a
 // websocket, so the pages' content policies are loosened there and only there. A build keeps them

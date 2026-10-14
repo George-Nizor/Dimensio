@@ -18,7 +18,7 @@ import { icon, themeIcon } from "./icons.mjs";
 // attributes only, so it is safe under this window's Content-Security-Policy.
 const brandIcon = (size, label = "") => InstrumentaIcons.render("forge3d", { size, label });
 
-const api = window.forge3d;
+const api = window.dimensio;
 const app = document.querySelector("#app");
 
 // project: undefined until the main process has answered, then null (the start screen) or the open project.
@@ -34,7 +34,7 @@ let viewportApi = null;
 // { ok: false, error, fix }. capsChecking is true while a check is in flight; the last answer stays on screen meanwhile.
 let capabilities = null;
 let capsChecking = false;
-// window.forge3d.agentStatus(): { agent, statuses: { claude: {...}, codex: {...} } }, for the agent choice on the setup card.
+// window.dimensio.agentStatus(): { agent, statuses: { claude: {...}, codex: {...} } }, for the agent choice on the setup card.
 let agentStatuses = null;
 let composing = false; // New run: no run is selected until one is picked or started
 let showSetup = false; // the person opened the readiness card from the status bar or the Run chip
@@ -266,7 +266,7 @@ function applyRunSettings(settings) {
 /* ── helpers ────────────────────────────────────────────────── */
 
 function artifactUrl(runId, relativePath) {
-  return `forge3d-artifact://${runId}/${relativePath.split("/").map(encodeURIComponent).join("/")}`;
+  return `dimensio-artifact://${runId}/${relativePath.split("/").map(encodeURIComponent).join("/")}`;
 }
 
 function escapeHtml(value) {

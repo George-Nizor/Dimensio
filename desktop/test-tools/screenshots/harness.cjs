@@ -1,5 +1,5 @@
 // Screenshot harness for the Forge3D renderer. It serves a built desktop/dist (or SITE), injects a mocked
-// window.forge3d bridge with invented runs, and shoots named scenes in headless Chromium (SwiftShader WebGL).
+// window.dimensio bridge with invented runs, and shoots named scenes in headless Chromium (SwiftShader WebGL).
 // It is a visual check, not a test: the data shapes are guesses from main.js. See README.md.
 //
 //   node test-tools/screenshots/harness.cjs [scene,scene,...]
@@ -199,9 +199,9 @@ srv.listen(0, "127.0.0.1", async () => {
     if (sc === "stopped") { runs = [{ ...failed, run_id: "r4", status: "interrupted", failure: null, name: "Pod", prompt: "A sci-fi medical pod" }, done]; }
     if (sc === "plugin") { runs = [done]; skill = { state: "version-mismatch", installedVersion: "0.2.0", bundledVersion: "0.2.2" }; tools = { codex: true, blender: true, godot: false, wsl: true }; }
     localStorage.setItem("forge3d.panels", JSON.stringify({ library: !["first", "checking", "offline", "ready", "blockedrun"].includes(sc), inspector: true }));
-    // The app loads artifacts from forge3d-artifact://<run>/<path>, a scheme only Electron serves. Map it onto the
+    // The app loads artifacts from dimensio-artifact://<run>/<path>, a scheme only Electron serves. Map it onto the
     // harness's /artifacts/ route for fetch() (models, text) and for <img> (thumbnails, previews).
-    const mapUrl = (u) => (typeof u === "string" && u.startsWith("forge3d-artifact://") ? "/artifacts/" + u.split("/").slice(3).join("/") : u);
+    const mapUrl = (u) => (typeof u === "string" && u.startsWith("dimensio-artifact://") ? "/artifacts/" + u.split("/").slice(3).join("/") : u);
     const realFetch = window.fetch.bind(window);
     window.fetch = (input, init) => realFetch(mapUrl(typeof input === "string" ? input : input.url ?? String(input)), init);
     const fixImg = (img) => { const m = mapUrl(img.getAttribute("src")); if (m !== img.getAttribute("src")) img.setAttribute("src", m); };
@@ -225,7 +225,7 @@ srv.listen(0, "127.0.0.1", async () => {
       claude: { id: "claude", name: "Claude Code", imageGeneration: false, installed: true, signedIn: sc !== "signedout", version: "2.1.299", reason: sc === "signedout" ? "Claude Code is installed but not signed in." : "", fix: sc === "signedout" ? "Run `claude` in a terminal and sign in with your Claude account, then press Check again." : "" },
       codex: { id: "codex", name: "Codex", imageGeneration: true, installed: false, signedIn: false, version: "", reason: "Codex was not found.", fix: "Install the Codex app or CLI (https://developers.openai.com/codex) and sign in, then press Check again." },
     } };
-    window.forge3d = { bootstrap: async () => ({ version: "0.2.2", agent: { id: "claude", name: "Claude Code" }, activeJob: active, appServerError: err, skill, tools, runs, models: [{ id: "opus", label: "Opus" }, { id: "sonnet", label: "Sonnet" }, { id: "haiku", label: "Haiku" }], modelDefaults: { model: "opus", effort: "medium" }, ...projectState() }),
+    window.dimensio = { bootstrap: async () => ({ version: "0.2.2", agent: { id: "claude", name: "Claude Code" }, activeJob: active, appServerError: err, skill, tools, runs, models: [{ id: "opus", label: "Opus" }, { id: "sonnet", label: "Sonnet" }, { id: "haiku", label: "Haiku" }], modelDefaults: { model: "opus", effort: "medium" }, ...projectState() }),
       agentStatus: async () => agentStatuses, models: async () => ({ models: [{ id: "opus", label: "Opus" }], defaultModel: "opus", defaultEffort: "medium" }), setAgent: async (id) => ({ agent: id, name: id === "codex" ? "Codex" : "Claude Code" }),
       project: projectApi, onState: noop, onEvent: noop, onApproval: (cb) => { window.__approve = cb; return () => {}; }, onError: noop, refreshTools: async () => projectState(), capabilities: async () => { await new Promise((r) => setTimeout(r, sc === "checkingcaps" ? 60000 : 150)); return capsResult; }, artifactAction: async () => ({}), pickAttachments: async () => [], continueRun: async () => ({}) };
   });

@@ -7,7 +7,7 @@ const test = require("node:test");
 
 const main = fs.readFileSync(path.join(__dirname, "..", "src", "main.cjs"), "utf8");
 const preload = fs.readFileSync(path.join(__dirname, "..", "src", "preload.cjs"), "utf8");
-// workshop.html is the Workshop (Forge3D's renderer); index.html is the course app.
+// workshop.html is the Workshop; index.html is the course app.
 const html = fs.readFileSync(path.join(__dirname, "..", "workshop.html"), "utf8");
 const courseHtml = fs.readFileSync(path.join(__dirname, "..", "index.html"), "utf8");
 const renderer = fs.readFileSync(path.join(__dirname, "..", "src", "renderer", "main.js"), "utf8");
@@ -23,7 +23,9 @@ test("Electron renderer is isolated and permissions default to deny", () => {
 });
 
 test("preload exposes narrow named operations without raw ipcRenderer", () => {
-  assert.match(preload, /contextBridge\.exposeInMainWorld\("forge3d"/);
+  assert.match(preload, /contextBridge\.exposeInMainWorld\("dimensio"/);
+  // One object for both pages: the Workshop's calls and the course bridge.
+  assert.equal(preload.match(/exposeInMainWorld\(/g).length, 1);
   assert.doesNotMatch(preload, /exposeInMainWorld\([^]*ipcRenderer\s*[,}]/);
   assert.doesNotMatch(preload, /\b(readFile|writeFile|rename|rm|unlink)\s*:/);
 });
@@ -42,7 +44,7 @@ test("desktop runs are local-only and expose no cloud provider controls", () => 
 test("CSP rejects remote scripts and allows only the contained artifact scheme", () => {
   assert.match(html, /script-src 'self'/);
   assert.match(html, /object-src 'none'/);
-  assert.match(html, /forge3d-artifact:/);
+  assert.match(html, /dimensio-artifact:/);
   assert.doesNotMatch(html, /https:/);
 });
 
@@ -52,7 +54,7 @@ test("the course app's policy allows YouTube's privacy-enhanced player and nothi
   assert.match(policy, /object-src 'none'/);
   assert.match(policy, /frame-src https:\/\/www\.youtube-nocookie\.com;/);
   assert.equal(policy.match(/https?:/g).length, 1);
-  assert.doesNotMatch(policy, /'unsafe-eval'|'wasm-unsafe-eval'|forge3d-artifact|data:/);
+  assert.doesNotMatch(policy, /'unsafe-eval'|'wasm-unsafe-eval'|dimensio-artifact|data:/);
 });
 
 test("pages are served from the app scheme, not from files, and lesson videos are told the app id", () => {

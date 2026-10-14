@@ -35,7 +35,7 @@ const splashSeen = () => {
 };
 
 // The Workshop keeps its theme in localStorage under this key. The course app writes it too, so the
-// two pages of the window agree, and the window's own chrome follows through window.forge3d.
+// two pages of the window agree, and the window's own chrome follows through window.dimensio.setTheme.
 const SHARED_THEME = 'forge3d.theme';
 const THEMES: Theme[] = ['system', 'light', 'dark'];
 
@@ -78,7 +78,7 @@ export function App() {
     if (reduceMotion) root.dataset.motion = 'reduced';
     else delete root.dataset.motion;
     try { localStorage.setItem(SHARED_THEME, JSON.stringify(theme)); } catch { /* storage is optional */ }
-    window.forge3d?.setTheme?.(theme)?.catch?.(() => {});
+    window.dimensio?.setTheme?.(theme)?.catch?.(() => {});
   }, [theme, reduceMotion]);
 
   const endSplash = useCallback(() => {

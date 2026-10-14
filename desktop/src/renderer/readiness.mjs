@@ -201,7 +201,7 @@ export function setupHeadline(readiness, { firstRun = false } = {}) {
   }
 }
 
-// The agent choice on the setup card, from window.forge3d.agentStatus(): one row per agent with its state, what it
+// The agent choice on the setup card, from window.dimensio.agentStatus(): one row per agent with its state, what it
 // can do that matters here, and the install or sign-in fix when it is not ready.
 export function agentChoices(result) {
   const statuses = result?.statuses || {};
