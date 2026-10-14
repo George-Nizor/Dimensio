@@ -76,10 +76,21 @@ export function Practice() {
             <span className="visually-hidden">Search exercises</span>
             <input type="search" placeholder="Search exercises" value={query} onChange={(event) => setQuery(event.target.value)} />
           </label>
-          <FilterGroup name="Part" value={part} onPick={setPart} options={[
-            { value: 0, label: 'Any part' },
-            ...content.parts.map((p) => ({ value: p.number, label: p.title, count: count('part', (item) => lessonOf(item).part === p.number) })),
-          ]} />
+          {content.parts.length > 6 ? (
+            // A long course lists its parts in a menu rather than a column of 16 buttons.
+            <label className="filter-select">
+              <span>Part</span>
+              <select value={part} onChange={(event) => setPart(Number(event.target.value))}>
+                <option value={0}>Any part</option>
+                {content.parts.map((p) => <option key={p.number} value={p.number}>{p.number}. {p.title} ({count('part', (item) => lessonOf(item).part === p.number)})</option>)}
+              </select>
+            </label>
+          ) : (
+            <FilterGroup name="Part" value={part} onPick={setPart} options={[
+              { value: 0, label: 'Any part' },
+              ...content.parts.map((p) => ({ value: p.number, label: p.title, count: count('part', (item) => lessonOf(item).part === p.number) })),
+            ]} />
+          )}
           <FilterGroup name="Length" value={length} onPick={setLength} options={LENGTHS.map((l) => ({ value: l.value, label: l.label, count: l.value ? count('length', (item) => lengthFits(item, l.value)) : undefined }))} />
           <FilterGroup name="Type" value={kind} onPick={setKind} options={[
             { value: '' as const, label: 'Any type' },

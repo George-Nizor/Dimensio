@@ -2,6 +2,11 @@ import { TOTAL_LESSONS, useContent } from '../content/load';
 import { href } from '../router';
 import { saveSetting } from '../store/db';
 
+// "Edit Mode, Extrude, Loop cuts and 5 more": a part's lessons, short enough to scan 16 parts.
+function titles(list: string[]): string {
+  return list.length <= 4 ? list.join(', ') : `${list.slice(0, 3).join(', ')} and ${list.length - 3} more`;
+}
+
 // What opens the first time, and again from Settings.
 export function Welcome() {
   const content = useContent();
@@ -57,7 +62,7 @@ export function Welcome() {
               <a href={href('course')} onClick={welcomed}>
                 <span>
                   <span className="part-list-title">Part {part.number}: {part.title}</span>
-                  <span className="part-list-text">{part.lessons.map((entry) => entry.title).join(', ')}</span>
+                  <span className="part-list-text">{titles(part.lessons.map((entry) => entry.title))}</span>
                 </span>
                 <span className="meta">{part.lessons.length} lessons</span>
               </a>

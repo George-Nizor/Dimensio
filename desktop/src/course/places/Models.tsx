@@ -132,13 +132,6 @@ export function ModelDetail({ id }: { id: number }) {
         </section>
       ) : null}
 
-      {item?.measure.length && attempt.report ? (
-        <section className="model-section" aria-labelledby="measured-title">
-          <h2 id="measured-title">Measurements</h2>
-          <Measurements report={attempt.report} measures={item.measure} />
-        </section>
-      ) : null}
-
       {checks.length ? (
         <section className="model-section" aria-labelledby="checks-title">
           <h2 id="checks-title">Your checks</h2>
@@ -149,6 +142,13 @@ export function ModelDetail({ id }: { id: number }) {
               </li>
             ))}
           </ul>
+        </section>
+      ) : null}
+
+      {item?.measure.length && attempt.report ? (
+        <section className="model-section" aria-labelledby="measured-title">
+          <h2 id="measured-title">Measurements</h2>
+          <Measurements report={attempt.report} measures={item.measure} />
         </section>
       ) : null}
 

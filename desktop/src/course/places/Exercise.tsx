@@ -235,11 +235,13 @@ function OpenInBlender({ item, onStarter }: { item: PracticeItem; onStarter: (fi
         : starter ? 'Builds the starter scene for this exercise and opens it. If you started before, it opens your file.' : 'Opens Blender with a new scene.'}</p>
       {starter && file && !busy ? (
         confirming ? (
-          <p className="start-over">
-            Replace {fileName(file)} with a new starter scene? Your changes in it will be lost.{' '}
-            <button type="button" className="button small danger" onClick={() => void open(true)}>Start over</button>{' '}
-            <button type="button" className="quiet" onClick={() => setConfirming(false)}>Keep my file</button>
-          </p>
+          <div className="start-over" role="group" aria-label="Start over">
+            <p>Replace {fileName(file)} with a new starter scene? Your changes in it will be lost.</p>
+            <div className="actions">
+              <button type="button" className="button small danger" onClick={() => void open(true)}>Start over</button>
+              <button type="button" className="quiet" onClick={() => setConfirming(false)}>Keep my file</button>
+            </div>
+          </div>
         ) : <button type="button" className="quiet" onClick={() => setConfirming(true)}>Start over</button>
       ) : null}
       {problem ? <p className="error" role="alert">{problem}</p> : null}

@@ -129,7 +129,7 @@ export function LessonPage({ slug }: { slug: string }) {
           <h2 id="check">Checking your model</h2>
           <Paragraphs items={lesson.checkIntro} />
           <ol className="checks">
-            {lesson.checks.map((check, i) => <li key={i}><InlineText nodes={check} /></li>)}
+            {lesson.checks.map((check, i) => <li key={i}><span><InlineText nodes={check} /></span></li>)}
           </ol>
           <Paragraphs items={lesson.checkNotes} className="note" />
         </Reveal>

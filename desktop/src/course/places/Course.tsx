@@ -12,6 +12,9 @@ import { resourceDetails } from '../ui/Resource';
 
 type Show = 'all' | 'open';
 
+// The course is long (Dimensio's has 16 parts), so the parts are folded, as Delineare's plan has
+// them: the part you're on is open, the others show their name and a count, and a click opens one.
+// A search or the "Not done yet" filter opens every part with a match.
 export function Course() {
   const content = useContent();
   const { records, settings } = useAppData();
@@ -19,7 +22,17 @@ export function Course() {
   const [show, setShow] = useState<Show>('all');
   const written = writtenLessons(content);
   const current = currentLesson(written.map((lesson) => lesson.slug), records);
+  const currentPart = current ? content.lessons[current]?.part ?? 1 : 1;
+  const [open, setOpen] = useState<Set<number>>(() => new Set([currentPart]));
   const q = query.trim().toLowerCase();
+  const filtering = Boolean(q) || show === 'open';
+  const allOpen = content.parts.every((part) => open.has(part.number));
+  const toggle = (number: number) => setOpen((previous) => {
+    const next = new Set(previous);
+    if (next.has(number)) next.delete(number);
+    else next.add(number);
+    return next;
+  });
 
   const keep = (entry: LessonEntry) => {
     const status = lessonStatus(records.get(entry.slug));
@@ -46,21 +59,38 @@ export function Course() {
           <button type="button" aria-pressed={show === 'all'} onClick={() => setShow('all')}>All lessons</button>
           <button type="button" aria-pressed={show === 'open'} onClick={() => setShow('open')}>Not done yet</button>
         </div>
+        {filtering || content.parts.length < 2 ? null : (
+          <button type="button" className="quiet" onClick={() => setOpen(allOpen ? new Set() : new Set(content.parts.map((part) => part.number)))}>
+            {allOpen ? 'Fold every part' : 'Open every part'}
+          </button>
+        )}
       </div>
 
       {parts.length ? null : <p className="empty">No lessons match that.</p>}
 
-      {parts.map((part) => (
-        <section key={part.number} className="course-part" aria-labelledby={`part-${part.number}`}>
-          <div className="part-head">
-            <h2 id={`part-${part.number}`}>Part {part.number}: {part.title}</h2>
-            <span className="meta">{part.lessons.length} lessons</span>
-          </div>
-          <ol className="lesson-grid">
-            {part.shown.map((entry) => <LessonCard key={entry.slug} entry={entry} current={entry.slug === current} offerKnown={settings.knowsBlender} />)}
-          </ol>
-        </section>
-      ))}
+      <div className="course-parts">
+        {parts.map((part) => {
+          const expanded = filtering || open.has(part.number);
+          const done = part.lessons.filter((entry) => ['done', 'known'].includes(lessonStatus(records.get(entry.slug)))).length;
+          const here = part.number === currentPart && Boolean(current);
+          return (
+            <section key={part.number} className={`course-part ${expanded ? 'open' : ''}`} aria-labelledby={`part-${part.number}`}>
+              <h2 className="part-head" id={`part-${part.number}`}>
+                <button type="button" className="part-toggle" aria-expanded={expanded} aria-controls={`part-${part.number}-lessons`} disabled={filtering} onClick={() => toggle(part.number)}>
+                  <span className="part-title">Part {part.number}: {part.title}</span>
+                  <span className="part-count">{filtering ? `${part.shown.length} of ${part.lessons.length} lessons` : `${part.lessons.length} lessons, ${done} done`}{here ? " · the part you're on" : ''}</span>
+                  <span className="part-chevron" aria-hidden="true"><Icon name="next" size={18} /></span>
+                </button>
+              </h2>
+              {expanded ? (
+                <ol className="lesson-grid" id={`part-${part.number}-lessons`}>
+                  {part.shown.map((entry) => <LessonCard key={entry.slug} entry={entry} current={entry.slug === current} offerKnown={settings.knowsBlender} />)}
+                </ol>
+              ) : null}
+            </section>
+          );
+        })}
+      </div>
     </div>
   );
 }

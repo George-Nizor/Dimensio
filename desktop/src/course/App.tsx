@@ -157,8 +157,8 @@ function Header({ active }: { active: string }) {
         <a className="tab" href="./workshop.html"><Icon name="workshop" size={18} /><span>Workshop</span></a>
       </nav>
       <nav className="header-end" aria-label="About">
-        <a className="tab small" href={href('settings')} aria-current={active === 'settings' ? 'page' : undefined}><Icon name="settings" size={18} /><span>Settings</span></a>
-        <a className="tab small" href={href('credits')} aria-current={active === 'credits' ? 'page' : undefined}><Icon name="credits" size={18} /><span>Credits</span></a>
+        <a className="tab small" href={href('settings')} aria-label="Settings" title="Settings" aria-current={active === 'settings' ? 'page' : undefined}><Icon name="settings" size={18} /><span>Settings</span></a>
+        <a className="tab small" href={href('credits')} aria-label="Credits" title="Credits" aria-current={active === 'credits' ? 'page' : undefined}><Icon name="credits" size={18} /><span>Credits</span></a>
       </nav>
     </header>
   );

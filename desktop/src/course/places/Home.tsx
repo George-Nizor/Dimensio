@@ -41,12 +41,13 @@ export function Home() {
   const items = suggest({ order, records, practice: practiceByLesson(content), log, now, prompt: makePrompt(content.prompts, seed) });
   const exerciseCount = Object.keys(content.practice).length;
   const resourceCount = Object.keys(content.resources).length;
-  const teachers = [...new Set(Object.values(content.resources).map((r) => r.teacher))].slice(0, 2).join(', ');
+  const allTeachers = [...new Set(Object.values(content.resources).map((r) => r.teacher))];
+  const teachers = allTeachers.length <= 2 ? allTeachers.join(' and ') : `${allTeachers.slice(0, 2).join(', ')} and other teachers`;
 
   const places: { route: string; icon: IconName; title: string; text: string }[] = [
     { route: href('course'), icon: 'course', title: 'Course', text: `All ${TOTAL_LESSONS(content)} lessons. Work through them in order or go straight to the one you need.` },
     { route: href('practice'), icon: 'practice', title: 'Practice', text: `${exerciseCount} exercises from every lesson, plus a modelling prompt each day.` },
-    { route: href('library'), icon: 'library', title: 'Library', text: `${resourceCount} videos and pages from ${teachers} and other teachers, and the example models.` },
+    { route: href('library'), icon: 'library', title: 'Library', text: `${resourceCount} videos and pages from ${teachers}, and the example models.` },
     { route: href('models'), icon: 'models', title: 'Models', text: attemptCount ? `${attemptCount} model${attemptCount === 1 ? '' : 's'} so far. Compare your first attempts with your latest.` : 'Every model you add, with its renders and measurements.' },
     { route: './workshop.html', icon: 'workshop', title: 'Workshop', text: 'Describe a model and Claude Code or Codex builds it in Blender.' },
   ];
