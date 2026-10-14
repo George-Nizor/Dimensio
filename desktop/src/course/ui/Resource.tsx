@@ -36,8 +36,9 @@ export function ResourceLine({ resource, extra }: { resource: Resource; extra?: 
 // The player loads as a credentialless frame, as in Delineare: no cookies go to YouTube, and the
 // page's content policy allows this one frame origin and nothing else. React drops a bare
 // `credentialless` attribute, so the frame gets it here, before its address, which is the order the
-// browser needs. The window is served from dimensio-app://app rather than a file, because YouTube
-// refuses to play for a page that sends no referrer (player errors 152 and 153).
+// browser needs. YouTube also refuses to play when the request for its player carries no Referer
+// (player errors 152 and 153), which Chromium never sends from the app's own scheme; the main
+// process adds one naming the app (src/lib/app-protocol.cjs, identifyToYouTube).
 export function VideoEmbed({ id, title }: { id: string; title: string }) {
   const frame = useRef<HTMLIFrameElement>(null);
   const [loaded, setLoaded] = useState(false);

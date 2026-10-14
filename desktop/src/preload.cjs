@@ -49,3 +49,28 @@ contextBridge.exposeInMainWorld("forge3d", Object.freeze({
   onApproval: (listener) => subscribe("forge3d:approval", listener),
   onError: (listener) => subscribe("forge3d:error", listener),
 }));
+// The course app's bridge to Blender (docs/course/PLAN.md), answered by src/lib/course-ipc.cjs.
+// A failure arrives as an Error whose message is the sentence the course app shows, without
+// Electron's "Error invoking remote method" prefix.
+function courseCall(channel, toPayload = () => undefined) {
+  return async (...args) => {
+    try {
+      return await ipcRenderer.invoke(channel, toPayload(...args));
+    } catch (error) {
+      throw new Error(String(error?.message || error).replace(/^Error invoking remote method '[^']+': (?:Error: )?/, ""));
+    }
+  };
+}
+
+contextBridge.exposeInMainWorld("dimensio", Object.freeze({
+  course: Object.freeze({
+    blenderStatus: courseCall("dimensio:course-blender-status"),
+    chooseBlender: courseCall("dimensio:course-choose-blender"),
+    pickBlend: courseCall("dimensio:course-pick-blend"),
+    measure: courseCall("dimensio:course-measure", (path, options) => ({ path, options })),
+    makeStarter: courseCall("dimensio:course-make-starter", (id, extra = {}) => ({ id, name: extra.name, overwrite: extra.overwrite, options: extra.options })),
+    openInBlender: courseCall("dimensio:course-open-in-blender", (path) => ({ path })),
+    reveal: courseCall("dimensio:course-reveal", (path) => ({ path })),
+    courseFolder: courseCall("dimensio:course-folder"),
+  }),
+}));

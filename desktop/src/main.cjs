@@ -57,12 +57,15 @@ const {
   windowTitle,
   writeProject,
 } = require("./lib/project-store.cjs");
+const { APP_ORIGIN, APP_PRIVILEGES, isAppUrl, openHttps, registerAppProtocol } = require("./lib/app-protocol.cjs");
+const { registerCourseIpc } = require("./lib/course-ipc.cjs");
 
 protocol.registerSchemesAsPrivileged([
   {
     scheme: "forge3d-artifact",
     privileges: { standard: true, secure: true, supportFetchAPI: true, corsEnabled: true, stream: true },
   },
+  APP_PRIVILEGES,
 ]);
 
 let mainWindow = null;
@@ -96,7 +99,7 @@ const bundledToolkit = () => app.isPackaged
   : repoRoot;
 
 function rendererUrlAllowed(url) {
-  if (url.startsWith("file://")) return true;
+  if (url.startsWith("file://") || isAppUrl(url)) return true;
   const dev = process.env.FORGE3D_DEV_SERVER_URL;
   return Boolean(dev && url.startsWith(dev));
 }
@@ -696,9 +699,10 @@ function createWindow() {
       spellcheck: true,
     },
   });
-  mainWindow.webContents.setWindowOpenHandler(() => ({ action: "deny" }));
+  // New windows are never opened; an https link goes to the system browser instead.
+  mainWindow.webContents.setWindowOpenHandler(({ url }) => { openHttps(shell, url); return { action: "deny" }; });
   mainWindow.webContents.on("will-navigate", (event, url) => {
-    if (!rendererUrlAllowed(url)) event.preventDefault();
+    if (!rendererUrlAllowed(url)) { event.preventDefault(); openHttps(shell, url); }
   });
   mainWindow.once("ready-to-show", () => mainWindow.show());
   // The window title belongs to the project ("● Name — Forge3D"), so the page's own <title> never replaces it.
@@ -707,7 +711,7 @@ function createWindow() {
   updateWindowTitle();
   const dev = process.env.FORGE3D_DEV_SERVER_URL;
   if (dev) mainWindow.loadURL(dev);
-  else mainWindow.loadFile(path.join(__dirname, "..", "dist", "index.html"));
+  else mainWindow.loadURL(`${APP_ORIGIN}/index.html`);
 }
 
 function registerIpc() {
@@ -934,6 +938,7 @@ app.whenReady().then(async () => {
     try { openSession({ file: launchFile, folder: path.dirname(launchFile), manifest: readProject(launchFile) }); } catch (error) { launchError = error.message; }
   }
 
+  registerAppProtocol({ protocol, net, session: session.defaultSession, root: path.join(__dirname, "..", "dist") });
   protocol.handle("forge3d-artifact", (request) => {
     if (!runStore) return new Response("No project is open", { status: 404 });
     const url = new URL(request.url);
@@ -945,6 +950,7 @@ app.whenReady().then(async () => {
   session.defaultSession.setPermissionRequestHandler((_webContents, _permission, callback) => callback(false));
   session.defaultSession.setPermissionCheckHandler(() => false);
   registerIpc();
+  registerCourseIpc({ handle, getWindow: () => mainWindow });
   createWindow();
   if (launchError) mainWindow.webContents.once("did-finish-load", () => send("forge3d:error", `Forge3D could not reopen the project: ${launchError}`));
   const godot = externalTools(true).godot;
