@@ -10,7 +10,7 @@ sources and resources, in one pass.
 - `docs/course/PLAN.md`: what Dimensio is, and the lesson format changes.
 - `docs/course/WRITING.md`: the rules and word budgets. It wins over everything else here.
 - `docs/course/COURSE.md`: each lesson's skill, exercise, measurements and manual pages.
-- `content/lessons/01-*` to `03-*`: the standard. Match their tone, length, diagrams and practice.
+- `content/lessons/001-install-blender`, `002-interface` and `003-navigation`: the standard. Match their tone, length, diagrams and practice.
 - Delineare's model lesson, `../Delineare/content/lessons/01-confident-lines/`. The owner approved
   its tone.
 - `docs/course/sources/videos.md` and `written.md`: resources already checked. Also
@@ -24,9 +24,9 @@ sources and resources, in one pass.
 It is checked by `node desktop/scripts/build-content.mjs --check`.
 
 ```
-content/lessons/NN-slug/lesson.md      NN is the lesson number from course.yaml, slug its slug
-content/lessons/NN-slug/practice.yaml  the main exercise (main: true) plus one or two more
-content/lessons/NN-slug/diagrams/*.mjs one script per picture
+content/lessons/NNN-slug/lesson.md     NNN is the lesson number from course.yaml in three digits (007), slug its slug
+content/lessons/NNN-slug/practice.yaml the main exercise (main: true) plus one or two more
+content/lessons/NNN-slug/diagrams/*.mjs one script per picture
 ```
 
 `lesson.md`:

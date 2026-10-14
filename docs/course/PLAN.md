@@ -62,9 +62,9 @@ from the header.
 ```text
 content/                       the course, as files a person can read
   course.yaml                  parts and lessons in order: slug, title, summary
-  lessons/NN-slug/lesson.md    one lesson
-  lessons/NN-slug/practice.yaml
-  lessons/NN-slug/diagrams/*.mjs
+  lessons/NNN-slug/lesson.md   one lesson (three digits: 001 to 127)
+  lessons/NNN-slug/practice.yaml
+  lessons/NNN-slug/diagrams/*.mjs
   resources/*.yaml             teachers' videos and pages
   references/*.yaml            example models and pictures, with credit and licence
   prompts.yaml                 free modelling prompts

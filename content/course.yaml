@@ -1,0 +1,179 @@
+# The course: parts and lessons in order. This file is the one source of each lesson's title and
+# one-sentence summary for the course page. A lesson with a folder under content/lessons/ is written; the rest show in the course
+# as coming later. Lesson numbers follow the order here. Written for Blender 5.2 LTS; see docs/course/COURSE.md.
+
+parts:
+  - title: Getting started
+    lessons:
+      - { slug: install-blender, title: "Installing Blender", summary: "Installing Blender 5.2 LTS, opening it and choosing your first settings." }
+      - { slug: interface, title: "The interface", summary: "Finding your way around editors, workspaces, menus, toolbars and the Properties editor." }
+      - { slug: navigation, title: "Viewport navigation", summary: "Orbiting, panning and zooming the 3D Viewport, and jumping to front, side and top views." }
+      - { slug: laptop-navigation, title: "Navigating on a laptop", summary: "Getting around the viewport with a touchpad and no numpad or middle mouse button." }
+      - { slug: selecting, title: "Selecting objects", summary: "Selecting objects by clicking, with a box or a lasso, and choosing the active one." }
+      - { slug: transform, title: "Move, rotate and scale", summary: "Moving, rotating and scaling objects along one axis and by exact amounts." }
+      - { slug: adding-objects, title: "Adding and duplicating", summary: "Adding primitive shapes, adjusting them after the fact, and duplicating and deleting them." }
+      - { slug: saving, title: "Saving and undo", summary: "Saving and recovering your work, and stepping back through the undo history." }
+      - { slug: first-material, title: "Colour with materials", summary: "Giving an object a flat colour and seeing it in Material Preview." }
+      - { slug: potion-bottle, title: "A potion bottle", summary: "Building a low-poly potion bottle from primitives without leaving Object Mode." }
+
+  - title: Working precisely
+    lessons:
+      - { slug: units, title: "Units and dimensions", summary: "Building objects to real sizes in metres and measuring them." }
+      - { slug: snapping, title: "Snapping", summary: "Snapping objects and points to the grid, to each other and to surfaces." }
+      - { slug: pivot-orientation, title: "Pivot points and orientations", summary: "Choosing the point objects turn around and the axes they move along." }
+      - { slug: origins, title: "Origins", summary: "Putting an object's origin where it should pivot and stand, such as its base." }
+      - { slug: apply-transforms, title: "Applying transforms", summary: "Applying rotation and scale so modifiers and game engines see true sizes." }
+      - { slug: parenting, title: "Parenting and empties", summary: "Parenting objects to each other and to empties so they move together." }
+      - { slug: collections, title: "Collections and the Outliner", summary: "Naming, grouping, hiding and isolating objects with collections and the Outliner." }
+      - { slug: house-blockout, title: "A house block-out", summary: "Blocking out a small house at real size with snapping and measured dimensions." }
+
+  - title: Edit Mode
+    lessons:
+      - { slug: edit-mode, title: "Edit Mode", summary: "Switching to Edit Mode and moving vertices, edges and faces." }
+      - { slug: selecting-loops, title: "Selecting loops", summary: "Selecting edge loops, rings, linked parts and shortest paths in a few clicks." }
+      - { slug: extrude, title: "Extrude", summary: "Extruding faces and edges to build a shape out of a cube." }
+      - { slug: inset, title: "Inset", summary: "Insetting faces to make borders, panels and frames." }
+      - { slug: loop-cuts, title: "Loop cuts", summary: "Adding edge loops with a loop cut and sliding edges into place." }
+      - { slug: bevel, title: "Bevel", summary: "Bevelling edges to round off corners and catch the light." }
+      - { slug: delete-merge, title: "Delete, dissolve and merge", summary: "Removing and combining vertices, edges and faces without leaving holes." }
+      - { slug: filling-faces, title: "Filling faces", summary: "Closing holes and joining edges with new faces, grid fill and bridge." }
+      - { slug: crate, title: "A low-poly crate", summary: "Modelling a wooden crate under 300 triangles with insets, extrusions and bevels." }
+
+  - title: Clean meshes and export
+    lessons:
+      - { slug: knife, title: "The knife tool", summary: "Cutting new edges across faces exactly where you want them." }
+      - { slug: proportional-editing, title: "Proportional editing", summary: "Moving part of a mesh and letting the area around it follow smoothly." }
+      - { slug: separate-join, title: "Separate and join", summary: "Splitting parts of a mesh into objects and joining objects into one." }
+      - { slug: normals, title: "Normals", summary: "Finding faces that point the wrong way and turning them outwards." }
+      - { slug: shading, title: "Flat and smooth shading", summary: "Choosing flat, smooth or auto smooth shading and marking sharp edges." }
+      - { slug: topology, title: "Quads, triangles and n-gons", summary: "Telling quads, triangles and n-gons apart and knowing which a model needs." }
+      - { slug: checking-model, title: "Checking your model", summary: "Finding doubled vertices, loose parts, holes and flipped faces before a model is done." }
+      - { slug: first-export, title: "Exporting to Godot", summary: "Exporting a model as a .glb file and placing it in a Godot 4 scene." }
+      - { slug: barrel, title: "A low-poly barrel", summary: "Modelling a barrel from a 12-sided cylinder and opening it in Godot." }
+
+  - title: Modifiers
+    lessons:
+      - { slug: modifiers, title: "Modifiers", summary: "Adding, ordering, hiding and applying modifiers without changing the mesh underneath." }
+      - { slug: mirror, title: "The Mirror modifier", summary: "Modelling one half of a shape and letting the Mirror modifier make the other." }
+      - { slug: bevel-modifier, title: "The Bevel modifier", summary: "Bevelling every hard edge at once with the Bevel modifier and an angle limit." }
+      - { slug: subdivision, title: "Subdivision Surface", summary: "Smoothing a mesh with the Subdivision Surface modifier and holding edges sharp." }
+      - { slug: solidify, title: "Solidify", summary: "Giving thin surfaces such as cloth, leaves and walls a real thickness." }
+      - { slug: array, title: "Array", summary: "Repeating an object in a line or a circle with the Array modifier." }
+      - { slug: boolean, title: "Boolean", summary: "Cutting holes and joining shapes with the Boolean modifier, then tidying the result." }
+      - { slug: deform-modifiers, title: "Deform modifiers", summary: "Bending, twisting and reshaping a mesh with Simple Deform, Lattice and Curve." }
+      - { slug: spin-screw, title: "Spin and Screw", summary: "Turning a profile into a round shape with the Spin tool and the Screw modifier." }
+      - { slug: reference-images, title: "Reference images", summary: "Setting up front and side reference pictures to model from." }
+      - { slug: sword, title: "A low-poly sword", summary: "Modelling a sword from reference with the Mirror, Bevel and Solidify modifiers." }
+
+  - title: Materials
+    lessons:
+      - { slug: principled-bsdf, title: "The Principled BSDF", summary: "Setting a material's colour, roughness, metallic, emission and transparency." }
+      - { slug: material-slots, title: "Material slots", summary: "Giving different faces of one object different materials." }
+      - { slug: shader-editor, title: "The Shader Editor", summary: "Building a material from connected nodes in the Shader Editor." }
+      - { slug: image-textures, title: "Image textures", summary: "Putting an image on a material and choosing its colour space." }
+      - { slug: procedural-textures, title: "Procedural textures", summary: "Making noise, wood grain and brick patterns from texture nodes." }
+      - { slug: chest, title: "A low-poly chest", summary: "Modelling a treasure chest and colouring it with material slots." }
+
+  - title: UVs and painting
+    lessons:
+      - { slug: uv-maps, title: "UV maps", summary: "Reading a model's UV map in the UV Editor with a checker texture." }
+      - { slug: unwrapping, title: "Seams and unwrapping", summary: "Marking seams and unwrapping a model so its texture lies flat without stretching." }
+      - { slug: uv-islands, title: "Arranging UV islands", summary: "Moving, straightening, scaling and packing UV islands to use the texture well." }
+      - { slug: palette-texture, title: "Palette textures", summary: "Colouring a low-poly model by placing its UVs on a small palette image." }
+      - { slug: texture-paint, title: "Texture painting", summary: "Painting colour straight onto a model in Texture Paint mode." }
+      - { slug: vertex-paint, title: "Vertex painting", summary: "Colouring a model's vertices so it needs no texture at all." }
+      - { slug: furniture, title: "Low-poly furniture", summary: "Modelling a table and a chair that share one palette texture." }
+
+  - title: Game assets in Godot
+    lessons:
+      - { slug: game-ready, title: "Game-ready models", summary: "Checking triangle count, scale, origin, facing and normals against a game's needs." }
+      - { slug: godot-import, title: "Godot import settings", summary: "Importing a model into Godot with the right scale, root node and options." }
+      - { slug: godot-materials, title: "Materials in Godot", summary: "Making Blender materials, palette textures and vertex colours look right in Godot." }
+      - { slug: collision, title: "Collision shapes", summary: "Making simple collision meshes and naming them so Godot builds the collision." }
+      - { slug: lods, title: "Levels of detail", summary: "Making lower-detail versions of a model with Decimate, and letting Godot make its own." }
+      - { slug: modular-kit, title: "Modular kits", summary: "Building wall, floor and corner pieces on a grid so they fit together." }
+      - { slug: building-kit, title: "A small building kit", summary: "Building a modular kit, exporting it, and assembling a small building in Godot." }
+
+  - title: Lighting and rendering
+    lessons:
+      - { slug: lights, title: "Lights", summary: "Lighting a scene with point, sun, spot and area lights." }
+      - { slug: world-lighting, title: "World lighting", summary: "Lighting a scene from the World with a colour or an HDRI image." }
+      - { slug: cameras, title: "Cameras", summary: "Placing and aiming a camera, choosing a lens and framing a shot." }
+      - { slug: eevee, title: "Rendering with EEVEE", summary: "Rendering a still image with EEVEE and choosing its main quality settings." }
+      - { slug: cycles, title: "Rendering with Cycles", summary: "Rendering with Cycles on your graphics card with sensible samples and denoising." }
+      - { slug: render-output, title: "Render output", summary: "Setting resolution, colour view and file format, and rendering an animation." }
+      - { slug: portfolio-render, title: "A portfolio render", summary: "Lighting and rendering your low-poly assets as a finished image and a clay render." }
+
+  - title: Sculpting
+    lessons:
+      - { slug: sculpt-mode, title: "Sculpt Mode", summary: "Sculpting a shape with the Draw, Clay Strips, Smooth and Grab brushes." }
+      - { slug: remeshing, title: "Remeshing for sculpting", summary: "Adding detail where you need it with voxel remesh, Dyntopo and Multiresolution." }
+      - { slug: retopology, title: "Retopology", summary: "Building a clean low-poly mesh over a sculpt with snapping and Shrinkwrap." }
+      - { slug: baking, title: "Baking textures", summary: "Baking a sculpt's detail and a material's colour into images for a low-poly model." }
+      - { slug: rock-tree, title: "A rock and a tree", summary: "Sculpting a rock and modelling a tree, each within a triangle budget." }
+
+  - title: Curves and Geometry Nodes
+    lessons:
+      - { slug: bezier-curves, title: "Bézier curves", summary: "Drawing and shaping a Bézier curve with its control points and handles." }
+      - { slug: curve-geometry, title: "Curve depth and bevel", summary: "Turning a curve into a pipe, rope or rail and then into a mesh." }
+      - { slug: text, title: "3D text", summary: "Adding 3D text, choosing a font, giving it depth and converting it to a mesh." }
+      - { slug: other-objects, title: "Other object types", summary: "Trying surfaces, metaballs, volumes and point clouds, and converting them to meshes." }
+      - { slug: geometry-nodes, title: "Geometry Nodes", summary: "Changing a mesh with a Geometry Nodes modifier and your first few nodes." }
+      - { slug: fields, title: "Attributes and fields", summary: "Moving parts of a mesh differently using positions, normals and other attributes." }
+      - { slug: instancing, title: "Instancing on points", summary: "Scattering copies of an object over a surface with points and instances." }
+      - { slug: fence, title: "A fence generator", summary: "Building a node group that places fence posts and rails along any curve." }
+
+  - title: Animation
+    lessons:
+      - { slug: keyframes, title: "Keyframes", summary: "Animating an object by setting keyframes on its location, rotation and scale." }
+      - { slug: dope-sheet, title: "The Dope Sheet", summary: "Moving, copying and retiming keyframes in the Dope Sheet." }
+      - { slug: graph-editor, title: "The Graph Editor", summary: "Shaping how motion speeds up, slows down and loops in the Graph Editor." }
+      - { slug: constraints, title: "Constraints", summary: "Making objects follow, aim at or copy other objects with constraints." }
+      - { slug: drivers, title: "Drivers", summary: "Linking one property to another so a wheel turns as its cart moves." }
+      - { slug: shape-keys, title: "Shape keys", summary: "Storing other shapes of a mesh and blending between them." }
+      - { slug: actions, title: "Actions", summary: "Keeping several animations of one object as separate, named actions." }
+      - { slug: nla, title: "The NLA editor", summary: "Stacking, repeating and blending actions as strips in the Nonlinear Animation editor." }
+      - { slug: animated-chest, title: "An animated chest", summary: "Animating a chest lid opening and closing as two actions and playing them in Godot." }
+
+  - title: Characters
+    lessons:
+      - { slug: character-modelling, title: "Character modelling", summary: "Modelling a low-poly character from a cube with Mirror, extrusions and loop cuts." }
+      - { slug: armatures, title: "Armatures", summary: "Adding an armature and building a skeleton of bones for a character." }
+      - { slug: skinning, title: "Skinning", summary: "Binding a mesh to an armature with automatic weights so it bends with the bones." }
+      - { slug: weight-painting, title: "Weight painting", summary: "Painting how strongly each bone moves each part of the mesh." }
+      - { slug: posing, title: "Posing", summary: "Posing a rigged character in Pose Mode and saving poses to reuse." }
+      - { slug: inverse-kinematics, title: "Inverse kinematics", summary: "Making a leg or arm follow a target with an IK constraint and a pole." }
+      - { slug: rigify, title: "Rigify", summary: "Generating a full humanoid rig from a meta-rig with the bundled Rigify add-on." }
+      - { slug: walk-cycle, title: "A walk cycle", summary: "Animating a looping walk from contact, down, passing and up poses." }
+      - { slug: godot-animations, title: "Animations in Godot", summary: "Exporting a character's actions and playing them in Godot with an AnimationPlayer." }
+      - { slug: animated-character, title: "An animated character", summary: "Rigging and animating your character with idle and walk cycles that loop in Godot." }
+
+  - title: Physics
+    lessons:
+      - { slug: rigid-bodies, title: "Rigid bodies", summary: "Dropping, stacking and knocking over objects with rigid body physics." }
+      - { slug: cloth, title: "Cloth", summary: "Simulating cloth that hangs, drapes and blows, and baking the result." }
+      - { slug: soft-bodies, title: "Soft bodies", summary: "Making objects squash and wobble like jelly with soft body physics." }
+      - { slug: fluids, title: "Fluids, smoke and fire", summary: "Setting up smoke, fire and liquid with a domain, a flow and a bake." }
+      - { slug: particles, title: "Particles and force fields", summary: "Emitting particles, scattering objects with them and pushing them with force fields." }
+      - { slug: hair, title: "Hair curves", summary: "Adding, combing and cutting hair with the Curves object and its sculpt brushes." }
+      - { slug: simulation-nodes, title: "Simulation nodes", summary: "Building a simple simulation in Geometry Nodes with a simulation zone." }
+      - { slug: falling-crates, title: "Falling crates", summary: "Simulating crates tumbling off a cart and baking the fall to keyframes for Godot." }
+
+  - title: Grease Pencil, compositing and video
+    lessons:
+      - { slug: grease-pencil, title: "Drawing with Grease Pencil", summary: "Drawing strokes and fills in 3D space with a Grease Pencil object." }
+      - { slug: grease-pencil-animation, title: "Grease Pencil animation", summary: "Drawing a short frame-by-frame animation with Grease Pencil and onion skinning." }
+      - { slug: line-art, title: "Line Art", summary: "Drawing outlines around 3D models automatically with the Line Art modifier." }
+      - { slug: compositor, title: "The Compositor", summary: "Adjusting a finished render with render passes and nodes in the Compositor." }
+      - { slug: video-sequencer, title: "The Video Sequencer", summary: "Cutting renders into a short video with titles and sound in the Video Sequencer." }
+
+  - title: Files, add-ons and scripting
+    lessons:
+      - { slug: link-append, title: "Linking and appending", summary: "Bringing objects and materials in from other .blend files by appending or linking them." }
+      - { slug: asset-browser, title: "The Asset Browser", summary: "Marking your models as assets and dragging them into any file from the Asset Browser." }
+      - { slug: file-paths, title: "Packing and file paths", summary: "Packing textures into a .blend file and finding files that have gone missing." }
+      - { slug: import-export, title: "Importing and exporting", summary: "Moving models in and out of Blender as glTF, FBX, OBJ, STL and USD." }
+      - { slug: extensions, title: "Extensions and add-ons", summary: "Installing, turning on and updating extensions and the add-ons that come with Blender." }
+      - { slug: preferences, title: "Preferences and keymap", summary: "Changing preferences and shortcuts and saving your own startup file." }
+      - { slug: python-console, title: "Python in Blender", summary: "Running Python in the console and reading the commands Blender runs for you." }
+      - { slug: scripting, title: "Writing a script", summary: "Writing a script in the Text Editor that exports every object as its own file." }
