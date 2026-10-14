@@ -1,6 +1,6 @@
-![Forge3D banner](docs/images/forge3d-banner.png)
+![Dimensio banner](docs/images/dimensio-banner.png)
 
-<p align="center"><img src="docs/brand/forge3d-animated.svg" alt="Forge3D cube" width="96" /></p>
+<p align="center"><img src="docs/brand/dimensio-animated.svg" alt="Dimensio cube" width="96" /></p>
 
 # Forge3D
 

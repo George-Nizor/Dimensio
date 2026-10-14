@@ -1,6 +1,6 @@
 /* Dimensio's course app, styled as Delineare is: Fraunces for headings, Commissioner for reading
-   and the interface, Spline Sans Mono for timers and numbers. The accent is Forge3D's ember until
-   the rename step, and it marks the one main action on a screen. Renders and references sit on
+   and the interface, Spline Sans Mono for timers and numbers. The accent is Dimensio's ember, and
+   it marks the one main action on a screen. Renders and references sit on
    neutral grey in both themes, so a model's shading reads the same in light and dark. The header is
    72 px tall, the height of the window's own caption area on Windows, and leaves room on the right
    for the window buttons drawn over it. */

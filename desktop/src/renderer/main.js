@@ -16,7 +16,7 @@ import { icon, themeIcon } from "./icons.mjs";
 
 // Brand v2 cube from Instrumenta's icon library (a UMD file; the bundler hands over its exports). Built from presentation
 // attributes only, so it is safe under this window's Content-Security-Policy.
-const brandIcon = (size, label = "") => InstrumentaIcons.render("forge3d", { size, label });
+const brandIcon = (size, label = "") => InstrumentaIcons.render("dimensio", { size, label });
 
 const api = window.dimensio;
 const app = document.querySelector("#app");

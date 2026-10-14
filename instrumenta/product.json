@@ -26,7 +26,7 @@
     "override": "explicit"
   },
   "assets": {
-    "mark": "desktop/assets/brand/forge3d-app-art.png"
+    "mark": "desktop/assets/brand/dimensio-app-art.png"
   },
   "mcp": {
     "skill": "plugins/dimensio/skills/dimensio/SKILL.md"

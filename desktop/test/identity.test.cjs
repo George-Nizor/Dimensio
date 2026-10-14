@@ -22,7 +22,7 @@ test("the brand v2 cube is the canonical desktop identity", () => {
   assert.ok(ico.readUInt16LE(4) >= 6);
   assert.equal(packageJson.build.win.icon, "assets/icon.ico");
   assert.match(renderer, /import InstrumentaIcons from "\.\/brand\/instrumenta-icons\.js"/);
-  assert.match(renderer, /InstrumentaIcons\.render\("forge3d"/);
+  assert.match(renderer, /InstrumentaIcons\.render\("dimensio"/);
   assert.doesNotMatch(renderer, /forge3d-mark|brand-symbol|Codex-driven asset studio|class="brand-mark">F3/);
 });
 

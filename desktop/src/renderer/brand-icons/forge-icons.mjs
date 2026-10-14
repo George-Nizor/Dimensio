@@ -1,7 +1,7 @@
-// Forge3D interface icons in the Instrumenta brand v2 style (brand/ALIGNMENT.md): a flat, friendly
+// The Workshop's interface icons in the Instrumenta brand v2 style (brand/ALIGNMENT.md): a flat, friendly
 // drawing on a 48-unit grid with a dark ink outline and a stepped extrusion down and to the right,
 // no container behind it. The renderer is the suite's own algorithm (as in Discere's
-// apps/web/src/brand/discere-icons.ts); only the glyphs and their meaning-hues are Forge3D's.
+// apps/web/src/brand/discere-icons.ts); only the glyphs and their meaning-hues are the Workshop's.
 //
 // Output is presentation attributes and classes only: no style="", no <script>, no <foreignObject>,
 // no href, so it is safe under the renderer's strict Content-Security-Policy. Motion lives in
@@ -42,7 +42,7 @@ function colours(hue, chroma = 0.155) {
   };
 }
 
-// Meaning hues (docs/review-2026-10/ui-ux.md 2.4). Ember is the exact forge3d entry in brand/tokens.json.
+// Meaning hues (docs/review-2026-10/ui-ux.md 2.4). Ember is the exact dimensio entry in brand/tokens.json.
 export const HUES = {
   ember: { accent: "#EE7752", light: "#FFBDA6", deep: "#7D331B", ink: "#23100A" },
   green: colours(150),
@@ -142,10 +142,10 @@ export function render(name, options = {}) {
     return `<svg class="fi fi-line fi-${name}" viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"${label}>${LINES[name]}</svg>`;
   }
   const glyph = G[name];
-  if (!glyph) throw new Error(`Unknown Forge3D icon: ${name}`);
+  if (!glyph) throw new Error(`Unknown Workshop icon: ${name}`);
   const tier = TIERS[options.tier || tierFor(size)];
   const col = HUES[options.hue || glyph.hue];
-  if (!col) throw new Error(`Unknown Forge3D icon hue: ${options.hue}`);
+  if (!col) throw new Error(`Unknown Workshop icon hue: ${options.hue}`);
   let d = glyph.d;
   if (!tier.details) d = dropDetails(d);
   const round = ' stroke-linecap="round" stroke-linejoin="round"';

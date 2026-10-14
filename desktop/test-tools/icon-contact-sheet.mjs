@@ -24,7 +24,7 @@ const rows = names
   })
   .join("");
 
-const html = `<!doctype html><html lang="en"><meta charset="utf-8"><title>Forge3D icons: contact sheet</title>
+const html = `<!doctype html><html lang="en"><meta charset="utf-8"><title>Workshop icons: contact sheet</title>
 <style>${css}
 body{margin:0;background:#1b1815;color:#d9d3cc;font:13px/1.3 system-ui,sans-serif;padding:18px}
 h1{font:600 18px system-ui;margin:0 0 4px}p{margin:0 0 14px;color:#a9a29a}
@@ -37,7 +37,7 @@ h1{font:600 18px system-ui;margin:0 0 4px}p{margin:0 0 14px;color:#a9a29a}
 .cell{display:inline-flex;align-items:center}
 .tag{color:#8d867e;font-size:11px}
 .legend{display:flex;gap:16px;margin:0 0 14px;font-size:12px;color:#a9a29a}
-</style><body><h1>Forge3D interface icons, brand v2</h1>
+</style><body><h1>Workshop interface icons, brand v2</h1>
 <p>${names.length} glyphs at 16 / 24 / 48 px, dark (#141210) then light. Rail glyphs repeat in stone, the inactive state. Line utilities use currentColor.</p>
 <div class="grid">${rows}</div></body></html>`;
 fs.writeFileSync(path.join(out, "icon-contact-sheet.html"), html);
