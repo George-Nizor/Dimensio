@@ -510,7 +510,7 @@ class ClaudeDriver extends EventEmitter {
         this.emit("step", { method: "claude/init", text: `Claude Code ${event.version || ""} started with ${event.model || "its default model"}.`.replace(/\s+/g, " ") });
         for (const server of event.mcpServers) {
           if (server?.status === "failed" || server?.status === "needs-auth") {
-            this._report({ method: "claude/mcp", message: `The ${server.name} MCP server did not start (${server.status}). Steps that need it cannot run.` });
+            this._report({ method: "claude/mcp", message: `The ${server.name} MCP server did not start${server.status === "needs-auth" ? " because it needs a sign-in" : ""}, so steps that need it cannot run.` });
           }
         }
       } else if (event.kind === "echo") {
@@ -531,7 +531,7 @@ class ClaudeDriver extends EventEmitter {
         this.emit("tool", { phase: "completed", method: "item/completed", item: { ...item, status: event.isError ? "failed" : "completed" } });
         if (item.type === "commandExecution" && event.text) this.emit("log", { method: "claude/commandOutput", text: `${event.text.slice(-20000)}\n` });
       } else if (event.kind === "denied") {
-        this._report({ method: "claude/permission", message: `Forge3D does not allow ${event.tool} here, so Claude Code was refused.` });
+        this._report({ method: "claude/permission", message: `Forge3D refused a ${event.tool} call from Claude Code that its allowlist does not cover.` });
       } else if (event.kind === "rate_limit" && event.status === "rejected") {
         const when = event.resetsAt ? ` It resets at ${new Date(event.resetsAt * 1000).toLocaleString()}.` : "";
         this._report({ method: "claude/limit", message: `Claude Code reached its usage limit.${when}` });

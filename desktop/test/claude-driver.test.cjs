@@ -249,7 +249,7 @@ test("a steering note written during a tool call lands mid-turn, and the run fin
     ["started", "commandExecution", "forge3d --version"], ["completed", "commandExecution", "forge3d --version"],
   ]);
   assert.ok(events.some((event) => event.type === "message" && /banana/.test(event.text)));
-  assert.ok(events.some((event) => event.type === "error" && event.method === "claude/mcp" && /blender MCP server did not start/.test(event.message)));
+  assert.ok(events.some((event) => event.type === "error" && event.method === "claude/mcp" && /blender MCP server did not start, so steps/.test(event.message)));
   assert.equal(events.filter((event) => event.type === "usage").length, 1);
   const lines = logLines(log);
   assert.equal(lines[0].cwd, fs.realpathSync(run));
@@ -307,7 +307,7 @@ test("interrupt kills the process tree during a tool call and the run ends inter
   driver.send("Use the Bash tool to run `touch probe.txt`.");
   const finished = await done;
   assert.equal(finished.status, "interrupted");
-  assert.ok(events.some((event) => event.type === "error" && event.method === "claude/permission" && /does not allow Bash/.test(event.message)));
+  assert.ok(events.some((event) => event.type === "error" && event.method === "claude/permission" && /refused a Bash call/.test(event.message)));
   assert.equal(events.find((event) => event.type === "tool" && event.phase === "completed").item.status, "failed");
 });
 

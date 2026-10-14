@@ -364,7 +364,7 @@ async function openRecovered(payload = {}) {
 // stopped first, as for Save, because the runs folder moves with it.
 async function renameOpenProject(payload = {}) {
   if (!project) throw new Error("No project is open");
-  if (project.untitled) throw new Error("Save the project first. Its name is chosen when it is saved.");
+  if (project.untitled) throw new Error("Save the project first. You name it when you save it.");
   assertIdle("renaming the project");
   flushRunEvents();
   await releaseProjectFolder();
