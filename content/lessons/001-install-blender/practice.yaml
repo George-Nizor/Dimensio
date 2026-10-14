@@ -1,0 +1,21 @@
+# Practice for lesson 1. The item marked main is the lesson's exercise.
+
+- id: install-and-set-up
+  main: true
+  title: Install and set up Blender
+  kind: drill
+  minutes: 10
+  text: Install Blender 5.2 LTS, choose your settings on the splash screen and close it. Then open Settings in Dimensio and check it has found Blender 5.2.
+  steps: [Download 5.2 LTS, Install it, Choose your settings, "Check the version, then close", Point Dimensio at Blender]
+  timer: { minutes: 10 }
+  reference: { diagram: quick-setup }
+
+- id: splash-screen-again
+  title: Open the splash screen again
+  kind: warm-up
+  minutes: 2
+  text: Close the splash screen, then open it again from the Blender logo at the left of the Topbar by choosing Splash Screen. Close it with Esc.
+  timer: { minutes: 2 }
+  check:
+    - The splash screen opens from the Blender logo in the Topbar.
+    - Esc closes it.

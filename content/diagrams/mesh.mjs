@@ -7,9 +7,12 @@
 // takes an azimuth (0 looks from the front, 90 from the right) and an elevation (90 looks down).
 //
 // Classes the app styles, so diagrams follow the theme: d-face-1 to d-face-3 (lit, mid and dark
-// faces), d-face-sel (a selected face), d-axis-x, d-axis-y, d-axis-z (Blender's red, green and
-// blue), d-ui and d-ui-mark (the window schematic), d-key (a key cap), plus lib.mjs's own d-ink,
-// d-guide, d-mark, d-mark-fill, d-bad and d-label.
+// faces), d-face-sel (a selected face), d-axis-x, d-axis-y, d-axis-z and d-axis-*-text (Blender's
+// red, green and blue), d-ui and d-ui-mark (the window schematic), d-key, d-key-mark, d-key-text and
+// d-key-text-mark (keys and mouse buttons, plain and picked out), d-key-bad (a setting picked out
+// as the wrong one), d-cursor (the mouse pointer), d-gizmo-x, -y, -z, their -neg
+// forms, d-gizmo-mark and d-gizmo-text (the navigation gizmo), plus lib.mjs's own d-ink, d-guide,
+// d-mark, d-mark-fill, d-bad, d-label, d-tag and d-sunk (a recessed panel).
 
 const rad = (deg) => (deg * Math.PI) / 180;
 const sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
@@ -298,18 +301,24 @@ export const edgesWhere = (m, test) => edges(m).filter((e) => test(m.verts[e.a],
 // A view of the scene. azimuth 0 is the front view (numpad 1), 90 the right view (numpad 3);
 // elevation 90 is the top view (numpad 7). The default matches Blender's opening view: in front, to
 // the right and a little above. `scale` is pixels per metre and `at` is where `target` lands.
-export function view({ azimuth = 40, elevation = 28, scale = 60, at = [180, 120], target = [0, 0, 0] } = {}) {
+// The view is orthographic unless `distance` is set: then it is a perspective view from that many
+// metres away, so nearer parts look bigger, as numpad 5 switches between.
+export function view({ azimuth = 40, elevation = 28, scale = 60, at = [180, 120], target = [0, 0, 0], distance = 0 } = {}) {
   const az = rad(azimuth);
   const el = rad(elevation);
   const toward = [Math.cos(el) * Math.sin(az), -Math.cos(el) * Math.cos(az), Math.sin(el)];
   const right = [Math.cos(az), Math.sin(az), 0];
   const up = cross(toward, right);
+  const depth = (p) => dot3(sub(p, target), toward);
   const project = (p) => {
     const d = sub(p, target);
-    return [at[0] + dot3(d, right) * scale, at[1] - dot3(d, up) * scale];
+    const f = distance ? distance / Math.max(distance - depth(p), 0.01) : 1;
+    return [at[0] + dot3(d, right) * scale * f, at[1] - dot3(d, up) * scale * f];
   };
-  const depth = (p) => dot3(sub(p, target), toward);
-  return { project, depth, toward, scale };
+  // In perspective a face can face the camera even when it points slightly away from the view
+  // direction, so facing tests use the direction from the face to the eye.
+  const eye = distance ? add(target, mul(toward, distance)) : null;
+  return { project, depth, toward, scale, eye };
 }
 
 export const views = {
@@ -319,7 +328,7 @@ export const views = {
   user: (o = {}) => view(o),
 };
 
-const facing = (m, face, v) => dot3(normal(m, face), v.toward) > 1e-6;
+const facing = (m, face, v) => dot3(normal(m, face), v.eye ? sub(v.eye, centroid(m, face)) : v.toward) > 1e-6;
 const points = (m, face, v) => face.map((i) => v.project(m.verts[i]));
 
 // Draws a mesh. mode 'solid' fills faces in three tones by how they face the light and hides what
@@ -466,4 +475,76 @@ export function keycap(kit, x, y, label, { size = 14 } = {}) {
     `<rect x="${(x - w / 2).toFixed(1)}" y="${(y - h / 2).toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" rx="5" class="d-key" stroke-width="1.4"/>`,
     kit.text(x, y + size * 0.36, label, { anchor: 'middle', size, cls: 'd-key-text' }),
   ];
+}
+
+// A mouse seen from above, with one button or the wheel picked out: 'left', 'right', 'middle' (the
+// wheel pressed and dragged) or 'wheel' (rolled). `label` is a short line under it.
+export function mouse(kit, x, y, { button, label, size = 1 } = {}) {
+  const w = 54 * size;
+  const h = 84 * size;
+  const top = y - h / 2;
+  const split = top + h * 0.42;
+  const out = [kit.path(`M ${x - w / 2} ${split} L ${x - w / 2} ${top + w / 2} A ${w / 2} ${w / 2} 0 0 1 ${x + w / 2} ${top + w / 2} L ${x + w / 2} ${y + h / 2 - w / 2} A ${w / 2} ${w / 2} 0 0 1 ${x - w / 2} ${y + h / 2 - w / 2} Z`, { cls: 'd-ink', width: 2 })];
+  const half = (dir) => `<path d="M ${x} ${top} A ${w / 2} ${w / 2} 0 0 ${dir < 0 ? 0 : 1} ${x + (dir * w) / 2} ${top + w / 2} L ${x + (dir * w) / 2} ${split} L ${x} ${split} Z" class="d-key-mark" stroke-width="0"/>`;
+  if (button === 'left') out.push(half(-1));
+  if (button === 'right') out.push(half(1));
+  out.push(kit.line(x - w / 2, split, x + w / 2, split, { cls: 'd-ink', width: 1.6 }), kit.line(x, top, x, split, { cls: 'd-ink', width: 1.6 }));
+  const wheel = button === 'middle' || button === 'wheel';
+  out.push(`<rect x="${(x - 5 * size).toFixed(1)}" y="${(top + h * 0.12).toFixed(1)}" width="${(10 * size).toFixed(1)}" height="${(h * 0.2).toFixed(1)}" rx="${(5 * size).toFixed(1)}" class="${wheel ? 'd-key-mark' : 'd-key'}" stroke-width="1.6"/>`);
+  if (button === 'wheel') {
+    out.push(kit.arrowhead(x, top + h * 0.07, -Math.PI / 2, { size: 6, width: 1.8 }), kit.arrowhead(x, top + h * 0.37, Math.PI / 2, { size: 6, width: 1.8 }));
+  }
+  if (label) out.push(kit.text(x, y + h / 2 + 18, label, { anchor: 'middle', size: 12 }));
+  return out;
+}
+
+// The numeric keypad, with keys picked out by their labels ('1', '3', '7', '5', '.', '0').
+export function numpad(kit, x, y, { highlight = [], size = 1, label } = {}) {
+  const k = 26 * size;
+  const g = 4 * size;
+  const rows = [['Num', '/', '*', '-'], ['7', '8', '9', '+'], ['4', '5', '6', null], ['1', '2', '3', 'Enter'], ['0', null, '.', null]];
+  const out = [];
+  rows.forEach((row, r) => row.forEach((name, c) => {
+    if (!name) return;
+    let w = k;
+    let h = k;
+    if (name === '+' || name === 'Enter') h = 2 * k + g;
+    if (name === '0') w = 2 * k + g;
+    const kx = x + c * (k + g);
+    const ky = y + r * (k + g);
+    const on = highlight.includes(name);
+    out.push(`<rect x="${kx.toFixed(1)}" y="${ky.toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" rx="4" class="${on ? 'd-key-mark' : 'd-key'}" stroke-width="1.4"/>`);
+    out.push(kit.text(kx + w / 2, ky + h / 2 + 4 * size, name, { anchor: 'middle', size: (name.length > 2 ? 9 : 12) * size, cls: on ? 'd-key-text d-key-text-mark' : 'd-key-text' }));
+  }));
+  if (label) out.push(kit.text(x + 2 * (k + g) - g / 2, y + 5 * (k + g) + 14, label, { anchor: 'middle', size: 12 }));
+  return out;
+}
+
+// Blender's navigation gizmo for a view: a circle with a ball for each axis, the positive ends
+// lettered and coloured, as in the top right of the 3D Viewport.
+export function navGizmo(kit, x, y, v, { radius = 34, highlight } = {}) {
+  const o = v.project([0, 0, 0]);
+  const balls = [['x', [1, 0, 0]], ['y', [0, 1, 0]], ['z', [0, 0, 1]], ['-x', [-1, 0, 0]], ['-y', [0, -1, 0]], ['-z', [0, 0, -1]]].map(([name, dir]) => {
+    const p = v.project(dir);
+    const dx = (p[0] - o[0]) / v.scale;
+    const dy = (p[1] - o[1]) / v.scale;
+    return { name, px: x + dx * radius * 0.8, py: y + dy * radius * 0.8, depth: dot3(dir, v.toward) };
+  }).sort((a, b) => a.depth - b.depth);
+  const out = [`<circle cx="${x}" cy="${y}" r="${radius}" class="d-ui" stroke-width="1"/>`];
+  for (const b of balls) {
+    const axis = b.name.replace('-', '');
+    const positive = !b.name.startsWith('-');
+    if (positive) out.push(kit.line(x, y, b.px, b.py, { cls: `d-axis-${axis}`, width: 2 }));
+    const r = positive ? 8 : 6;
+    const ring = highlight === b.name ? ' d-gizmo-mark' : '';
+    out.push(`<circle cx="${b.px.toFixed(1)}" cy="${b.py.toFixed(1)}" r="${r}" class="d-gizmo-${axis}${positive ? '' : '-neg'}${ring}" stroke-width="1.6"/>`);
+    if (positive) out.push(kit.text(b.px, b.py + 4, axis.toUpperCase(), { anchor: 'middle', size: 10, cls: 'd-gizmo-text' }));
+  }
+  return out;
+}
+
+// The mouse pointer, its tip at (x, y), for showing where the mouse is when a key is pressed.
+export function cursor(kit, x, y, { size = 1, cls = 'd-ink' } = {}) {
+  const p = [[0, 0], [0, 17], [4.5, 13], [7.5, 20], [10, 19], [7, 12], [12.5, 12]].map(([a, b]) => [x + a * size, y + b * size]);
+  return `<path d="M ${p.map(([a, b]) => `${a.toFixed(1)} ${b.toFixed(1)}`).join(' L ')} Z" class="d-cursor ${cls}" stroke-width="1.4" stroke-linejoin="round"/>`;
 }

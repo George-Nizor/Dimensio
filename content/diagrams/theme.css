@@ -1,0 +1,116 @@
+/* Colours for lesson diagrams, in light and dark. The course app imports this file; the diagram
+   sheet script uses it too. d-mark is the orange Blender uses for selection, the axis colours are
+   Blender's own, and d-bad is a red kept clear of the orange. */
+
+:root {
+  --d-ink: #1f1d1a;
+  --d-guide: #a8a29a;
+  --d-mark: #d4661c;
+  --d-bad: #c22f4f;
+  --d-paper: #ffffff;
+  --d-edge: #e3dfd8;
+  --d-sunk: #ece8e1;
+  --d-label: #5f5a52;
+  --d-face-1: #ffffff;
+  --d-face-2: #e8e5df;
+  --d-face-3: #d2cec6;
+  --d-face-sel: #f6d6bd;
+  --d-ui: #f3f1ed;
+  --d-ui-mark: #fbe0cb;
+  --d-key: #ffffff;
+  --d-key-mark: #d4661c;
+  --d-key-bad: #c22f4f;
+  --d-axis-x: #e2384f;
+  --d-axis-y: #5f9e12;
+  --d-axis-z: #2f7fe0;
+}
+
+:root[data-theme='dark'] {
+  --d-ink: #ece7df;
+  --d-guide: #706a61;
+  --d-mark: #f39a52;
+  --d-bad: #f0708b;
+  --d-paper: #24211e;
+  --d-edge: #3a3530;
+  --d-sunk: #1b1916;
+  --d-label: #a59d92;
+  --d-face-1: #3c3833;
+  --d-face-2: #312e2a;
+  --d-face-3: #282521;
+  --d-face-sel: #6a4128;
+  --d-ui: #2b2825;
+  --d-ui-mark: #573522;
+  --d-key: #2f2b27;
+  --d-key-mark: #f39a52;
+  --d-key-bad: #f0708b;
+  --d-axis-x: #ff5a6e;
+  --d-axis-y: #8bd133;
+  --d-axis-z: #4f9bff;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --d-ink: #ece7df;
+    --d-guide: #706a61;
+    --d-mark: #f39a52;
+    --d-bad: #f0708b;
+    --d-paper: #24211e;
+    --d-edge: #3a3530;
+    --d-sunk: #1b1916;
+    --d-label: #a59d92;
+    --d-face-1: #3c3833;
+    --d-face-2: #312e2a;
+    --d-face-3: #282521;
+    --d-face-sel: #6a4128;
+    --d-ui: #2b2825;
+    --d-ui-mark: #573522;
+    --d-key: #2f2b27;
+    --d-key-mark: #f39a52;
+    --d-key-bad: #f0708b;
+    --d-axis-x: #ff5a6e;
+    --d-axis-y: #8bd133;
+    --d-axis-z: #4f9bff;
+  }
+}
+
+.diagram-svg .d-ink { stroke: var(--d-ink); }
+.diagram-svg .d-guide { stroke: var(--d-guide); }
+.diagram-svg .d-mark { stroke: var(--d-mark); }
+.diagram-svg .d-bad { stroke: var(--d-bad); }
+.diagram-svg .d-dot { fill: var(--d-ink); }
+.diagram-svg .d-paper { fill: var(--d-paper); stroke: var(--d-edge); }
+.diagram-svg .d-sunk { fill: var(--d-sunk); stroke: var(--d-edge); }
+.diagram-svg .d-mark-fill { fill: var(--d-mark); stroke: none; }
+.diagram-svg .d-label { fill: var(--d-label); stroke: none; font-family: var(--font-ui, sans-serif); }
+.diagram-svg .d-tag { fill: var(--d-mark); stroke: none; font-family: var(--font-ui, sans-serif); font-weight: 600; }
+.diagram-svg .d-tag-bad { fill: var(--d-bad); }
+
+.diagram-svg .d-face-1 { fill: var(--d-face-1); }
+.diagram-svg .d-face-2 { fill: var(--d-face-2); }
+.diagram-svg .d-face-3 { fill: var(--d-face-3); }
+.diagram-svg .d-face-sel { fill: var(--d-face-sel); }
+
+.diagram-svg .d-axis-x { stroke: var(--d-axis-x); fill: none; }
+.diagram-svg .d-axis-y { stroke: var(--d-axis-y); fill: none; }
+.diagram-svg .d-axis-z { stroke: var(--d-axis-z); fill: none; }
+.diagram-svg .d-axis-x-text { fill: var(--d-axis-x); stroke: none; }
+.diagram-svg .d-axis-y-text { fill: var(--d-axis-y); stroke: none; }
+.diagram-svg .d-axis-z-text { fill: var(--d-axis-z); stroke: none; }
+
+.diagram-svg .d-ui { fill: var(--d-ui); stroke: var(--d-guide); }
+.diagram-svg .d-ui-mark { fill: var(--d-ui-mark); stroke: var(--d-mark); }
+.diagram-svg .d-key { fill: var(--d-key); stroke: var(--d-ink); }
+.diagram-svg .d-key-mark { fill: var(--d-key-mark); stroke: var(--d-key-mark); }
+.diagram-svg .d-key-bad { fill: var(--d-key-bad); stroke: var(--d-key-bad); }
+.diagram-svg .d-key-text { fill: var(--d-ink); stroke: none; font-family: var(--font-mono, monospace); }
+.diagram-svg .d-key-text-mark { fill: var(--d-paper); font-weight: 600; }
+.diagram-svg .d-cursor { fill: var(--d-paper); stroke: var(--d-ink); }
+
+.diagram-svg .d-gizmo-x { fill: var(--d-axis-x); stroke: var(--d-axis-x); }
+.diagram-svg .d-gizmo-y { fill: var(--d-axis-y); stroke: var(--d-axis-y); }
+.diagram-svg .d-gizmo-z { fill: var(--d-axis-z); stroke: var(--d-axis-z); }
+.diagram-svg .d-gizmo-x-neg { fill: none; stroke: var(--d-axis-x); }
+.diagram-svg .d-gizmo-y-neg { fill: none; stroke: var(--d-axis-y); }
+.diagram-svg .d-gizmo-z-neg { fill: none; stroke: var(--d-axis-z); }
+.diagram-svg .d-gizmo-mark { stroke: var(--d-mark); stroke-width: 3; }
+.diagram-svg .d-gizmo-text { fill: #ffffff; stroke: none; font-family: var(--font-ui, sans-serif); font-weight: 700; }

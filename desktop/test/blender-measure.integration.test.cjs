@@ -141,6 +141,7 @@ test("Dimensio's Blender scripts against a real Blender", { skip, timeout: 10 * 
       await starter("unapplied-scale"),
       await starter("reference-images", { imageFront: front, imageSide: side, height: 1.8 }),
       await starter("copy-reference", { reference: cubeObj }),
+      await starter("navigation-letters"),
     ];
     for (const file of built) assert.ok(fs.statSync(file).size > 1000, `${file} is empty`);
     await assert.rejects(starter("fix-ngons"), { code: "exists" });
@@ -201,6 +202,10 @@ test("Dimensio's Blender scripts against a real Blender", { skip, timeout: 10 * 
     const copy = await check(path.join(starters, "copy-reference.blend"), "copy-reference", { views: ["front"] });
     assert.equal(copy.totals.meshes, 0);
     assert.deepEqual(copy.renders, {});
+    const letters = await check(path.join(starters, "navigation-letters.blend"), "navigation-letters", { views: ["top"] });
+    assert.equal(letters.totals.meshes, 14);
+    assert.equal(letters.totals.ngons, 2);
+    assert.deepEqual(letters.objects.filter((item) => /^Prop \d$/.test(item.name)).map((item) => item.name), ["Prop 1", "Prop 2", "Prop 3", "Prop 4", "Prop 5", "Prop 6"]);
   });
 
   const cube = path.join(starters, "empty-scene.blend");

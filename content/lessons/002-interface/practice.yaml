@@ -1,0 +1,30 @@
+# Practice for lesson 2. The item marked main is the lesson's exercise.
+
+- id: rearrange-layout
+  main: true
+  title: Rearrange the Layout workspace
+  kind: drill
+  minutes: 15
+  text: "In a new General file, split the Timeline in two and turn one half into a Shader Editor. Maximize the 3D Viewport with Ctrl+Space and put it back. Join the two halves of the Timeline again. Then use F3 to find and run Save As, Shade Smooth and Add Cube."
+  steps: [Name the parts, Change an editor, "Resize, split and join", Show the Toolbar and Sidebar, Maximize an area, Search for a command]
+  timer: { minutes: 15 }
+  reference: { diagram: split-join }
+
+- id: workspace-tour
+  title: A tour of the workspaces
+  kind: warm-up
+  minutes: 5
+  text: Click each workspace tab along the Topbar in turn, from Layout to Scripting. In each one, change one area to another editor and back. Finish on Layout.
+  timer: { minutes: 5 }
+  check:
+    - You opened every workspace tab once.
+    - You finished on the Layout tab.
+
+- id: find-by-name
+  title: Find it by name
+  kind: drill
+  minutes: 5
+  text: "Use only F3 to find these five commands: Add Cylinder, Shade Flat, Apply All Transforms, Render Image and Save Copy. Run each one except Render Image."
+  timer: { minutes: 5 }
+  check:
+    - You found all five without opening a menu by hand.
